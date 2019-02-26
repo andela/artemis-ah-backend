@@ -40,4 +40,5 @@ node_modules
 # Environment variables
 .env
 
+# Package-lock json
 package-lock.json
