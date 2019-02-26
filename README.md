@@ -1,7 +1,8 @@
 Authors Haven - A Social platform for the creative at heart.
 =======
 
-[![Build Status](https://travis-ci.com/andela/artemis-ah-backend.svg?branch=develop)](https://travis-ci.org/andela/artemis-ah-backend) [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
+[![Build Status](https://travis-ci.com/andela/artemis-ah-backend.svg?branch=develop)](https://travis-ci.org/andela/artemis-ah-backend) [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com) [![Coverage Status](https://coveralls.io/repos/github/andela/artemis-ah-backend/badge.svg?branch=develop)](https://coveralls.io/github/andela/artemis-ah-backend?branch=develop)
+
 ## Vision
 Create a community of like minded authors to foster inspiration and innovation
 by leveraging the modern web.
