@@ -36,3 +36,8 @@ node_modules
 
 #nyc output
 .nyc_output
+
+# Environment variables
+.env
+
+package-lock.json
