@@ -40,5 +40,5 @@ node_modules
 # Environment variables
 .env
 
-# Package-lock json
+# This file is causing a lot of merge conflict!
 package-lock.json
