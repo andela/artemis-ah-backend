@@ -23,13 +23,13 @@
     "method-override": "^2.3.10",
     "methods": "^1.1.2",
     "mocha": "^6.0.2",
-    "mongoose": "^5.2.2",
-    "mongoose-unique-validator": "^2.0.1",
     "morgan": "^1.9.0",
     "nyc": "^13.3.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "request": "^2.87.0",
+    "sequelize": "^4.42.0",
+    "sequelize-cli": "^5.4.0",
     "slug": "^0.9.1",
     "underscore": "^1.9.1"
   }

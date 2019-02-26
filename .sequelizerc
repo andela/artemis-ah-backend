@@ -1,0 +1,10 @@
+const path = require('path');
+
+const databasePath = path.join(__dirname, 'database');
+
+module.exports = {
+  config: path.join(databasePath, 'config', 'config.json'),
+  'models-path': path.join(databasePath, 'models'),
+  'seeders-path': path.join(databasePath, 'seeders'),
+  'migrations-path': path.join(databasePath, 'migrations'),
+};
