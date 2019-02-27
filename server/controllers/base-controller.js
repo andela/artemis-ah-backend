@@ -1,7 +1,14 @@
 /**
  * Base controller class. All controller classes should extend this class
  */
-class Controller {
+class BaseController {
+
+  /**
+   * Helper method for sending response to the client.
+   * 
+   * @param {object} res The response object from the route
+   * @return {object} An object with methods for sending different type of responses (not found, forbidden, success, etc)
+   */
   response(res) {
     return {
       /**
@@ -76,4 +83,4 @@ class Controller {
   }
 }
 
-export default Controller;
+export default BaseController;
