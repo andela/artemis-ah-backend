@@ -36,3 +36,9 @@ node_modules
 
 #nyc output
 .nyc_output
+
+# Environment variables
+.env
+
+# This file is causing a lot of merge conflict!
+package-lock.json

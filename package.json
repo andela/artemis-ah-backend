@@ -4,12 +4,17 @@
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
   "scripts": {
-    "coveralls": "nyc report --reporter=text-lcov | coveralls",
-    "test": "nyc mocha"
+    "test": "nyc mocha",
+    "sequelize": "./node_modules/.bin/babel-node ./node_modules/.bin/sequelize $*",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
   "dependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.4",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.3.4",
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
@@ -24,13 +29,14 @@
     "method-override": "^2.3.10",
     "methods": "^1.1.2",
     "mocha": "^6.0.2",
-    "mongoose": "^5.2.2",
-    "mongoose-unique-validator": "^2.0.1",
     "morgan": "^1.9.0",
     "nyc": "^13.3.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
+    "pg": "^7.8.1",
     "request": "^2.87.0",
+    "sequelize": "^4.42.0",
+    "sequelize-cli": "^5.4.0",
     "slug": "^0.9.1",
     "underscore": "^1.9.1"
   },
