@@ -1,7 +1,7 @@
 import supertest from 'supertest';
 import app from '../app';
 import chai, { expect } from 'chai';
-
+import slugify from 'slug';
 
 /**
  * Method to check if a value is a number.
@@ -30,7 +30,7 @@ describe('Testing articles endpoint', () => {
         const { article } = res.body;
         expect(article.id).to.be.a.number();
         expect(article.title).to.equal('This is an article');
-        expect(article.slug).to.equal(`this-is-an-article-${article.id}`);
+        expect(article.slug).to.equal(`${slugify(data.title, {lower: true})}-${article.id}`);
         expect(article.description).to.equal('This is the description of the article');
         expect(article.body).to.equal('This is the body of the article');
 
