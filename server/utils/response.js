@@ -58,6 +58,15 @@ export default (res) => {
     },
 
     /**
+     * Sends status 400 and `data` to the client
+     * 
+     * @param {*} data 
+     */
+    badRequest(data) {
+      this.sendData(400, data);
+    },
+
+    /**
     * Send data to the client.
     * 
     * @access private
@@ -73,4 +82,21 @@ export default (res) => {
       res.status(status).json(data);
     },
   };
+};
+
+export const validationErrors = (errors) => {
+  errors = errors.mapped();
+  const formatted = {};
+
+  for (const field in errors) {
+    // Convert to array if is not array.
+    const errorMessage = errors[field].msg;
+    if ( ! (errorMessage instanceof Array)) {
+      errorMessage = [errorMessage];
+    }
+    
+    formatted[field] = errorMessage;
+  }
+
+  return formatted;
 };

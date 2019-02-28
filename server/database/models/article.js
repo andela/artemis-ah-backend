@@ -5,7 +5,8 @@ export default (sequelize, DataTypes) => {
     description: DataTypes.STRING,
     body: DataTypes.STRING,
     primaryImageUrl: DataTypes.STRING,
-    totalClaps: DataTypes.INTEGER
+    totalClaps: DataTypes.INTEGER,
+    slug: DataTypes.STRING,
   }, {});
   Article.associate = function(models) {
     // associations can be defined here
