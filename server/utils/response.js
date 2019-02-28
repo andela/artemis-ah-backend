@@ -48,6 +48,16 @@ export default (res) => {
     },
 
     /**
+     * Sends status 201 and `data` to the client
+     * Should be sent when something new has been created on the server
+     * 
+     * @param {*} data The data to send
+     */
+    created(data) {
+      this.sendData(201, data);
+    },
+
+    /**
     * Send data to the client.
     * 
     * @access private
@@ -55,7 +65,7 @@ export default (res) => {
     * @param {*} data 
     */
     sendData(status, data) {
-      if (typeof data === 'string') {
+      if (typeof data !== 'object') {
         data = {
           message: data,
         };
