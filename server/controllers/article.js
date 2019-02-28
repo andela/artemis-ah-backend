@@ -1,9 +1,9 @@
 import { Article } from '../database/models/index';
-import BaseController from './base-controller';
+import response from '../utils/response';
 
-class ArticleController extends BaseController {
+class ArticleController {
   create(req, res) {
-    this.response(res).success('This end point will create a new article.');
+    response(res).success('This end point will create a new article.');
   }
 }
 
