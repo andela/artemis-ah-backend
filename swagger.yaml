@@ -19,6 +19,8 @@ tags:
     url: "http://swagger.io"
 - name: "store"
   description: "Access to Petstore orders"
+- name: "article"
+  description: "Every thing relating to articles"
 schemes:
 - "https"
 paths:
@@ -48,6 +50,34 @@ paths:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
+
+  /articles:
+    post:
+      tags:
+      - "article"
+      summary: "Creates a new article"
+      description: "Creates a new article"
+      consumes:
+        - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "article"
+        description: "Create an article"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+            body:
+              type: string
+      responses:
+        200:
+          description: "Success"
         
 securityDefinitions:
   petstore_auth:
