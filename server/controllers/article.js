@@ -1,7 +1,9 @@
-import response, { validationErrors } from '../utils/response';
-import { validationResult } from 'express-validator/check';
-import { Article } from '../database/models';
 import slugify from 'slug';
+import { validationResult } from 'express-validator/check';
+import response, { validationErrors } from '../utils/response';
+import db from '../database/models';
+
+const { Article } = db;
 
 class ArticleController {
   /**
