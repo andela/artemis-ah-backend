@@ -3,7 +3,7 @@ import BaseController from './base-controller';
 
 class ArticleController extends BaseController {
   create(req, res) {
-    this.response(res).success('Hello');
+    this.response(res).success('This end point will create a new article.');
   }
 }
 
