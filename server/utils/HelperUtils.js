@@ -35,7 +35,7 @@ class HelperUtils {
       const payload = jwt.verify(token, secretKey);
       return payload;
     } catch (error) {
-      throw new Error(error);
+      return false;
     }
   }
 
@@ -63,14 +63,14 @@ class HelperUtils {
   }
 
   /**
-  * @description Method that sends emails
-  * @param {string} email
-  * @param {string} from
-  * @param {string} subject
-  * @param {string} text
-  * @param {string} htmlMarkup
-  * @return {undefined}
-  */
+   * @description Method that sends emails
+   * @param {string} email
+   * @param {string} from
+   * @param {string} subject
+   * @param {string} text
+   * @param {string} htmlMarkup
+   * @return {undefined}
+   */
   static sendMail(email, from, subject, text, htmlMarkup) {
     sendGrid.setApiKey(process.env.SENDGRID_API_KEY);
     const message = {
