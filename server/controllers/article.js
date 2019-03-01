@@ -9,8 +9,8 @@ class ArticleController {
   /**
    * Creates a new 
    * 
-   * @param {*} req The request object
-   * @param {*} res The response object
+   * @param {object} req The request object
+   * @param {object} res The response object
    */
   create(req, res) {
     const errors = validationResult(req);
