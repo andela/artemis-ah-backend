@@ -8,7 +8,7 @@ export default (sequelize, DataTypes) => {
     totalClaps: DataTypes.INTEGER,
     slug: DataTypes.STRING,
   }, {});
-  Article.associate = function(models) {
+  Article.associate = (models) => {
     // associations can be defined here
   };
   return Article;
