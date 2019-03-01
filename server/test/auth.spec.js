@@ -9,7 +9,7 @@ describe('GET articles', () => {
   it('should return an error if no token is specified', (done) => {
     chai
       .request(app)
-      .get('/api/articles')
+      .post('/api/articles')
       .set('authorization', '')
       .end((err, res) => {
         expect(res.status).to.equal(401);
@@ -22,7 +22,7 @@ describe('GET articles', () => {
   it('should return an error if token is invalid', (done) => {
     chai
       .request(app)
-      .get('/api/articles')
+      .post('/api/articles')
       .set('authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9')
       .end((err, res) => {
         expect(res.status).to.equal(401);
