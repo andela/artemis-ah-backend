@@ -14,7 +14,36 @@ chai.Assertion.addMethod('number', (value) => {
   return typeof value === 'number';
 });
 
+let token = null;
+
 describe('Testing articles endpoint', () => {
+
+  // Register a user to get jwt token.
+  it('It should create a new user', (done) => {
+    const data = {
+      firstname: 'Great',
+      lastname: 'Author',
+      email: 'greatauthor@gmail.com',
+      username: 'greatauthor',
+      password: '1234567'
+    };
+    chai
+      .request(app)
+      .post('/api/users')
+      .send(data)
+      .end((err, res) => {
+        expect(res.status).to.equal(201);
+
+        const { body } = res;
+        expect(body.message).to.be.a('string');
+        expect(body.message).to.equal('user created successfully');
+
+        token = body.user.token;
+
+        done();
+      });
+  });
+
   // Test creating article.
   it('It should create a new article', (done) => {
     const data = {
@@ -25,6 +54,7 @@ describe('Testing articles endpoint', () => {
     chai
       .request(app)
       .post('/api/articles')
+      .set('authorization', `Bearer ${token}`)
       .send(data)
       .end((err, res) => {
         expect(res.status).to.equal(201);
