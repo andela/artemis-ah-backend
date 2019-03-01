@@ -1,2 +1,2 @@
-import './auth.spec';
+import './user.spec';
 import './articles.spec';
