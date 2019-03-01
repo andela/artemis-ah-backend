@@ -78,6 +78,56 @@ paths:
       responses:
         200:
           description: "Success"
+
+  /users:
+  post:
+    tags:
+    - "users"
+    summary: "Signs up a new user"
+    description: "Creates a user"
+    consumes:
+      - "application/json"
+    produces:
+    - "application/json"
+    parameters:
+    - in: "body"
+      name: "users"
+      description: "Create a user"
+      required: true
+      schema:
+        type: "object"
+        properties:
+          firstname:
+            type: string
+          lastname:
+            type: string
+          username:
+            type: string
+          email:
+            type: string
+          password:
+            type: string
+    responses:
+      200:
+        description: "user created successfully"
+
+  /users/verifyemail:
+  get:
+    tags:
+    - "users"
+    summary: "Verifies a new user"
+    description: "Verifies a new users email"
+    consumes:
+      - "application/json"
+    produces:
+    - "application/json"
+    parameters:
+    - in: "body"
+    responses:
+      200:
+        description: "email verified successfully"
+      400:
+        description: "invalid email"
         
 securityDefinitions:
   petstore_auth:

@@ -7,7 +7,13 @@ cache:
   directories:
     - "node_modules"
   
-script: 
-  - export DATABASE_URL="postgres://ftezhqxo:B4OU8-jXQW3e9cm6vLrotQO3wIwUjUN3@baasu.db.elephantsql.com:5432/ftezhqxo"
+script:
+  - export DATABASE_URL="postgres://postgres@127.0.0.1:5432/artemisah"
   - npm test
   - npm run coveralls
+
+services:
+- postgresql
+
+before_script:
+ - psql -c 'create database artemisah;' -U postgres
