@@ -1,6 +1,8 @@
-import supertest from 'supertest';
-import { expect } from 'chai';
+import chaiHttp from 'chai-http';
+import chai, { expect } from 'chai';
 import app from '../app';
+
+chai.use(chaiHttp);
 
 const signupURL = '/api/users';
 const verifyURL = '/api/users/verifyemail?email=nwabuzor.obiora@gmail.com&hash=$2a$08$vu6Gwj1EgU7/6IJv6juphuraxOv6tOHaeNOvWmsjh0oYHOLRO8/9q';
@@ -8,7 +10,8 @@ const invalidVerifyURL = '/api/users/verifyemail?email=invalid.obiora@gmail.com&
 
 describe('Test signup endpoint and email verification endpoint', () => {
   it('It should return a 404 if user don\'t exist during email verification', (done) => {
-    supertest(app)
+    chai
+      .request(app)
       .get(verifyURL)
       .end((err, res) => {
         expect(res.status).to.equal(404);
@@ -26,7 +29,8 @@ describe('Test signup endpoint and email verification endpoint', () => {
       username: 'john45',
       password: '1234567'
     };
-    supertest(app)
+    chai
+      .request(app)
       .post(signupURL)
       .send(data)
       .end((err, res) => {
@@ -38,7 +42,8 @@ describe('Test signup endpoint and email verification endpoint', () => {
   });
 
   it('It should return 400 if email is not verified successfully', (done) => {
-    supertest(app)
+    chai
+      .request(app)
       .get(invalidVerifyURL)
       .end((err, res) => {
         expect(res.status).to.equal(400);
@@ -49,7 +54,8 @@ describe('Test signup endpoint and email verification endpoint', () => {
   });
 
   it('It should return 200 if email is verified successfully', (done) => {
-    supertest(app)
+    chai
+      .request(app)
       .get(verifyURL)
       .end((err, res) => {
         expect(res.status).to.equal(200);

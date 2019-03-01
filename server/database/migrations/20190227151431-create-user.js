@@ -38,14 +38,6 @@ export default {
         allowNull: true,
         defaultValue: 'https://res.cloudinary.com/shaolinmkz/image/upload/v1544370726/iReporter/avatar.png'
       },
-      following: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      followers: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
       verifiedEmail: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,

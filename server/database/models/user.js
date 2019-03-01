@@ -33,14 +33,6 @@ export default (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: 'https://res.cloudinary.com/shaolinmkz/image/upload/v1544370726/iReporter/avatar.png'
     },
-    following: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    followers: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
     verifiedEmail: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,

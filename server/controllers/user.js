@@ -80,10 +80,9 @@ export default class Users {
           message: 'user doesn\'t exist',
         });
       } else {
-        await user
-          .update({
-            verifiedEmail: true
-          });
+        await user.update({
+          verifiedEmail: true
+        });
         response(res).success({
           message: 'email verified successfully'
         });
