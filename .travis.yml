@@ -8,5 +8,6 @@ cache:
     - "node_modules"
   
 script: 
+  - export DATABASE_URL="postgres://ftezhqxo:B4OU8-jXQW3e9cm6vLrotQO3wIwUjUN3@baasu.db.elephantsql.com:5432/ftezhqxo"
   - npm test
   - npm run coveralls
