@@ -32,7 +32,7 @@ class HelperUtils {
       const payload = jwt.verify(token, secretKey);
       return payload;
     } catch (error) {
-      throw new Error(error);
+      return false;
     }
   }
 }
