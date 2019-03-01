@@ -6,7 +6,7 @@
   "scripts": {
     "start": "babel-node ./server/app.js",
     "dev": "nodemon --exec babel-node ./server/app.js",
-    "test": "npm run reset:db && nyc mocha --require @babel/polyfill --require @babel/register ./server/test/ --timeout 20000 --exit",
+    "test": "npm run reset:db && nyc mocha --require @babel/polyfill --require @babel/register ./server/test/ --timeout 10000 --exit",
     "sequelize": "./node_modules/.bin/babel-node ./node_modules/.bin/sequelize $*",
     "migrate": "./node_modules/.bin/babel-node ./node_modules/.bin/sequelize db:migrate",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
