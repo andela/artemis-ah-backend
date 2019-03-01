@@ -1,16 +1,21 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import logger from 'morgan';
+import cors from 'cors';
 import routes from './routes';
 
 // Set up the express app
 const app = express();
+
+// Enable CORS
+app.use(cors());
 
 // Log requests to the console.
 app.use(logger('dev'));
 
 // Parse incoming requests data
 app.use(bodyParser.json());
+
 // Setup a default catch-all route that sends back a welcome message in JSON format.
 app.get('/', (req, res) => res.status(200).send({
   message: 'Authors Haven.',

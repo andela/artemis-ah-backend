@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import Sequelize from 'sequelize';
-import dbConfig from '../config/config';
 import dotenv from 'dotenv';
+import dbConfig from '../config/config';
 
 dotenv.config();
 
@@ -39,4 +39,4 @@ Object.keys(db).forEach(modelName => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-export default db;
+module.exports = db;
