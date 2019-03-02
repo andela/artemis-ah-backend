@@ -9,7 +9,9 @@ export default (sequelize, DataTypes) => {
     slug: DataTypes.STRING,
   }, {});
   Article.associate = (models) => {
-    // associations can be defined here
+    Article.belongsTo(models.User, {
+      foreignKey: 'userId',
+    });
   };
   return Article;
 };

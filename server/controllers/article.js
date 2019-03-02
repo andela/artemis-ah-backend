@@ -5,18 +5,25 @@ import { validationResult } from 'express-validator/check';
 import response, { validationErrors } from '../utils/response';
 import db from '../database/models';
 
-const { Article } = db;
+const { Article, User } = db;
 
+/**
+ * @class ArticleController
+ * @exports ArticleController
+ */
 class ArticleController {
+  /**
+   */
   constructor() {
-    this.numberPerPage = 20;
+    this.defaultLimit = 20;
   }
 
   /**
-   * Creates a new
-   *
-   * @param {object} req The request object
-   * @param {object} res The response object
+   * @method create
+   * @description Creates a new
+   * @param {object} req - The request object
+   * @param {object} res - The response object
+   * @returns {null} - Returns nothing
    */
   create(req, res) {
     const errors = validationResult(req);
@@ -59,12 +66,12 @@ class ArticleController {
   }
 
   /**
-   *
+   * @method getAll
    * @param {object} req The request object from the route
    * @param {object} res The response object from the route
    */
   getAll(req, res) {
-    let limit = 20; // Default limit.
+    let limit = this.defaultLimit; // Default limit.
     let offset = 0; // Default offset.
 
     const { query } = req;
@@ -81,15 +88,20 @@ class ArticleController {
       where: {},
       offset, // Default is page 1
       limit,
+      include: [{
+        model: User,
+        attributes: ['username', 'bio', 'image'],
+      }],
+      attributes: ['slug', 'title', 'description', 'body', 'totalClaps', 'createdAt', 'updatedAt'],
     };
 
     Article
-       .findAll(sequelizeOptions)
-       .then((articles) => {
-         response(res).success({
-           articles,
-         });
-       });
+      .findAll(sequelizeOptions)
+      .then((articles) => {
+        response(res).success({
+          articles,
+        });
+      });
   }
 }
 
