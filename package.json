@@ -11,7 +11,7 @@
     "migrate": "./node_modules/.bin/babel-node ./node_modules/.bin/sequelize db:migrate",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "reset:db": "npm run sequelize db:migrate:undo:all && npm run sequelize db:migrate",
-    "start:dev":"npm run reset:db && npm run dev"
+    "start:dev": "npm run reset:db && npm run dev"
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
@@ -19,6 +19,7 @@
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.3.4",
     "@babel/node": "^7.2.2",
+    "@babel/polyfill": "^7.2.5",
     "@sendgrid/mail": "^6.3.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
@@ -46,8 +47,7 @@
     "sequelize": "^4.42.0",
     "sequelize-cli": "^5.4.0",
     "slug": "^0.9.1",
-    "underscore": "^1.9.1",
-    "@babel/polyfill": "^7.2.5"
+    "underscore": "^1.9.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.3.4",

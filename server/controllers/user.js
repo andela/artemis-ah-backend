@@ -91,4 +91,68 @@ export default class Users {
       res.status(400).json({ message: 'invalid email' });
     }
   }
+
+  /**
+   * @description controller function that handles user data retrieval
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} user
+   */
+  static async getUser(req, res) {
+    const { username } = req.params.username ? req.params : req;
+
+    try {
+      const user = await User.findOne({
+        where: { username },
+        attributes: ['username', 'email', 'bio', 'image']
+      });
+
+      if (!user) response(res).notFound({ message: 'user not found' });
+
+      response(res).success({
+        message: 'user found',
+        user
+      });
+    } catch (err) {
+      response(res).serverError({ message: err });
+    }
+  }
+
+  /**
+   * @description contoller function that updates user information
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} updatedUser
+   */
+  static async updateUser(req, res) {
+    const { username } = req;
+    try {
+      const user = await User.findOne({
+        where: { username },
+        attributes: ['username', 'email', 'bio', 'image']
+      });
+
+      if (!user) response(res).notFound({ message: 'user not found' });
+
+      const values = {
+        bio: req.body.bio || user.bio,
+        image: req.body.image || user.image,
+      };
+
+      const updateUser = await User.update(values, { returning: true, where: { username } });
+      const { email, bio, image } = updateUser[1][0];
+
+      response(res).success({
+        message: 'user updated',
+        user: {
+          username,
+          email,
+          bio,
+          image,
+        }
+      });
+    } catch (err) {
+      response(res).serverError({ message: err });
+    }
+  }
 }
