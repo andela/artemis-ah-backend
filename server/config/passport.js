@@ -29,22 +29,23 @@ const facebookAppId = process.env.FACEBOOK_APP_ID;
 const facebookAppSecret = process.env.FACEBOOK_APP_SECRET;
 const facebookReturnUrl = process.env.FACEBOOK_RETURN_URL;
 
-const handleSocialLogin = (email, firstname, lastname, username, photo, cb) => {
-  User.findOne({ where: { email } })
-    .then((existingUser) => {
-      if (existingUser) {
-        return cb(null, {
-          data: existingUser.dataValues
-        });
-      }
-      User.create({
+const handleSocialLogin = async (email, firstname, lastname, username, photo, cb) => { 
+  try{
+    const existingUser = await User.findOne({ where: { email } })
+    return cb(null, {
+      data: existingUser.dataValues
+    });
+  }
+    catch{
+      const user = await User.create({
         email,
         firstname,
         lastname,
         username: username ? `${username}-${new Date().getTime()}` : `${firstname ? firstname.toLowerCase() : email}${lastname ? lastname.toLowerCase() : ''}-${new Date().getTime()}`,
         image: photo,
-      }).then(user => cb(null, { data: user.dataValues }));
-    });
+      })
+      return cb(null, { data: user.dataValues })
+    }
 };
 
 passport.use(
@@ -69,7 +70,8 @@ passport.use(new TwitterStrategy({
 (token, tokenSecret, profile, cb) => {
   const { username, emails, photos } = profile;
   handleSocialLogin(emails[0].value, null, null, username, photos[0].value, cb);
-}));
+})
+);
 
 passport.use(new FacebookStrategy({
   clientID: facebookAppId,
@@ -83,6 +85,7 @@ passport.use(new FacebookStrategy({
   const firstname = splitnames[0];
   const lastname = splitnames.length > 1 ? splitnames[1] : '';
   handleSocialLogin(emails[0].value, firstname, lastname, null, photos[0].value, cb);
-}));
+})
+);
 
 export default passport;

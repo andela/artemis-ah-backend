@@ -102,21 +102,28 @@ export default class Users {
   static async socialLogin(req, res) {
     const { data } = req.user;
 
-    const userToken = await HelperUtils.generateToken(data);
-
-    const {
-      email, username, bio, image
-    } = data;
-
-    response(res).success({
-      message: 'user logged in successfully',
-      user: {
-        email,
-        username,
-        bio,
-        image,
-        token: userToken,
-      }
-    });
+    try{
+      const userToken = await HelperUtils.generateToken(data);
+  
+      const {
+        email, username, bio, image
+      } = data;
+  
+      response(res).success({
+        message: 'user logged in successfully',
+        user: {
+          email,
+          username,
+          bio,
+          image,
+          token: userToken,
+        }
+      });
+    }
+    catch{
+      response(res).serverError({
+        message: 'token could not be generated, please try again later'
+      });
+    }
   }
 }
