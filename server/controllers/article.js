@@ -92,8 +92,13 @@ class ArticleController {
         model: User,
         attributes: ['username', 'bio', 'image'],
       }],
-      attributes: ['slug', 'title', 'description', 'body', 'totalClaps', 'createdAt', 'updatedAt'],
+      attributes: ['id', 'slug', 'title', 'description', 'body', 'totalClaps', 'createdAt', 'updatedAt'],
     };
+
+    // If query author=? is in url, filter by author.
+    if (query.author) {
+      sequelizeOptions.where['$User.username$'] = query.author;
+    }
 
     Article
       .findAll(sequelizeOptions)
