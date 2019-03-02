@@ -32,7 +32,7 @@ class ArticleController {
 
       // Insert into database
       Article.create({
-        userId: 2,
+        userId: req.user.id,
         title,
         description,
         body,
