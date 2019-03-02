@@ -87,18 +87,9 @@ export default (res) => {
 };
 
 export const validationErrors = (errors) => {
-  errors = errors.mapped();
-  const formatted = {};
+  errors.formatWith(({ location, msg, param, value, nestedErrors }) => {
+    return (!(msg instanceof Array)) ? [msg] : msg;
+  });
 
-  for (const field in errors) {
-    // Convert to array if is not array.
-    const errorMessage = errors[field].msg;
-    if ( ! (errorMessage instanceof Array)) {
-      errorMessage = [errorMessage];
-    }
-    
-    formatted[field] = errorMessage;
-  }
-
-  return formatted;
+  return errors.mapped();
 };
