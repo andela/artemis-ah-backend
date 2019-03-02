@@ -58,15 +58,6 @@ export default res => ({
     this.sendData(201, data);
   },
 
-  /**
-    * Sends a status 500 and `data` to the client.
-    * Should be sent when there is an internal server error
-    *
-    * @param {*} data
-    */
-  serverError(data) {
-    this.sendData(500, data);
-  },
 
   /**
     * Send data to the client.
