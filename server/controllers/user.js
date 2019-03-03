@@ -26,17 +26,19 @@ export default class Users {
       firstname, lastname, username, email, password
     } = req.body;
 
-    const hash = HelperUtils.hashPassword(password);
-    const hashedEmail = HelperUtils.hashPassword(email);
+    const hash = await HelperUtils.hashPassword(password);
+    const hashedEmail = await HelperUtils.hashPassword(email);
 
     const formInputs = {
       firstname, lastname, username, email, password: hash
     };
     try {
       const createUser = await User.create(formInputs);
-      const token = HelperUtils.generateToken(formInputs);
+      const encryptDetails = { id: createUser.id, firstname, lastname, username, email };
+      const token = await HelperUtils.generateToken(encryptDetails);
       const name = typeof username !== 'undefined' ? username : `${lastname}, ${firstname}`;
-      HelperUtils.sendMail(
+
+      await HelperUtils.sendMail(
         email,
         'Authors Haven <no-reply@authorshaven.com>',
         'Email Verification',
@@ -55,7 +57,7 @@ export default class Users {
         }
       });
     } catch (err) {
-      res.status(400).json({ message: err });
+      response(res).sendData(500, err);
     }
   }
 
@@ -76,7 +78,7 @@ export default class Users {
         where: { email }
       });
       if (!user) {
-        res.status(404).json({
+        response(res).notFound({
           message: 'user doesn\'t exist',
         });
       } else {
@@ -88,7 +90,7 @@ export default class Users {
         });
       }
     } else {
-      res.status(400).json({ message: 'invalid email' });
+      response(res).badRequest({ message: 'invalid email' });
     }
   }
 }

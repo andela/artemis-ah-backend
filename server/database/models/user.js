@@ -2,15 +2,16 @@ export default (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     firstname: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: false
     },
     lastname: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: false
     },
     username: {
       type: DataTypes.STRING,
-      unique: true
+      unique: true,
+      allowNull: false
     },
     email: {
       type: DataTypes.STRING,
@@ -26,11 +27,12 @@ export default (sequelize, DataTypes) => {
     },
     bio: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
+      defaultValue: 'n/a'
     },
     image: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       defaultValue: 'https://res.cloudinary.com/shaolinmkz/image/upload/v1544370726/iReporter/avatar.png'
     },
     verifiedEmail: {
@@ -40,7 +42,16 @@ export default (sequelize, DataTypes) => {
     }
   }, {});
   User.associate = (models) => {
-    // associations can be defined here
+    const { Follower } = models;
+    User.hasMany(Follower, {
+      foreignKey: 'userId',
+      as: 'following'
+    });
+
+    User.hasMany(Follower, {
+      foreignKey: 'followerId',
+      as: 'followers'
+    });
   };
   return User;
 };

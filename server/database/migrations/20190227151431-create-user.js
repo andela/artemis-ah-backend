@@ -9,15 +9,15 @@ export default {
       },
       firstname: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       lastname: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       username: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
         unique: true
       },
       email: {
@@ -32,10 +32,11 @@ export default {
       bio: {
         type: Sequelize.STRING,
         allowNull: true,
+        defaultValue: 'n/a'
       },
       image: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
         defaultValue: 'https://res.cloudinary.com/shaolinmkz/image/upload/v1544370726/iReporter/avatar.png'
       },
       verifiedEmail: {

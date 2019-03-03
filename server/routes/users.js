@@ -1,9 +1,12 @@
 import express from 'express';
 import { Users } from '../controllers';
 
-const authRoute = express.Router();
+const userRoutes = express.Router();
 
-authRoute.post('/users', Users.signupUser);
-authRoute.get('/users/verifyemail', Users.verifyUserEmail);
+// Signup/Register a new user
+userRoutes.post('/users', Users.signupUser);
 
-export default authRoute;
+// Verify a new users email
+userRoutes.get('/users/verifyemail', Users.verifyUserEmail);
+
+export default userRoutes;

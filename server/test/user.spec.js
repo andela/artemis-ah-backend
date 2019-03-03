@@ -1,12 +1,15 @@
 import chaiHttp from 'chai-http';
 import chai, { expect } from 'chai';
+import { HelperUtils } from '../utils';
 import app from '../app';
+
 
 chai.use(chaiHttp);
 
+const testEmail = 'thatemail@yahoo.com';
 const signupURL = '/api/users';
-const verifyURL = '/api/users/verifyemail?email=nwabuzor.obiora@gmail.com&hash=$2a$08$vu6Gwj1EgU7/6IJv6juphuraxOv6tOHaeNOvWmsjh0oYHOLRO8/9q';
-const invalidVerifyURL = '/api/users/verifyemail?email=invalid.obiora@gmail.com&hash=$2a$08$vu6Gwj1EgU7/6IJv6juphuraxOv6tOHaeNOvWmsjh0oYHOLRO8/9q';
+const verifyURL = `/api/users/verifyemail?email=${testEmail}&hash=${HelperUtils.hashPassword(testEmail)}`;
+const invalidVerifyURL = `/api/users/verifyemail?email=${'invalid.email@gmail.com'}&hash=${HelperUtils.hashPassword('iamEvenmoreInvalid@rocketmail.com')}`;
 
 describe('Test signup endpoint and email verification endpoint', () => {
   it('It should return a 404 if user don\'t exist during email verification', (done) => {
@@ -25,7 +28,7 @@ describe('Test signup endpoint and email verification endpoint', () => {
     const data = {
       firstname: 'John',
       lastname: 'Doe',
-      email: 'nwabuzor.obiora@gmail.com',
+      email: testEmail,
       username: 'john45',
       password: '1234567'
     };
