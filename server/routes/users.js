@@ -1,13 +1,13 @@
 import express from 'express';
 import { Users } from '../controllers';
-import Auth from '../middlewares/auth';
+import AuthenticateUser from '../middlewares/AuthenticateUser';
 
 const authRoute = express.Router();
 
 authRoute.post('/users', Users.signupUser);
 authRoute.get('/users/verifyemail', Users.verifyUserEmail);
-authRoute.get('/user', Auth, Users.getUser);
-authRoute.put('/user', Auth, Users.updateUser);
+authRoute.get('/user', AuthenticateUser.verifyUser, Users.getUser);
+authRoute.put('/user', AuthenticateUser.verifyUser, Users.updateUser);
 authRoute.get('/profiles/:username', Users.getUser);
 
 export default authRoute;

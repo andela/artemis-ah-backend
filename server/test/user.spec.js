@@ -91,12 +91,12 @@ describe('Get user data', () => {
         done();
       });
   });
-  describe('get endpoints', () => {
+  describe('Get current user', () => {
     it('It should return 200 if user exists', (done) => {
       chai
         .request(app)
         .get(userURL)
-        .set('x-access-token', userToken)
+        .set('Authorization', `Bearer ${userToken}`)
         .end((err, res) => {
           expect(res.status).to.equal(200);
           expect(res.body.message).to.be.a('string');
@@ -109,10 +109,10 @@ describe('Get user data', () => {
       chai
         .request(app)
         .get(userURL)
-        .set('x-access-token', wrongToken)
+        .set('Authorization', `Bearer ${wrongToken}`)
         .end((err, res) => {
           expect(res.status).to.equal(401);
-          expect(res.body.message).to.be.a('string');
+          expect(res.body.error).to.be.an('object');
           done();
         });
     });
@@ -123,8 +123,7 @@ describe('Get user data', () => {
         .get(userURL)
         .end((err, res) => {
           expect(res.status).to.equal(401);
-          expect(res.body.message).to.be.a('string');
-          expect(res.body.message).to.equal('unauthorized');
+          expect(res.body.error).to.be.an('object');
           done();
         });
     });
@@ -165,7 +164,7 @@ describe('Get user data', () => {
         chai
           .request(app)
           .put(userURL)
-          .set('x-access-token', userToken)
+          .set('Authorization', `Bearer ${userToken}`)
           .send(data)
           .end((err, res) => {
             expect(res.status).to.equal(200);
@@ -176,14 +175,14 @@ describe('Get user data', () => {
           });
       });
 
-      it('It should return 401 for wrong jwt', (done) => {
+      it('It should return 401 for unauthorized user', (done) => {
         chai
           .request(app)
           .get(userURL)
-          .set('x-access-token', wrongToken)
+          .set('Authorization', `Bearer ${wrongToken}`)
           .end((err, res) => {
             expect(res.status).to.equal(401);
-            expect(res.body.message).to.be.a('string');
+            expect(res.body.error).to.be.an('object');
             done();
           });
       });
@@ -194,8 +193,7 @@ describe('Get user data', () => {
           .get(userURL)
           .end((err, res) => {
             expect(res.status).to.equal(401);
-            expect(res.body.message).to.be.a('string');
-            expect(res.body.message).to.equal('unauthorized');
+            expect(res.body.error).to.be.an('object');
             done();
           });
       });

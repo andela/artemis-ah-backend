@@ -99,7 +99,7 @@ export default class Users {
    * @returns {object} user
    */
   static async getUser(req, res) {
-    const { username } = req.params.username ? req.params : req;
+    const { username } = req.params.username ? req.params : req.user;
 
     try {
       const user = await User.findOne({
@@ -125,7 +125,7 @@ export default class Users {
    * @returns {object} updatedUser
    */
   static async updateUser(req, res) {
-    const { username } = req;
+    const { username } = req.user;
     try {
       const user = await User.findOne({
         where: { username },

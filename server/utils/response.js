@@ -49,6 +49,16 @@ export default res => ({
   },
 
   /**
+    * Sends a status 500 and `data` to the client.
+    * Should be sent when there is an internal server error.
+    *
+    * @param {*} data
+    */
+  serverError(data) {
+    this.sendData(500, data);
+  },
+
+  /**
      * Sends status 201 and `data` to the client
      * Should be sent when something new has been created on the server
      *
