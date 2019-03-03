@@ -7,8 +7,8 @@ const { Article } = db;
 
 class ArticleController {
   /**
-   * Creates a new 
-   * 
+   * Creates a new
+   *
    * @param {object} req The request object
    * @param {object} res The response object
    */
@@ -34,7 +34,7 @@ class ArticleController {
         slug = slug.concat(`-${article.id}`);
         article.slug = slug;
 
-        // Append id to slug and update. 
+        // Append id to slug and update.
         return Article.update({
           slug,
         }, {
@@ -42,7 +42,7 @@ class ArticleController {
             id: article.id,
           }
         }).then(dbRes => article);
-      }).then(article => {
+      }).then((article) => {
         article.userId = undefined;
 
         response(res).created({
