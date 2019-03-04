@@ -33,10 +33,12 @@ export default class Users {
     const formInputs = { ...body, password: hash };
     try {
       const createUser = await User.create(formInputs);
+
       const encryptDetails = {
         id: createUser.id, firstname, lastname, username, email
       };
       const token = await HelperUtils.generateToken(encryptDetails);
+
       const name = typeof username !== 'undefined' ? username : `${lastname}, ${firstname}`;
 
       await HelperUtils.sendMail(
