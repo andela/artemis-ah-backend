@@ -1,12 +1,31 @@
 import express from 'express';
 import { Users } from '../controllers';
+import passport from '../config/passport';
 
-const userRoutes = express.Router();
+const authRoute = express.Router();
 
-// Signup/Register a new user
-userRoutes.post('/users', Users.signupUser);
+authRoute.post('/users', Users.signupUser);
+authRoute.get('/users/verifyemail', Users.verifyUserEmail);
+authRoute.post('/users/reset-password', Users.resetPasswordEmail);
+authRoute.patch('/users/reset-password', Users.resetPassword);
+authRoute.get('/users/auth/google', passport.authenticate('google', {
+  scope: [
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'https://www.googleapis.com/auth/userinfo.email'
+  ]
+}));
 
-// Verify a new users email
-userRoutes.get('/users/verifyemail', Users.verifyUserEmail);
+authRoute.get('/users/auth/google/redirect', passport.authenticate('google', { session: false }), Users.socialLogin);
+authRoute.get('/users/auth/facebook', passport.authenticate('facebook', {
+  scope: ['email']
+}));
 
-export default userRoutes;
+authRoute.get('/users/auth/facebook/redirect', passport.authenticate('facebook', { session: false }), Users.socialLogin);
+
+authRoute.get('/users/auth/twitter', passport.authenticate('twitter', {
+  scope: ['include_email=true']
+}));
+
+authRoute.get('/users/auth/twitter/redirect', passport.authenticate('twitter', { session: false }), Users.socialLogin);
+
+export default authRoute;

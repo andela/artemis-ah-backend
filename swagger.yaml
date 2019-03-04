@@ -181,6 +181,92 @@ paths:
           description: "user not found"
       security:
         - authorization: []
+          description: "Success"
+  /users:
+  post:
+    tags:
+    - "users"
+    summary: "Signs up a new user"
+    description: "Creates a user"
+    consumes:
+      - "application/json"
+    produces:
+    - "application/json"
+    parameters:
+    - in: "body"
+      name: "users"
+      description: "Create a user"
+      required: true
+      schema:
+        type: "object"
+        properties:
+          firstname:
+            type: string
+          lastname:
+            type: string
+          username:
+            type: string
+          email:
+            type: string
+          password:
+            type: string
+    responses:
+      200:
+        description: "user created successfully"
+
+  /users/verifyemail:
+  get:
+    tags:
+    - "users"
+    summary: "Verifies a new user"
+    description: "Verifies a new users email"
+    consumes:
+      - "application/json"
+    produces:
+    - "application/json"
+    parameters:
+    - in: "body"
+    responses:
+      200:
+        description: "email verified successfully"
+      400:
+        description: "invalid email"
+
+  /users/auth/google:
+  get:
+    tags:
+    - "users"
+    summary: "Signs users in with google"
+    description: "Redirects to google authentication page to seek their permission to share their information with the platform"
+    produces:
+    - "text/html"
+    responses:
+      200:
+        description: "user logged in successfully"
+
+  /users/auth/facebook:
+  get:
+    tags:
+    - "users"
+    summary: "Signs users in with facebook"
+    description: "Redirects to facebook authentication page to seek their permission to share their information with the platform"
+    produces:
+    - "text/html"
+    responses:
+      200:
+        description: "user logged in successfully"
+
+  /users/auth/twitter:
+  get:
+    tags:
+    - "users"
+    summary: "Signs users in with twitter"
+    description: "Redirects to twitter authentication page to seek their permission to share their information with the platform"
+    produces:
+    - "text/html"
+    responses:
+      200:
+        description: "user logged in successfully"
 securityDefinitions:
   authorization:
     type: "apiKey"

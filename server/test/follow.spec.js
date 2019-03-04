@@ -5,7 +5,6 @@ import app from '../app';
 import { HelperUtils } from '../utils';
 
 dotenv.config();
-
 chai.use(chaiHttp);
 
 let token1 = '';
@@ -21,7 +20,6 @@ const verifyURL1 = `/api/users/verifyemail?email=${email1}&hash=${HelperUtils.ha
 const verifyURL2 = `/api/users/verifyemail?email=${email2}&hash=${HelperUtils.hashPassword(email2)}`;
 
 describe('Test user follow and unfollow on user profile endpoint', () => {
-
   it(`Insert user ${email1}`, (done) => {
     chai
       .request(app)

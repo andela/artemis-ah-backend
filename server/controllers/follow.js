@@ -1,7 +1,7 @@
+import '@babel/polyfill';
 import dotenv from 'dotenv';
 import db from '../database/models';
 import response from '../utils/response';
-import '@babel/polyfill';
 
 const { User, Follower } = db;
 dotenv.config();

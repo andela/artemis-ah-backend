@@ -9,6 +9,16 @@ cache:
   
 script:
   - export DATABASE_URL="postgres://postgres@127.0.0.1:5432/artemisah"
+  - export GOOGLE_CLIENT_ID="53636154845-afrnvoq70t0mbceslfrrdegpmobvqcnh.apps.googleusercontent.com"
+  - export GOOGLE_CLIENT_SECRET="Brnx1TxmaUZlhAk0RJYMmxi_"
+  - export GOOGLE_RETURN_URL="/api/users/auth/google/redirect"
+  - export TWITTER_CONSUMER_KEY="fI361EhD3pB8ye7wEQHDezrQi"
+  - export TWITTER_CONSUMER_SECRET="ItJz0SHSXstsQINs4MMZDkQaAaPAvccfBTeGKEQjQlFcGzau0s"
+  - export TWITTER_RETURN_URL="/api/users/auth/twitter/redirect"
+  - export FACEBOOK_APP_ID="775660842814342"
+  - export FACEBOOK_APP_SECRET="f63a934f47f2499286c251cc530b443c"
+  - export FACEBOOK_RETURN_URL="/api/users/auth/facebook/redirect"
+  - export SESSION_SECRET="asdfghjhkjlqwer"
   - npm test
   - npm run coveralls
 
