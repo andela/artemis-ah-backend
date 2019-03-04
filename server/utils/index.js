@@ -1,3 +1,3 @@
 import HelperUtils from './HelperUtils';
 
-export { HelperUtils };
+export default HelperUtils;

@@ -13,7 +13,8 @@
     "reset:db": "npm run sequelize db:migrate:undo:all && npm run sequelize db:migrate",
     "start:dev": "npm run reset:db && npm run dev",
     "build": "rm -rf dist && mkdir dist && babel -d ./dist ./server -s",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm run build"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm run build",
+    "lint": "eslint ./server --fix"
   },
   "lint-staged": {
     "*.js": [
