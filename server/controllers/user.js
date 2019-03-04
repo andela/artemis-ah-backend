@@ -41,13 +41,11 @@ export default class Users {
 
       const name = typeof username !== 'undefined' ? username : `${lastname}, ${firstname}`;
 
-      await HelperUtils.sendMail(
-        email,
+      await HelperUtils.sendMail(email,
         'Authors Haven <no-reply@authorshaven.com>',
         'Email Verification',
         'Verify Email',
-        verifyEmailMarkup(name, email, hashedEmail)
-      );
+        verifyEmailMarkup(name, email, hashedEmail));
 
       response(res).created({
         message: 'user created successfully',
@@ -119,13 +117,11 @@ export default class Users {
           message: 'user not found in our records'
         });
       } else {
-        HelperUtils.sendMail(
-          email,
+        HelperUtils.sendMail(email,
           'Authors Haven <no-reply@authorshaven.com>',
           'Password Reset',
           'Reset Password',
-          passwordResetMarkup(user.firstname, email, hashedEmail)
-        );
+          passwordResetMarkup(user.firstname, email, hashedEmail));
         response(res).success({
           message: 'Please, verify password reset link in your email box'
         });
@@ -174,7 +170,8 @@ export default class Users {
             password: hashPassword
           });
           response(res).success({
-            message: 'Password reset successful. Please, login using your new password.'
+            message:
+              'Password reset successful. Please, login using your new password.'
           });
         }
       } else {
@@ -189,14 +186,13 @@ export default class Users {
     }
   }
 
-
   /**
-  * @description This controller method completes the social sign in process
-  *
-  * @param {object} req - Express request object
-  * @param {object} res - Express response object
-  * @return {undefined}
-  */
+   * @description This controller method completes the social sign in process
+   *
+   * @param {object} req - Express request object
+   * @param {object} res - Express response object
+   * @return {undefined}
+   */
   static async socialLogin(req, res) {
     const { data } = req.user;
 
@@ -214,7 +210,7 @@ export default class Users {
           username,
           bio,
           image,
-          token: userToken,
+          token: userToken
         }
       });
     } catch (err) {

@@ -8,15 +8,15 @@ export default {
     },
     firstname: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     lastname: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     username: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
       unique: true
     },
     email: {
@@ -35,7 +35,7 @@ export default {
     },
     image: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
       defaultValue: 'https://res.cloudinary.com/shaolinmkz/image/upload/v1544370726/iReporter/avatar.png'
     },
     verifiedEmail: {
