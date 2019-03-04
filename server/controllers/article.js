@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable valid-jsdoc */
 import slugify from 'slug';
 import { validationResult } from 'express-validator/check';
 import response, { validationErrors } from '../utils/response';
