@@ -3,7 +3,7 @@ import { validationResult } from 'express-validator/check';
 import response, { validationErrors } from '../utils/response';
 import db from '../database/models';
 
-const { Article } = db;
+const { Article, Tag } = db;
 
 class ArticleController {
   /**
@@ -19,7 +19,7 @@ class ArticleController {
         errors: validationErrors(errors),
       });
     } else {
-      const { title, description, body } = req.body;
+      const { title, description, body, tagId } = req.body;
       let slug = slugify(title, {
         lower: true,
       });
@@ -30,6 +30,7 @@ class ArticleController {
         title,
         description,
         body,
+        tagId
       }).then((article) => {
         slug = slug.concat(`-${article.id}`);
         article.slug = slug;
@@ -49,6 +50,25 @@ class ArticleController {
           article,
         });
       });
+    }
+  }
+  /**
+   * Returns all tags
+   * 
+   * @param {object} req The request object
+   * @param {object} res The response object
+   */
+  async getTags(req, res){
+    try{
+      const allTags = await Tag.findAll({ where: {} });
+      response(res).success({
+        tags: allTags
+      })
+    }
+    catch(err){
+      response(res).serverError({ 
+        message: 'Could not get all tags'
+      })
     }
   }
 }

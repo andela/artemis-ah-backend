@@ -61,11 +61,20 @@ export default (res) => {
 
     /**
      * Sends status 400 and `data` to the client
-     * 
+     *
      * @param {*} data 
      */
     badRequest(data) {
       this.sendData(400, data);
+    },
+
+    /**
+     * Sends status 500 and `data` to the client
+     * Should be sent when there's a server error
+     * @param {*} data
+     */
+    serverError(data) {
+      this.sendData(500, data);
     },
 
     /**

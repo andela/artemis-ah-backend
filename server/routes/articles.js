@@ -12,4 +12,7 @@ router.post('/articles',
   createArticleValidation,
   controller.create.bind(controller));
 
+router.get('/articles/tags',
+  controller.getTags.bind(controller));
+
 export default router;
