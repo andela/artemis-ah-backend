@@ -136,15 +136,14 @@ describe('Testing articles endpoint', () => {
           const { articles } = res.body;
           expect(articles).to.be.an('array');
 
-          expect(articles).to.satisfy((articles) => {
-            if (articles.length === 0) { // Assuming there is nothing on page 2
+          expect(articles).to.satisfy((arr) => {
+            if (arr.length === 0) { // Assuming there is nothing on page 2
               return true;
-            } else {
-              // Given that page=2 and limit=1, the id of first item on page 2 should 1 greater than
-              // the id of the first element on page 1 since the table contains only the 2
-              // articles created in this test file.
-              return articles[0].id === (pageOneFirstArticle.id + 1);
             }
+            // Given that page=2 and limit=1, the id of first item on page 2 should 1 greater than
+            // the id of the first element on page 1 since the table contains only the 2
+            // articles created in this test file.
+            return arr[0].id === (pageOneFirstArticle.id + 1);
           });
 
           done();
