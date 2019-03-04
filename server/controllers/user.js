@@ -155,7 +155,6 @@ export default class Users {
       
       const { email, hash } = req.query;
       const isEmail = await HelperUtils.comparePasswordOrEmail(email, hash);
-      console.log(isEmail);
 
       if (isEmail) {
         const user = await User.findOne({
@@ -183,6 +182,40 @@ export default class Users {
       response(res).sendData(400, {
         message: err
       });
-    }   
+    }
   }
-}
+
+/**
+* @description This controller method completes the social sign in process
+*
+* @param {object} req - Express request object
+* @param {object} res - Express response object
+* @return {undefined}
+*/
+  static async socialLogin(req, res) {
+    const { data } = req.user;
+
+    try{
+      const userToken = await HelperUtils.generateToken(data);
+  
+      const {
+        email, username, bio, image
+      } = data;
+  
+      response(res).success({
+        message: 'user logged in successfully',
+        user: {
+          email,
+          username,
+          bio,
+          image,
+          token: userToken,
+        }
+      });
+    }
+    catch{
+      response(res).serverError({
+        message: 'token could not be generated, please try again later'
+      });
+    }
+  }

@@ -128,6 +128,42 @@ paths:
         description: "email verified successfully"
       400:
         description: "invalid email"
+
+  /users/auth/google:
+  get:
+    tags:
+    - "users"
+    summary: "Signs users in with google"
+    description: "Redirects to google authentication page to seek their permission to share their information with the platform"
+    produces:
+    - "text/html"
+    responses:
+      200:
+        description: "user logged in successfully"
+
+  /users/auth/facebook:
+  get:
+    tags:
+    - "users"
+    summary: "Signs users in with facebook"
+    description: "Redirects to facebook authentication page to seek their permission to share their information with the platform"
+    produces:
+    - "text/html"
+    responses:
+      200:
+        description: "user logged in successfully"
+
+  /users/auth/twitter:
+  get:
+    tags:
+    - "users"
+    summary: "Signs users in with twitter"
+    description: "Redirects to twitter authentication page to seek their permission to share their information with the platform"
+    produces:
+    - "text/html"
+    responses:
+      200:
+        description: "user logged in successfully"
         
 securityDefinitions:
   petstore_auth:

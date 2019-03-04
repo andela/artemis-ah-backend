@@ -31,7 +31,6 @@ export default {
         defaultValue: 0,
       },
       slug: {
-        allowNull: false,
         type: Sequelize.STRING,
       },
       createdAt: {

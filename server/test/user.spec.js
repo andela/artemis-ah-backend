@@ -143,3 +143,28 @@ describe('Test reset password mail endpoint and password link endpoint', () => {
       });
   });
 });
+
+describe('Social Login with Google', () => {
+  it('should return the google authentication webpage', (done) => {
+    chai
+      .request(app)
+      .get(`${signupURL}/auth/google`)
+      .end((err, res) => {
+        expect(res.redirects[0]).to.contain('https://accounts.google.com/o/oauth2');
+        done();
+      });
+  });
+});
+
+describe('Social Login with Facebook', () => {
+  it('should return the facebook authentication webpage', (done) => {
+    chai
+      .request(app)
+      .get(`${signupURL}/auth/facebook`)
+      .end((err, res) => {
+        expect(res.redirects[0]).to.contain('https://www.facebook.com');
+        expect(res.redirects[0]).to.contain('oauth');
+        done();
+      });
+  });
+});
