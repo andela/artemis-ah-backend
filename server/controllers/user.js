@@ -1,7 +1,7 @@
 import '@babel/polyfill';
 import dotenv from 'dotenv';
 import db from '../database/models';
-import { HelperUtils } from '../utils';
+import HelperUtils from '../utils';
 import response from '../utils/response';
 import verifyEmailMarkup from '../utils/markups/emailVerificationMarkup';
 import passwordResetMarkup from '../utils/markups/passwordResetMarkup';
@@ -33,15 +33,14 @@ export default class Users {
     const formInputs = { ...body, password: hash };
     try {
       const createUser = await User.create(formInputs);
-
-      const encryptDetails = {
-        id: createUser.id, firstname, lastname, username, email
-      };
-      const token = await HelperUtils.generateToken(encryptDetails);
-
-      const name = typeof username !== 'undefined' ? username : `${lastname}, ${firstname}`;
-
-      await HelperUtils.sendMail(email,
+      const token = HelperUtils.generateToken({
+        ...formInputs,
+        id: createUser.id
+      });
+      const name = typeof username !== 'undefined'
+        ? username
+        : `${lastname}, ${firstname}`;
+      HelperUtils.sendMail(email,
         'Authors Haven <no-reply@authorshaven.com>',
         'Email Verification',
         'Verify Email',
