@@ -4,14 +4,16 @@
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
   "scripts": {
-    "start": "babel-node ./server/app.js",
+    "start": " node ./dist/app.js",
     "dev": "nodemon --exec babel-node ./server/app.js",
     "test": "npm run reset:db && nyc mocha --require @babel/polyfill --require @babel/register ./server/test/ --timeout 10000 --exit",
     "sequelize": "./node_modules/.bin/babel-node ./node_modules/.bin/sequelize $*",
     "migrate": "./node_modules/.bin/babel-node ./node_modules/.bin/sequelize db:migrate",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "reset:db": "npm run sequelize db:migrate:undo:all && npm run sequelize db:migrate",
-    "start:dev": "npm run reset:db && npm run dev"
+    "start:dev": "npm run reset:db && npm run dev",
+    "build": "rm -rf dist && mkdir dist && babel -d ./dist ./server -s",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm run build"
   },
   "lint-staged": {
     "*.js": [
@@ -32,6 +34,7 @@
     "@babel/node": "^7.2.2",
     "@babel/polyfill": "^7.2.5",
     "@sendgrid/mail": "^6.3.1",
+    "babel-eslint": "^10.0.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",
@@ -52,7 +55,10 @@
     "nodemon": "^1.18.10",
     "nyc": "^13.3.0",
     "passport": "^0.4.0",
+    "passport-facebook": "^3.0.0",
+    "passport-google-oauth20": "^1.0.0",
     "passport-local": "^1.0.0",
+    "passport-twitter": "^1.0.4",
     "pg": "^7.8.1",
     "request": "^2.87.0",
     "sendgrid": "^5.2.3",
