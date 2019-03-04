@@ -35,7 +35,7 @@ export default class Users {
     };
     try {
       const createUser = await User.create(formInputs);
-      const token = HelperUtils.generateToken(formInputs);
+      const token = HelperUtils.generateToken({ ...formInputs, id: createUser.id });
       const name = typeof username !== 'undefined' ? username : `${lastname}, ${firstname}`;
       HelperUtils.sendMail(
         email,
