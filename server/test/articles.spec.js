@@ -7,17 +7,14 @@ chai.use(chaiHttp);
 
 /**
  * Method to check if a value is a number.
- * 
+ *
  * USAGE: expect(..).to.be.a.number()
  */
-chai.Assertion.addMethod('number', (value) => {
-  return typeof value === 'number';
-});
+chai.Assertion.addMethod('number', value => typeof value === 'number');
 
-let token = null;
+let userToken = null;
 
 describe('Testing articles endpoint', () => {
-
   // Register a user to get jwt token.
   it('should create a new user', (done) => {
     const data = {
@@ -38,7 +35,7 @@ describe('Testing articles endpoint', () => {
         expect(body.message).to.be.a('string');
         expect(body.message).to.equal('user created successfully');
 
-        token = body.user.token;
+        userToken = body.user.token;
 
         done();
       });
@@ -49,21 +46,25 @@ describe('Testing articles endpoint', () => {
     const data = {
       title: 'This is an article',
       description: 'This is the description of the article',
-      body: 'This is the body of the article',
+      body: 'This is the body of the article'
     };
     chai
       .request(app)
       .post('/api/articles')
-      .set('authorization', `Bearer ${token}`)
+      .set('authorization', `Bearer ${userToken}`)
       .send(data)
       .end((err, res) => {
         expect(res.status).to.equal(201);
-        
+
         const { article } = res.body;
         expect(article.id).to.be.a.number();
         expect(article.title).to.equal('This is an article');
-        expect(article.slug).to.equal(`${slugify(data.title, { lower: true })}-${article.id}`);
-        expect(article.description).to.equal('This is the description of the article');
+        expect(article.slug).to.equal(
+          `${slugify(data.title, { lower: true })}-${article.id}`
+        );
+        expect(article.description).to.equal(
+          'This is the description of the article'
+        );
         expect(article.body).to.equal('This is the body of the article');
 
         done();
@@ -80,13 +81,13 @@ describe('Testing articles endpoint', () => {
         .get('/api/articles')
         .end((err, res) => {
           expect(res.status).to.equal(200);
-  
+
           const { articles } = res.body;
           expect(articles).to.be.an('array');
           expect(articles.length).to.be.at.least(1);
+          const [article] = articles;
+          pageOneFirstArticle = article;
 
-          pageOneFirstArticle = articles[0];
-  
           done();
         });
     });
@@ -98,7 +99,7 @@ describe('Testing articles endpoint', () => {
         .get('/api/articles?limit=0')
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          
+
           const { articles } = res.body;
           expect(articles).to.be.an('array');
           expect(articles.length).to.equal(0);
@@ -112,11 +113,11 @@ describe('Testing articles endpoint', () => {
       chai
         .request(app)
         .post('/api/articles')
-        .set('authorization', `Bearer ${token}`)
+        .set('authorization', `Bearer ${userToken}`)
         .send({
           title: 'The second article',
           description: 'This is the description of the second article',
-          body: 'Welcome to the second article',
+          body: 'Welcome to the second article'
         })
         .end((err, res) => {
           expect(res.status).to.equal(201);
@@ -124,7 +125,7 @@ describe('Testing articles endpoint', () => {
           done();
         });
     });
-    
+
     // Test pagination.
     it('should return the articles on page 2', (done) => {
       chai
@@ -137,13 +138,14 @@ describe('Testing articles endpoint', () => {
           expect(articles).to.be.an('array');
 
           expect(articles).to.satisfy((arr) => {
-            if (arr.length === 0) { // Assuming there is nothing on page 2
+            if (arr.length === 0) {
+              // Assuming there is nothing on page 2
               return true;
             }
             // Given that page=2 and limit=1, the id of first item on page 2 should 1 greater than
             // the id of the first element on page 1 since the table contains only the 2
             // articles created in this test file.
-            return arr[0].id === (pageOneFirstArticle.id + 1);
+            return arr[0].id === pageOneFirstArticle.id + 1;
           });
 
           done();

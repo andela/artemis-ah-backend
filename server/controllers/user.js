@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import dotenv from 'dotenv';
 import db from '../database/models';
 import { HelperUtils } from '../utils';
@@ -31,12 +30,21 @@ export default class Users {
     const hashedEmail = HelperUtils.hashPassword(email);
 
     const formInputs = {
-      firstname, lastname, username, email, password: hash
+      firstname,
+      lastname,
+      username,
+      email,
+      password: hash
     };
     try {
       const createUser = await User.create(formInputs);
-      const token = HelperUtils.generateToken({ ...formInputs, id: createUser.id });
-      const name = typeof username !== 'undefined' ? username : `${lastname}, ${firstname}`;
+      const token = HelperUtils.generateToken({
+        ...formInputs,
+        id: createUser.id
+      });
+      const name = typeof username !== 'undefined'
+        ? username
+        : `${lastname}, ${firstname}`;
       HelperUtils.sendMail(
         email,
         'Authors Haven <no-reply@authorshaven.com>',
@@ -78,7 +86,7 @@ export default class Users {
       });
       if (!user) {
         res.status(404).json({
-          message: 'user doesn\'t exist',
+          message: "user doesn't exist"
         });
       } else {
         await user.update({
@@ -124,7 +132,7 @@ export default class Users {
         );
         response(res).success({
           message: 'Please, verify password reset link in your email box'
-        });     
+        });
       }
     } catch (err) {
       response(res).sendData(400, {
@@ -147,12 +155,12 @@ export default class Users {
     if (!isPassword) {
       response(res).sendData(400, {
         message: 'The supplied passwords do not match'
-      });     
+      });
     }
 
     try {
       const hashPassword = HelperUtils.hashPassword(newPassword);
-      
+
       const { email, hash } = req.query;
       const isEmail = await HelperUtils.comparePasswordOrEmail(email, hash);
 
@@ -164,19 +172,20 @@ export default class Users {
         if (!user) {
           response(res).notFound({
             message: 'User not found'
-          })
+          });
         } else {
           await user.update({
             password: hashPassword
           });
           response(res).success({
-            message: 'Password reset successful. Please, login using your new password.'
+            message:
+              'Password reset successful. Please, login using your new password.'
           });
         }
       } else {
         response(res).sendData(400, {
           message: 'Invalid password reset link'
-        })
+        });
       }
     } catch (err) {
       response(res).sendData(400, {
@@ -185,24 +194,23 @@ export default class Users {
     }
   }
 
-
   /**
-  * @description This controller method completes the social sign in process
-  *
-  * @param {object} req - Express request object
-  * @param {object} res - Express response object
-  * @return {undefined}
-  */
+   * @description This controller method completes the social sign in process
+   *
+   * @param {object} req - Express request object
+   * @param {object} res - Express response object
+   * @return {undefined}
+   */
   static async socialLogin(req, res) {
     const { data } = req.user;
 
-    try{
+    try {
       const userToken = await HelperUtils.generateToken(data);
-  
+
       const {
         email, username, bio, image
       } = data;
-  
+
       response(res).success({
         message: 'user logged in successfully',
         user: {
@@ -210,11 +218,10 @@ export default class Users {
           username,
           bio,
           image,
-          token: userToken,
+          token: userToken
         }
       });
-    }
-    catch{
+    } catch {
       response(res).serverError({
         message: 'token could not be generated, please try again later'
       });
