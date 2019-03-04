@@ -12,6 +12,9 @@ export default (sequelize, DataTypes) => {
     Article.belongsTo(models.User, {
       foreignKey: 'userId',
     });
+    Article.hasMany(models.ArticleComment, {
+      foreignKey: 'id',
+    });
   };
   return Article;
 };
