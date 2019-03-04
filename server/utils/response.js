@@ -87,7 +87,7 @@ export default (res) => {
 };
 
 export const validationErrors = (errors) => {
-  errors.formatWith(({ location, msg, param, value, nestedErrors }) => {
+  errors.formatWith(({ msg }) => {
     return (!(msg instanceof Array)) ? [msg] : msg;
   });
 
