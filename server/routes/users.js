@@ -1,56 +1,44 @@
 import express from 'express';
 import { Users } from '../controllers';
-import ValidateUser from '../middlewares/ValidateUser';
+import { ValidateUser } from '../middlewares';
 import passport from '../config/passport';
 
 const authRoute = express.Router();
 
-authRoute.post(
-  '/users',
+authRoute.post('/users',
   ValidateUser.validateMethods(),
   ValidateUser.validateUserDetails,
-  Users.signupUser
-);
+  Users.signupUser);
 authRoute.get('/users/verifyemail', Users.verifyUserEmail);
-authRoute.get(
-  '/users/auth/google',
+authRoute.post('/users/reset-password', Users.resetPasswordEmail);
+authRoute.patch('/users/reset-password', Users.resetPassword);
+authRoute.get('/users/auth/google',
   passport.authenticate('google', {
     scope: [
       'https://www.googleapis.com/auth/userinfo.profile',
       'https://www.googleapis.com/auth/userinfo.email'
     ]
-  })
-);
+  }));
 
-authRoute.get(
-  '/users/auth/google/redirect',
+authRoute.get('/users/auth/google/redirect',
   passport.authenticate('google', { session: false }),
-  Users.socialLogin
-);
-authRoute.get(
-  '/users/auth/facebook',
+  Users.socialLogin);
+authRoute.get('/users/auth/facebook',
   passport.authenticate('facebook', {
     scope: ['email']
-  })
-);
+  }));
 
-authRoute.get(
-  '/users/auth/facebook/redirect',
+authRoute.get('/users/auth/facebook/redirect',
   passport.authenticate('facebook', { session: false }),
-  Users.socialLogin
-);
+  Users.socialLogin);
 
-authRoute.get(
-  '/users/auth/twitter',
+authRoute.get('/users/auth/twitter',
   passport.authenticate('twitter', {
     scope: ['include_email=true']
-  })
-);
+  }));
 
-authRoute.get(
-  '/users/auth/twitter/redirect',
+authRoute.get('/users/auth/twitter/redirect',
   passport.authenticate('twitter', { session: false }),
-  Users.socialLogin
-);
+  Users.socialLogin);
 
 export default authRoute;

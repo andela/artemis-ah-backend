@@ -1,7 +1,7 @@
 import { check, validationResult } from 'express-validator/check';
 import Sequelize from 'sequelize';
 import models from '../database/models';
-import response from '../utils/response';
+import { response } from '../utils';
 
 const { Op } = Sequelize;
 const { User } = models;
@@ -55,7 +55,7 @@ class ValidateUser {
     return Promise.resolve(uniqueUser).then((result) => {
       if (result.length > 0) {
         const errors = {};
-        result.map((userDetail) => {
+        result.forEach((userDetail) => {
           errors[userDetail] = [`${userDetail} already exists.`];
         });
         return response(res).conflict({ errors });

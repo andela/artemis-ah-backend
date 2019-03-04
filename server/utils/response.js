@@ -77,6 +77,15 @@ export default res => ({
   },
 
   /**
+   * Sends status 500 and `data` to the client
+   * Should be sent when there's a server error
+   * @param {*} data
+   */
+  serverError(data) {
+    this.sendData(500, data);
+  },
+
+  /**
    * Send data to the client.
    *
    * @access private
@@ -94,18 +103,6 @@ export default res => ({
 });
 
 export const validationErrors = (errors) => {
-  errors = errors.mapped();
-  const formatted = {};
-
-  for (const field in errors) {
-    // Convert to array if is not array.
-    const errorMessage = errors[field].msg;
-    if (!(errorMessage instanceof Array)) {
-      errorMessage = [errorMessage];
-    }
-
-    formatted[field] = errorMessage;
-  }
-
-  return formatted;
+  errors.formatWith(({ msg }) => (!(msg instanceof Array) ? [msg] : msg));
+  return errors.mapped();
 };

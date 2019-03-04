@@ -29,14 +29,22 @@ const facebookAppId = process.env.FACEBOOK_APP_ID;
 const facebookAppSecret = process.env.FACEBOOK_APP_SECRET;
 const facebookReturnUrl = process.env.FACEBOOK_RETURN_URL;
 
-const handleSocialLogin = async (
-  email,
+/**
+ *
+ * @param {string} email - User email
+ * @param {string} firstname - User's firstname
+ * @param {string} lastname - User's lastname
+ * @param {string} username - User's username
+ * @param {string} photo - Link to User's image
+ * @param {callback} cb - Callback function\
+ * @returns {method} - A callback function
+ */
+async function handleSocialLogin(email,
   firstname,
   lastname,
   username,
   photo,
-  cb
-) => {
+  cb) {
   try {
     const existingUser = await User.findOne({ where: { email } });
     return cb(null, {
@@ -56,77 +64,59 @@ const handleSocialLogin = async (
     });
     return cb(null, { data: user.dataValues });
   }
-};
+}
 
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: googleClientId,
-      clientSecret: googleClientSecret,
-      callbackURL: googleReturnUrl
-    },
-    (accessToken, refreshToken, profile, cb) => {
-      const { name, emails, photos } = profile;
-      handleSocialLogin(
-        emails[0].value,
-        name.givenName,
-        name.familyName,
-        null,
-        photos[0].value,
-        cb
-      );
-    }
-  )
-);
+passport.use(new GoogleStrategy({
+  clientID: googleClientId,
+  clientSecret: googleClientSecret,
+  callbackURL: googleReturnUrl
+},
+(accessToken, refreshToken, profile, cb) => {
+  const { name, emails, photos } = profile;
+  handleSocialLogin(emails[0].value,
+    name.givenName,
+    name.familyName,
+    null,
+    photos[0].value,
+    cb);
+}));
 
-passport.use(
-  new TwitterStrategy(
-    {
-      consumerKey: twitterConsumerKey,
-      consumerSecret: twitterConsumerSecret,
-      callbackURL: twitterReturnUrl,
-      userProfileURL:
-        'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true',
-      includeEmail: true,
-      proxy: trustProxy
-    },
-    (token, tokenSecret, profile, cb) => {
-      const { username, emails, photos } = profile;
-      handleSocialLogin(
-        emails[0].value,
-        null,
-        null,
-        username,
-        photos[0].value,
-        cb
-      );
-    }
-  )
-);
+passport.use(new TwitterStrategy({
+  consumerKey: twitterConsumerKey,
+  consumerSecret: twitterConsumerSecret,
+  callbackURL: twitterReturnUrl,
+  userProfileURL:
+    'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true',
+  includeEmail: true,
+  proxy: trustProxy
+},
+(token, tokenSecret, profile, cb) => {
+  const { username, emails, photos } = profile;
+  handleSocialLogin(emails[0].value,
+    null,
+    null,
+    username,
+    photos[0].value,
+    cb);
+}));
 
-passport.use(
-  new FacebookStrategy(
-    {
-      clientID: facebookAppId,
-      clientSecret: facebookAppSecret,
-      callbackURL: facebookReturnUrl,
-      profileFields: ['id', 'displayName', 'photos', 'email']
-    },
-    (accessToken, refreshToken, profile, cb) => {
-      const { displayName, photos, emails } = profile;
-      const splitnames = displayName.split(' ');
-      const firstname = splitnames[0];
-      const lastname = splitnames.length > 1 ? splitnames[1] : '';
-      handleSocialLogin(
-        emails[0].value,
-        firstname,
-        lastname,
-        null,
-        photos[0].value,
-        cb
-      );
-    }
-  )
-);
+passport.use(new FacebookStrategy({
+  clientID: facebookAppId,
+  clientSecret: facebookAppSecret,
+  callbackURL: facebookReturnUrl,
+  profileFields: ['id', 'displayName', 'photos', 'email']
+},
+(accessToken, refreshToken, profile, cb) => {
+  const { displayName, photos, emails } = profile;
+  const splitnames = displayName.split(' ');
+  const firstname = splitnames[0];
+  const lastname = splitnames.length > 1 ? splitnames[1] : '';
+  handleSocialLogin(emails[0].value,
+    firstname,
+    lastname,
+    null,
+    photos[0].value,
+    cb);
+}));
 
 export default passport;
