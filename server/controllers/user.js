@@ -91,4 +91,39 @@ export default class Users {
       res.status(400).json({ message: 'invalid email' });
     }
   }
+
+  /**
+* @description This controller method completes the social sign in process
+*
+* @param {object} req - Express request object
+* @param {object} res - Express response object
+* @return {undefined}
+*/
+  static async socialLogin(req, res) {
+    const { data } = req.user;
+
+    try{
+      const userToken = await HelperUtils.generateToken(data);
+  
+      const {
+        email, username, bio, image
+      } = data;
+  
+      response(res).success({
+        message: 'user logged in successfully',
+        user: {
+          email,
+          username,
+          bio,
+          image,
+          token: userToken,
+        }
+      });
+    }
+    catch{
+      response(res).serverError({
+        message: 'token could not be generated, please try again later'
+      });
+    }
+  }
 }
