@@ -8,10 +8,10 @@ const QueryURL = '?email=nwabuzor.obiora@gmail.com&hash=$2a$08$vu6Gwj1EgU7/6IJv6
 const invalidQueryURL = '?email=invalid.obiora@gmail.com&hash=$2a$08$vu6Gwj1EgU7/6IJv6juphuraxOv6tOHaeNOvWmsjh0oYHOLRO8/9q';
 const signupURL = '/api/users';
 const resetPassword = '/api/users/reset-password';
-const resetPasswordURL = '/api/users/reset-password' + QueryURL;
-const invalidResetPasswordURL = '/api/users/reset-password' + invalidQueryURL;
-const verifyURL = '/api/users/verifyemail' + QueryURL;
-const invalidVerifyURL = '/api/users/verifyemail' + invalidQueryURL;
+const resetPasswordURL = `/api/users/reset-password${QueryURL}`;
+const invalidResetPasswordURL = `/api/users/reset-password${invalidQueryURL}`;
+const verifyURL = `/api/users/verifyemail${QueryURL}`;
+const invalidVerifyURL = `/api/users/verifyemail${invalidQueryURL}`;
 
 
 describe('Test signup endpoint and email verification endpoint', () => {
@@ -74,7 +74,7 @@ describe('Test signup endpoint and email verification endpoint', () => {
 
 describe('Test reset password mail endpoint and password link endpoint', () => {
   it('It should return a 404 if user records not found', (done) => {
-    const data = {email: 'ayo-oluwa.adebayo@andela.com'}
+    const data = { email: 'ayo-oluwa.adebayo@andela.com' }
     chai
       .request(app)
       .post(resetPassword)
@@ -88,7 +88,7 @@ describe('Test reset password mail endpoint and password link endpoint', () => {
   });
 
   it('It should return a 200 if user email is found in the database', (done) => {
-    const data = {email: 'nwabuzor.obiora@gmail.com'}
+    const data = { email: 'nwabuzor.obiora@gmail.com' }
     chai
       .request(app)
       .post(resetPassword)
@@ -102,7 +102,7 @@ describe('Test reset password mail endpoint and password link endpoint', () => {
   });
 
   it('It should return a 400 if user passwords do not match', (done) => {
-    const data = {newPassword: 'hello', confirmPassword: 'hell'}
+    const data = { newPassword: 'hello', confirmPassword: 'hell' }
     chai
       .request(app)
       .patch(resetPasswordURL)
@@ -116,7 +116,7 @@ describe('Test reset password mail endpoint and password link endpoint', () => {
   });
 
   it('It should return a 200 if user passwords match', (done) => {
-    const data = {newPassword: 'hello', confirmPassword: 'hello'}
+    const data = { newPassword: 'hello', confirmPassword: 'hello' }
     chai
       .request(app)
       .patch(resetPasswordURL)
@@ -130,7 +130,7 @@ describe('Test reset password mail endpoint and password link endpoint', () => {
   });
 
   it('It should return a 400 if reset link is invalid', (done) => {
-    const data = {newPassword: 'hello', confirmPassword: 'hello'}
+    const data = { newPassword: 'hello', confirmPassword: 'hello' }
     chai
       .request(app)
       .patch(invalidResetPasswordURL)

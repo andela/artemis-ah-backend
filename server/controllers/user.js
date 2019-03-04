@@ -185,13 +185,14 @@ export default class Users {
     }
   }
 
-/**
-* @description This controller method completes the social sign in process
-*
-* @param {object} req - Express request object
-* @param {object} res - Express response object
-* @return {undefined}
-*/
+
+  /**
+  * @description This controller method completes the social sign in process
+  *
+  * @param {object} req - Express request object
+  * @param {object} res - Express response object
+  * @return {undefined}
+  */
   static async socialLogin(req, res) {
     const { data } = req.user;
 
@@ -219,3 +220,4 @@ export default class Users {
       });
     }
   }
+}
