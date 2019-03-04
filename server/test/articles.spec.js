@@ -59,12 +59,8 @@ describe('Testing articles endpoint', () => {
         const { article } = res.body;
         expect(article.id).to.be.a.number();
         expect(article.title).to.equal('This is an article');
-        expect(article.slug).to.equal(
-          `${slugify(data.title, { lower: true })}-${article.id}`
-        );
-        expect(article.description).to.equal(
-          'This is the description of the article'
-        );
+        expect(article.slug).to.equal(`${slugify(data.title, { lower: true })}-${article.id}`);
+        expect(article.description).to.equal('This is the description of the article');
         expect(article.body).to.equal('This is the body of the article');
 
         done();

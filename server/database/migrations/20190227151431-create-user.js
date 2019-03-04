@@ -31,6 +31,7 @@ export default {
     bio: {
       type: Sequelize.STRING,
       allowNull: true,
+      defaultValue: 'n/a'
     },
     image: {
       type: Sequelize.STRING,
@@ -42,6 +43,11 @@ export default {
       defaultValue: false,
       allowNull: false,
     },
+    isAdmin: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+      allowNull: false
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE
@@ -51,5 +57,5 @@ export default {
       type: Sequelize.DATE
     }
   }),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('Users')
+  down: queryInterface => queryInterface.dropTable('Users')
 };

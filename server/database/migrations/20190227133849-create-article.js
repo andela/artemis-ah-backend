@@ -43,7 +43,5 @@ export default {
       }
     });
   },
-  down(queryInterface, Sequelize) {
-    return queryInterface.dropTable('Articles');
-  }
+  down: queryInterface => queryInterface.dropTable('Articles')
 };

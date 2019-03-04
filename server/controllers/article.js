@@ -37,29 +37,25 @@ class ArticleController {
       });
 
       // Insert into database
-      Article.create(
-        Object.assign(this.article, {
-          userId: req.user.id,
-          title,
-          description,
-          body
-        })
-      )
+      Article.create(Object.assign(this.article, {
+        userId: req.user.id,
+        title,
+        description,
+        body
+      }))
         .then((article) => {
           slug = slug.concat(`-${article.id}`);
           article.slug = slug;
 
           // Append id to slug and update.
-          return Article.update(
-            {
-              slug
-            },
-            {
-              where: {
-                id: article.id
-              }
+          return Article.update({
+            slug
+          },
+          {
+            where: {
+              id: article.id
             }
-          ).then(() => article);
+          }).then(() => article);
         })
         .then((article) => {
           article.userId = undefined;

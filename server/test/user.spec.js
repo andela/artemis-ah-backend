@@ -1,18 +1,22 @@
 import chaiHttp from 'chai-http';
 import chai, { expect } from 'chai';
+import dotenv from 'dotenv';
+import { HelperUtils } from '../utils';
 import app from '../app';
+
+dotenv.config();
 
 chai.use(chaiHttp);
 
-const QueryURL = '?email=nwabuzor.obiora@gmail.com&hash=$2a$08$vu6Gwj1EgU7/6IJv6juphuraxOv6tOHaeNOvWmsjh0oYHOLRO8/9q';
-const invalidQueryURL = '?email=invalid.obiora@gmail.com&hash=$2a$08$vu6Gwj1EgU7/6IJv6juphuraxOv6tOHaeNOvWmsjh0oYHOLRO8/9q';
+const testEmail = 'thatemail@yahoo.com';
+const QueryURL = `?email=${testEmail}&hash=${HelperUtils.hashPassword(testEmail)}`;
+const invalidQueryURL = `?email=${'invalid.email@gmail.com'}&hash=${HelperUtils.hashPassword('iamEvenmoreInvalid@rocketmail.com')}`;
 const signupURL = '/api/users';
 const resetPassword = '/api/users/reset-password';
 const resetPasswordURL = `/api/users/reset-password${QueryURL}`;
 const invalidResetPasswordURL = `/api/users/reset-password${invalidQueryURL}`;
 const verifyURL = `/api/users/verifyemail${QueryURL}`;
 const invalidVerifyURL = `/api/users/verifyemail${invalidQueryURL}`;
-
 
 describe('Test signup endpoint and email verification endpoint', () => {
   it('It should return a 404 if user don\'t exist during email verification', (done) => {
@@ -31,7 +35,7 @@ describe('Test signup endpoint and email verification endpoint', () => {
     const data = {
       firstname: 'John',
       lastname: 'Doe',
-      email: 'nwabuzor.obiora@gmail.com',
+      email: testEmail,
       username: 'john45',
       password: '1234567'
     };
@@ -88,7 +92,7 @@ describe('Test reset password mail endpoint and password link endpoint', () => {
   });
 
   it('It should return a 200 if user email is found in the database', (done) => {
-    const data = { email: 'nwabuzor.obiora@gmail.com' };
+    const data = { email: testEmail };
     chai
       .request(app)
       .post(resetPassword)

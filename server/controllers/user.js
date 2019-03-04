@@ -1,10 +1,10 @@
+import '@babel/polyfill';
 import dotenv from 'dotenv';
 import db from '../database/models';
 import { HelperUtils } from '../utils';
 import response from '../utils/response';
 import verifyEmailMarkup from '../utils/markups/emailVerificationMarkup';
 import passwordResetMarkup from '../utils/markups/passwordResetMarkup';
-import '@babel/polyfill';
 
 const { User } = db;
 dotenv.config();
@@ -25,33 +25,27 @@ export default class Users {
     const {
       firstname, lastname, username, email, password
     } = req.body;
+    const { body } = req;
 
-    const hash = HelperUtils.hashPassword(password);
-    const hashedEmail = HelperUtils.hashPassword(email);
+    const hash = await HelperUtils.hashPassword(password);
+    const hashedEmail = await HelperUtils.hashPassword(email);
 
-    const formInputs = {
-      firstname,
-      lastname,
-      username,
-      email,
-      password: hash
-    };
+    const formInputs = { ...body, password: hash };
     try {
       const createUser = await User.create(formInputs);
-      const token = HelperUtils.generateToken({
-        ...formInputs,
-        id: createUser.id
-      });
-      const name = typeof username !== 'undefined'
-        ? username
-        : `${lastname}, ${firstname}`;
-      HelperUtils.sendMail(
-        email,
+
+      const encryptDetails = {
+        id: createUser.id, firstname, lastname, username, email
+      };
+      const token = await HelperUtils.generateToken(encryptDetails);
+
+      const name = typeof username !== 'undefined' ? username : `${lastname}, ${firstname}`;
+
+      await HelperUtils.sendMail(email,
         'Authors Haven <no-reply@authorshaven.com>',
         'Email Verification',
         'Verify Email',
-        verifyEmailMarkup(name, email, hashedEmail)
-      );
+        verifyEmailMarkup(name, email, hashedEmail));
 
       response(res).created({
         message: 'user created successfully',
@@ -64,7 +58,7 @@ export default class Users {
         }
       });
     } catch (err) {
-      res.status(400).json({ message: err });
+      response(res).sendData(500, err);
     }
   }
 
@@ -85,8 +79,8 @@ export default class Users {
         where: { email }
       });
       if (!user) {
-        res.status(404).json({
-          message: "user doesn't exist"
+        response(res).notFound({
+          message: 'user doesn\'t exist',
         });
       } else {
         await user.update({
@@ -97,7 +91,7 @@ export default class Users {
         });
       }
     } else {
-      res.status(400).json({ message: 'invalid email' });
+      response(res).badRequest({ message: 'invalid email' });
     }
   }
 
@@ -123,13 +117,11 @@ export default class Users {
           message: 'user not found in our records'
         });
       } else {
-        HelperUtils.sendMail(
-          email,
+        HelperUtils.sendMail(email,
           'Authors Haven <no-reply@authorshaven.com>',
           'Password Reset',
           'Reset Password',
-          passwordResetMarkup(user.firstname, email, hashedEmail)
-        );
+          passwordResetMarkup(user.firstname, email, hashedEmail));
         response(res).success({
           message: 'Please, verify password reset link in your email box'
         });
@@ -153,7 +145,7 @@ export default class Users {
     const isPassword = newPassword === confirmPassword;
 
     if (!isPassword) {
-      response(res).sendData(400, {
+      return response(res).sendData(400, {
         message: 'The supplied passwords do not match'
       });
     }
@@ -221,7 +213,7 @@ export default class Users {
           token: userToken
         }
       });
-    } catch {
+    } catch (err) {
       response(res).serverError({
         message: 'token could not be generated, please try again later'
       });
