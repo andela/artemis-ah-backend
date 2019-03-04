@@ -1,5 +1,5 @@
 import Users from './user';
 import Articles from './article';
-import Profile from './profile';
+import Follow from './follow';
 
-export { Users, Articles, Profile };
+export { Users, Articles, Follow };

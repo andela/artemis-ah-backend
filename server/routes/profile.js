@@ -1,5 +1,5 @@
 import express from 'express';
-import { Profile } from '../controllers';
+import { Follow } from '../controllers';
 import { AuthenticateUser } from '../middlewares';
 
 const profileRoutes = express.Router();
@@ -8,28 +8,28 @@ const profileRoutes = express.Router();
 profileRoutes.get(
   '/profiles/followers',
   AuthenticateUser.verifyUser,
-  Profile.fetchFollowers
+  Follow.fetchFollowers
 );
 
 // Fetch all users your're following
 profileRoutes.get(
   '/profiles/following',
   AuthenticateUser.verifyUser,
-  Profile.fetchFollowing
+  Follow.fetchFollowing
 );
 
 // Follow a particular user
 profileRoutes.post(
   '/profiles/:username/follow',
   AuthenticateUser.verifyUser,
-  Profile.followUser
+  Follow.followUser
 );
 
 // Unfollow a particular user
 profileRoutes.delete(
   '/profiles/:username/follow',
   AuthenticateUser.verifyUser,
-  Profile.unfollowUser
+  Follow.unfollowUser
 );
 
 export default profileRoutes;

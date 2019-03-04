@@ -39,16 +39,23 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
       allowNull: false
+    },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false
     }
   }, {});
   User.associate = (models) => {
     const { Follower } = models;
-    User.hasMany(Follower, {
+    User.belongsToMany(User, {
+      through: Follower,
       foreignKey: 'userId',
       as: 'following'
     });
 
-    User.hasMany(Follower, {
+    User.belongsToMany(User, {
+      through: Follower,
       foreignKey: 'followerId',
       as: 'followers'
     });

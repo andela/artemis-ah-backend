@@ -1,7 +1,10 @@
 import chaiHttp from 'chai-http';
 import chai, { expect } from 'chai';
+import dotenv from 'dotenv';
 import app from '../app';
 import { HelperUtils } from '../utils';
+
+dotenv.config();
 
 chai.use(chaiHttp);
 

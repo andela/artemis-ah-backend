@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import dotenv from 'dotenv';
 import db from '../database/models';
 import response from '../utils/response';
@@ -11,7 +10,7 @@ dotenv.config();
  * @description Controller to authenticate users
  * @return {undefined}
  */
-export default class Profile {
+export default class Follow {
   /**
    * @description This controller method gets all users followers
    *
@@ -25,7 +24,7 @@ export default class Profile {
     const users = await Follower.findAll({
       where: { followee: username },
       include: [
-        { 
+        {
           model: User,
           as: 'follower',
           attributes: ['firstname', 'lastname', 'email', 'username']
@@ -36,11 +35,11 @@ export default class Profile {
       response(res).success({
         message: 'nobody is currently following you',
         followers: users
-      })
+      });
     } else {
       response(res).success({
         message: 'these are your followers',
-        followers: users
+        followers: users.map(u => u.follower)
       });
     }
   }
@@ -57,23 +56,23 @@ export default class Profile {
     const following = await Follower.findAll({
       where: { userId: id },
       include: [
-        { 
+        {
           model: User,
           as: 'following',
           attributes: ['firstname', 'lastname', 'email', 'username']
         },
       ]
-    }) 
-    if (following.length < 1){
+    });
+    if (following.length < 1) {
       response(res).success({
-        message: "you are not following anyone",
+        message: 'you are not following anyone',
         following
-      })
+      });
     } else {
       response(res).success({
-        message: "people you are following",
-        following
-      })
+        message: 'people you are following',
+        following: following.map(u => u.following)
+      });
     }
   }
 
@@ -87,18 +86,18 @@ export default class Profile {
   static async followUser(req, res) {
     const { id } = req.user;
     const { username } = req.params;
-    if ( username === req.user.username) {
-      response(res).forbidden({ 
-        message: 'you cannot follow yourself' 
+    if (username === req.user.username) {
+      response(res).forbidden({
+        message: 'you cannot follow yourself'
       });
     } else {
       const followee = await User.findOne({
         where: { username }
       });
       const user = await Follower.findOne({
-        where: { 
+        where: {
           userId: id,
-          followee: username 
+          followee: username
         }
       });
       if (!user && followee) {
@@ -106,13 +105,13 @@ export default class Profile {
           userId: id,
           followerId: followee.id,
           followee: username
-        });  
+        });
         response(res).created({
           message: `you just followed ${username}`
-        })
+        });
       } else {
-        response(res).forbidden({ 
-          message: `you are already following ${username}` 
+        response(res).forbidden({
+          message: `you are already following ${username}`
         });
       }
     }
@@ -130,7 +129,7 @@ export default class Profile {
     const { username } = req.params;
 
     if (username === req.user.username) {
-      response(res).forbidden({ 
+      response(res).forbidden({
         message: 'you cannot unfollow yourself'
       });
     } else {

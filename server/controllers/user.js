@@ -25,16 +25,17 @@ export default class Users {
     const {
       firstname, lastname, username, email, password
     } = req.body;
+    const { body } = req;
 
     const hash = await HelperUtils.hashPassword(password);
     const hashedEmail = await HelperUtils.hashPassword(email);
 
-    const formInputs = {
-      firstname, lastname, username, email, password: hash
-    };
+    const formInputs = { ...body, password: hash };
     try {
       const createUser = await User.create(formInputs);
-      const encryptDetails = { id: createUser.id, firstname, lastname, username, email };
+      const encryptDetails = {
+        id: createUser.id, firstname, lastname, username, email
+      };
       const token = await HelperUtils.generateToken(encryptDetails);
       const name = typeof username !== 'undefined' ? username : `${lastname}, ${firstname}`;
 
