@@ -16,6 +16,7 @@
     "curly": ["error", "multi-line"],
     "import/no-unresolved": [2, { "commonjs": true }],
     "no-shadow": ["error", { "allow": ["req", "res", "err"] }],
+    "function-paren-newline": ["error", "never"],
     "valid-jsdoc": [
       "error",
       {
@@ -37,7 +38,7 @@
     ]
   },
   "parserOptions": {
-    "ecmaVersion": 2017,
+    "ecmaVersion": 6,
     "sourceType": "module"
   },
   "parser": "babel-eslint"
