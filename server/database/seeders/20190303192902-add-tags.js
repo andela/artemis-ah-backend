@@ -1,5 +1,5 @@
 export default {
-  up(queryInterface, Sequelize) {
+  up(queryInterface) {
     return queryInterface.bulkInsert('Tags', [{
       name: 'Food'
     }, {
@@ -13,7 +13,7 @@ export default {
     }], {});
   },
 
-  down(queryInterface, Sequelize) {
+  down(queryInterface) {
     return queryInterface.bulkDelete('Tags', null, {});
   }
 };

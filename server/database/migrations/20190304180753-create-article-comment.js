@@ -34,7 +34,5 @@ export default {
       }
     });
   },
-  down(queryInterface, Sequelize) {
-    return queryInterface.dropTable('ArticleComments');
-  }
+  down: queryInterface => queryInterface.dropTable('ArticleComments')
 };

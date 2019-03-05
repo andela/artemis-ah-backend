@@ -27,7 +27,7 @@ export default class Follow {
           {
             model: User,
             as: 'follower',
-            attributes: ['firstname', 'lastname', 'email', 'username']
+            attributes: ['firstname', 'lastname', 'email', 'username', 'image']
           },
         ]
       });
@@ -63,7 +63,7 @@ export default class Follow {
           {
             model: User,
             as: 'following',
-            attributes: ['firstname', 'lastname', 'email', 'username']
+            attributes: ['firstname', 'lastname', 'email', 'username', 'image']
           },
         ]
       });

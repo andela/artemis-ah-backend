@@ -22,7 +22,5 @@ export default {
       }
     });
   },
-  down(queryInterface, Sequelize) {
-    return queryInterface.dropTable('Tags');
-  }
+  down: queryInterface => queryInterface.dropTable('Tags')
 };
