@@ -2,15 +2,16 @@ export default (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     firstname: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: false
     },
     lastname: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: false
     },
     username: {
       type: DataTypes.STRING,
-      unique: true
+      unique: true,
+      allowNull: false
     },
     email: {
       type: DataTypes.STRING,
@@ -26,20 +27,40 @@ export default (sequelize, DataTypes) => {
     },
     bio: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
+      defaultValue: 'n/a'
     },
     image: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       defaultValue: 'https://res.cloudinary.com/shaolinmkz/image/upload/v1544370726/iReporter/avatar.png'
     },
     verifiedEmail: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
       allowNull: false
+    },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false
     }
   }, {});
   User.associate = (models) => {
+    const { Follower } = models;
+    User.belongsToMany(User, {
+      through: Follower,
+      foreignKey: 'userId',
+      as: 'following'
+    });
+
+    User.belongsToMany(User, {
+      through: Follower,
+      foreignKey: 'followerId',
+      as: 'followers'
+    });
+
+    // Relations for articles.
     User.hasMany(models.Article, {
       foreignKey: 'id',
     });

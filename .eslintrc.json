@@ -13,9 +13,34 @@
     "consistent-return": 0,
     "no-param-reassign": 0,
     "comma-dangle": 0,
-    "curly": ["error", "multi-line"],
-    "import/no-unresolved": [2, { "commonjs": true }],
-    "no-shadow": ["error", { "allow": ["req", "res", "err"] }],
+    "curly": [
+      "error",
+      "multi-line"
+    ],
+    "import/no-unresolved": [
+      2,
+      {
+        "commonjs": true
+      }
+    ],
+    "no-shadow": [
+      "error",
+      {
+        "allow": [
+          "req",
+          "res",
+          "err"
+        ]
+      }
+    ],
+    "function-paren-newline": [
+      "error",
+      "never"
+    ],
+    "indent": [
+      2,
+      2
+    ],
     "valid-jsdoc": [
       "error",
       {
@@ -36,8 +61,9 @@
       }
     ]
   },
+  "parser": "babel-eslint",
   "parserOptions": {
-    "ecmaVersion": 6,
+    "ecmaVersion": 2017,
     "sourceType": "module"
   }
 }

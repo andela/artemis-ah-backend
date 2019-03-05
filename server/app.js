@@ -25,13 +25,15 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 
 // Creating user session
-app.use(expressSession(
-  { secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true }
-));
+app.use(expressSession({
+  secret: process.env.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true
+}));
 
 // Setup a default catch-all route that sends back a welcome message in JSON format.
 app.get('/', (req, res) => res.status(200).send({
-  message: 'Authors Haven.',
+  message: 'Authors Haven.'
 }));
 
 // Routes
