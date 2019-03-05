@@ -1,5 +1,8 @@
 import Users from './user';
-import Articles from './article';
+import ArticleController from './article';
+import Comment from './articleComment';
 import Follow from './follow';
 
-export { Users, Articles, Follow };
+export {
+  Users, ArticleController, Follow, Comment
+};
