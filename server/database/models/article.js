@@ -3,7 +3,7 @@ export default (sequelize, DataTypes) => {
     userId: DataTypes.INTEGER,
     title: DataTypes.STRING,
     description: DataTypes.STRING,
-    body: DataTypes.STRING,
+    body: DataTypes.TEXT,
     primaryImageUrl: DataTypes.STRING,
     totalClaps: DataTypes.INTEGER,
     slug: DataTypes.STRING,

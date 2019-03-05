@@ -2,6 +2,7 @@ import slugify from 'slug';
 import { validationResult } from 'express-validator/check';
 import response, { validationErrors } from '../utils/response';
 import db from '../database/models';
+import HelperUtils from '../utils';
 
 const { Article, User } = db;
 
@@ -59,6 +60,8 @@ class ArticleController {
         })
         .then((article) => {
           article.userId = undefined;
+          const readTime = HelperUtils.estimateReadingTime(article.body);
+          article.dataValues.readTime = readTime;
 
           response(res).created({
             article
@@ -114,7 +117,11 @@ class ArticleController {
 
     Article.findAll(sequelizeOptions).then((articles) => {
       response(res).success({
-        articles
+        articles: articles.map((article) => {
+          const readTime = HelperUtils.estimateReadingTime(article.body);
+          article.dataValues.readTime = readTime;
+          return article;
+        })
       });
     });
   }
