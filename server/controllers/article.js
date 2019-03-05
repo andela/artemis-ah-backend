@@ -46,7 +46,7 @@ class ArticleController {
         description,
         body,
         tagId
-      }).then((article) => {
+      })).then((article) => {
         slug = slug.concat(`-${article.id}`);
         article.slug = slug;
 
@@ -65,7 +65,7 @@ class ArticleController {
           response(res).created({
             article
           });
-        }));
+        });
     }
   }
 
