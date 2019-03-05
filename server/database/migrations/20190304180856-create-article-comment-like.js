@@ -1,4 +1,5 @@
 export default {
+  /* eslint no-unused-vars: "off" */
   up(queryInterface, Sequelize) {
     return queryInterface.createTable('ArticleCommentLikes', {
       id: {
