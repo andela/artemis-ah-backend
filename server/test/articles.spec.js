@@ -1,9 +1,12 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import slugify from 'slug';
+import models from '../database/models';
 import app from '../app';
 
 chai.use(chaiHttp);
+
+const { ArticleComment } = models;
 
 /**
  * Method to check if a value is a number.
@@ -181,28 +184,37 @@ describe('Testing articles endpoint', () => {
         });
     });
 
-    // MISSING: Add a comment before liking. Replace 1 with actual comment id.
-    // For now make sure a comment is added before running the test.
+    let commentId;
     it('should add a like when called first time by a user', (done) => {
-      chai
-        .request(app)
-        .post(`/api/articles/${createdArticle.slug}/comments/1/like`)
-        .set('authorization', `Bearer ${userToken}`)
-        .end((err, res) => {
-          expect(res.status).to.equal(200);
+      ArticleComment
+        .create({
+          userId: 1,
+          articleId: createdArticle.id,
+          comment: 'This is a comment to test endpoint to toggle like an article comment',
+        })
+        .then((comment) => {
+          commentId = comment.id;
 
-          const { body } = res;
-          expect(body.totalLikes).to.equal(1);
-          expect(body.liked).to.equal(true);
+          chai
+            .request(app)
+            .post(`/api/articles/${createdArticle.slug}/comments/${commentId}/like`)
+            .set('authorization', `Bearer ${userToken}`)
+            .end((err, res) => {
+              expect(res.status).to.equal(200);
 
-          done();
+              const { body } = res;
+              expect(body.totalLikes).to.equal(1);
+              expect(body.liked).to.equal(true);
+
+              done();
+            });
         });
     });
 
     it('should remove a like when called second time by the same user', (done) => {
       chai
         .request(app)
-        .post(`/api/articles/${createdArticle.slug}/comments/1/like`)
+        .post(`/api/articles/${createdArticle.slug}/comments/${commentId}/like`)
         .set('authorization', `Bearer ${userToken}`)
         .end((err, res) => {
           expect(res.status).to.equal(200);
