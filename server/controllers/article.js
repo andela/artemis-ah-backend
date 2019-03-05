@@ -1,9 +1,9 @@
 import slugify from 'slug';
 import { validationResult } from 'express-validator/check';
-import response, { validationErrors } from '../utils/response';
+import { response } from '../utils';
 import db from '../database/models';
 
-const { Article, User } = db;
+const { Article, Tag, User } = db;
 
 /**
  * @class ArticleController
@@ -15,6 +15,7 @@ class ArticleController {
   constructor() {
     this.defaultLimit = 20;
     this.article = {};
+    this.tags = [];
   }
 
   /**
@@ -28,10 +29,12 @@ class ArticleController {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       response(res).badRequest({
-        errors: validationErrors(errors)
+        errors: response.validationErrors(errors)
       });
     } else {
-      const { title, description, body } = req.body;
+      const {
+        title, description, body, tagId
+      } = req.body;
       let slug = slugify(title, {
         lower: true
       });
@@ -41,29 +44,48 @@ class ArticleController {
         userId: req.user.id,
         title,
         description,
-        body
-      }))
-        .then((article) => {
-          slug = slug.concat(`-${article.id}`);
-          article.slug = slug;
+        body,
+        tagId
+      })).then((article) => {
+        slug = slug.concat(`-${article.id}`);
+        article.slug = slug;
 
-          // Append id to slug and update.
-          return Article.update({
-            slug
-          },
-          {
-            where: {
-              id: article.id
-            }
-          }).then(() => article);
-        })
+        // Append id to slug and update.
+        return Article.update({
+          slug
+        },
+        {
+          where: {
+            id: article.id
+          }
+        }).then(() => article);
+      })
         .then((article) => {
           article.userId = undefined;
-
           response(res).created({
             article
           });
         });
+    }
+  }
+
+  /**
+   * Returns all tags
+   * @method getTags
+   * @param {object} req The request object
+   * @param {object} res The response object
+   * @returns {null} - Returns nothing
+   */
+  async getTags(req, res) {
+    try {
+      this.tags = await Tag.findAll({ where: {} });
+      response(res).success({
+        tags: this.tags
+      });
+    } catch (err) {
+      response(res).serverError({
+        message: 'Could not get all tags'
+      });
     }
   }
 
@@ -89,12 +111,13 @@ class ArticleController {
       where: {},
       offset, // Default is page 1
       limit,
-      include: [
-        {
-          model: User,
-          attributes: ['username', 'bio', 'image']
-        }
-      ],
+      include: [{
+        model: User,
+        attributes: ['username', 'bio', 'image'],
+      }, {
+        model: Tag,
+        attributes: ['name']
+      }],
       attributes: [
         'id',
         'slug',

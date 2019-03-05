@@ -1,5 +1,4 @@
-import HelperUtils from '../utils/HelperUtils';
-import response from '../utils/response';
+import { response, HelperUtils } from '../utils';
 
 /**
  * @class AuthenticateUser

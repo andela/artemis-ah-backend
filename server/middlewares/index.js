@@ -1,3 +1,4 @@
 import AuthenticateUser from './AuthenticateUser';
+import ValidateUser from './ValidateUser';
 
-export { AuthenticateUser };
+export { AuthenticateUser, ValidateUser };

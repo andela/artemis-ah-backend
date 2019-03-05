@@ -2,7 +2,7 @@ import chaiHttp from 'chai-http';
 import chai, { expect } from 'chai';
 import dotenv from 'dotenv';
 import app from '../app';
-import HelperUtils from '../utils';
+import { HelperUtils } from '../utils';
 
 dotenv.config();
 chai.use(chaiHttp);
@@ -29,7 +29,7 @@ describe('Test user follow and unfollow on user profile endpoint', () => {
         lastname: 'Mark',
         email: 'mcemie4eva@gmail.com',
         username: 'Mekus',
-        password: '1234567'
+        password: '12345678'
       })
       .end((err, res) => {
         const { token } = res.body.user;
@@ -58,7 +58,7 @@ describe('Test user follow and unfollow on user profile endpoint', () => {
         lastname: 'Everything',
         email: 'ireporter18@gmail.com',
         username: 'iSeeiReport',
-        password: '1234567'
+        password: '12345678'
       })
       .end((err, res) => {
         const { token } = res.body.user;
