@@ -1,3 +1,4 @@
+import Sequelize from 'sequelize';
 import '@babel/polyfill';
 import dotenv from 'dotenv';
 import db from '../database/models';
@@ -164,6 +165,57 @@ export default class Follow {
       }
     } catch (err) {
       response(res).sendData(500, err);
+    }
+  }
+
+  /**
+   * @description This controller method lists all user profiles
+   *
+   * @param {object} req - Express request object
+   * @param {object} res - Express response object
+   * @return {object} Json response
+   */
+  static async profileList(req, res) {
+    const { Op } = Sequelize;
+    const { username } = req.user;
+
+    try {
+      const allUsers = await User.findAll({
+        attributes: ['username', 'bio', 'image'],
+        where: {
+          username: {
+            [Op.ne]: username
+          }
+        }
+      });
+
+      const userFollow = await Follower.findAll({
+        where: { followee: username },
+        include: [
+          {
+            model: User,
+            as: 'follower',
+            attributes: ['id']
+          },
+        ]
+      });
+
+      const followerId = userFollow.map(item => item.userId);
+
+      const profiles = allUsers.map((item) => {
+        item.dataValues.following = false;
+        if (followerId.includes(item.dataValues.id)) item.dataValues.following = true;
+
+        return item.dataValues;
+      });
+
+      response(res).success({
+        profiles
+      });
+    } catch (err) {
+      response(res).sendData(500, {
+        message: err
+      });
     }
   }
 }

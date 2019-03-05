@@ -34,6 +34,40 @@ before('It should return a 201 and create a new user', (done) => {
     });
 });
 
+describe('Fetch all user profiles', () => {
+  it('It should test for Headers', () => {
+    chai
+      .request(app)
+      .get(profileURL)
+      .set('Accept', 'application/json')
+      .set('Authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+      });
+  });
+
+  it('It should fetch all profiles', () => {
+    chai
+      .request(app)
+      .get(profileURL)
+      .set('Authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        expect(res.body.profiles).to.be.an('array');
+      });
+  });
+
+  it('It should return 401 if token is missing', (done) => {
+    chai
+      .request(app)
+      .get(profileURL)
+      .end((err, res) => {
+        expect(res.status).to.equal(401);
+        expect(res.body.error).to.be.an('object');
+        done();
+      });
+  });
+});
+
 describe('Get user data', () => {
   describe('Get current user', () => {
     it('It should return 200 if user exists', (done) => {

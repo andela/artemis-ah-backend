@@ -4,6 +4,11 @@ import { AuthenticateUser } from '../middlewares';
 
 const profileRoutes = express.Router();
 
+// Fetch all users
+profileRoutes.get('/profiles',
+  AuthenticateUser.verifyUser,
+  Follow.profileList);
+
 // Fetch all users following you
 profileRoutes.get('/profiles/followers',
   AuthenticateUser.verifyUser,
