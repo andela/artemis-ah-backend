@@ -151,6 +151,61 @@ paths:
           description: Success
       security:
         - authorization: []
+  /articles/ratings:
+    post:
+      tags:
+      - "article", "ratings"
+      summary: "Adds rating to article"
+      description: "Calculates the average rating of an article"
+      produces:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: slug
+          in: path
+          description: Article's slug
+          required: true
+          type: string
+        - name: rating
+          in: body
+          description: The new rating to be given to the article
+          required: true
+          type: number
+      responses:
+        '200':
+          description: You have successfully rated this article
+        '400':
+          description: Rating already given for this article
+        '403':
+        description: You cant rate your own article
+        '404':
+        description: Article not found
+
+  /articles/ratings:
+    post:
+      tags:
+      - "article", "ratings"
+      summary: "Get all ratings assigned to an article"
+      description: "Calculates the average rating of an article"
+      produces:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: slug
+          in: path
+          description: Article's slug
+          required: true
+          type: string
+      responses:
+        '200':
+          description: List of ratings
+        '404':
+        description: Article not found
+          
   /articles/tags:
     get:
       tags:
