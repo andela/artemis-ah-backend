@@ -5,7 +5,7 @@ export default (sequelize, DataTypes) => {
   Tag.associate = (models) => {
     // associations can be defined here
     Tag.hasMany(models.Article, {
-      foreingKey: 'tagId',
+      foreignKey: 'tagId',
       as: 'articles'
     });
   };
