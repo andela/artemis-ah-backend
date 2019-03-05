@@ -13,7 +13,9 @@ export default (sequelize, DataTypes) => {
     // associations can be defined here
     Article.belongsTo(models.Tag, {
       foreignKey: 'tagId',
-      as: 'category'
+    });
+    Article.belongsTo(models.User, {
+      foreignKey: 'userId',
     });
   };
   return Article;
