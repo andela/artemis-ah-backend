@@ -1,8 +1,7 @@
 import '@babel/polyfill';
 import dotenv from 'dotenv';
 import db from '../database/models';
-import HelperUtils from '../utils';
-import response from '../utils/response';
+import { HelperUtils, response } from '../utils';
 import verifyEmailMarkup from '../utils/markups/emailVerificationMarkup';
 import passwordResetMarkup from '../utils/markups/passwordResetMarkup';
 

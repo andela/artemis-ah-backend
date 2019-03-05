@@ -1,6 +1,6 @@
 import slugify from 'slug';
 import { validationResult } from 'express-validator/check';
-import response, { validationErrors } from '../utils/response';
+import { response } from '../utils';
 import db from '../database/models';
 
 const { Article, Tag, User } = db;
@@ -29,7 +29,7 @@ class ArticleController {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       response(res).badRequest({
-        errors: validationErrors(errors)
+        errors: response.validationErrors(errors)
       });
     } else {
       const {

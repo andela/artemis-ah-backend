@@ -1,10 +1,14 @@
 import express from 'express';
 import { Users } from '../controllers';
+import { ValidateUser } from '../middlewares';
 import passport from '../config/passport';
 
 const authRoute = express.Router();
 
-authRoute.post('/users', Users.signupUser);
+authRoute.post('/users',
+  ValidateUser.validateMethods(),
+  ValidateUser.validateUserDetails,
+  Users.signupUser);
 authRoute.get('/users/verifyemail', Users.verifyUserEmail);
 authRoute.post('/users/reset-password', Users.resetPasswordEmail);
 authRoute.patch('/users/reset-password', Users.resetPassword);

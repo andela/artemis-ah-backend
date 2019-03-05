@@ -60,7 +60,14 @@ export default (sequelize, DataTypes) => {
       as: 'followers'
     });
 
+    // Relations for articles.
     User.hasMany(models.Article, {
+      foreignKey: 'id',
+    });
+    User.hasMany(models.ArticleComment, {
+      foreignKey: 'id',
+    });
+    User.hasMany(models.ArticleCommentLike, {
       foreignKey: 'id',
     });
   };

@@ -1,4 +1,4 @@
 import AuthenticateUser from './AuthenticateUser';
-import newMiddle from './newMiddle';
+import ValidateUser from './ValidateUser';
 
-export { AuthenticateUser, newMiddle };
+export { AuthenticateUser, ValidateUser };
