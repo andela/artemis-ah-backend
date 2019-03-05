@@ -22,7 +22,7 @@ describe('Testing articles endpoint', () => {
       lastname: 'Author',
       email: 'greatauthor@gmail.com',
       username: 'greatauthor',
-      password: '1234567'
+      password: '12345678'
     };
     chai
       .request(app)

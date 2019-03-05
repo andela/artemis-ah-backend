@@ -68,6 +68,15 @@ export default res => ({
   },
 
   /**
+   * Sends status 409 and `data` to the client
+   *
+   * @param {object} data - The response message
+   */
+  conflict(data) {
+    this.sendData(409, data);
+  },
+
+  /**
    * Sends status 500 and `data` to the client
    * Should be sent when there's a server error
    * @param {*} data
