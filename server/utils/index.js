@@ -1,4 +1,4 @@
 import HelperUtils from './HelperUtils';
-import response from './response';
+import response, { validationErrors } from './response';
 
-export { HelperUtils, response };
+export { HelperUtils, response, validationErrors };
