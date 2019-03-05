@@ -1,4 +1,5 @@
 export default {
+  /* eslint no-unused-vars: "off" */
   up(queryInterface, Sequelize) {
     return queryInterface.createTable('ArticleComments', {
       id: {
@@ -34,7 +35,5 @@ export default {
       }
     });
   },
-  down(queryInterface, Sequelize) {
-    return queryInterface.dropTable('ArticleComments');
-  }
+  down: queryInterface => queryInterface.dropTable('ArticleComments')
 };

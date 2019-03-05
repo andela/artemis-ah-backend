@@ -1,4 +1,5 @@
 export default {
+  /* eslint no-unused-vars: "off" */
   up(queryInterface, Sequelize) {
     return queryInterface.createTable('Tags', {
       id: {
@@ -22,7 +23,5 @@ export default {
       }
     });
   },
-  down(queryInterface, Sequelize) {
-    return queryInterface.dropTable('Tags');
-  }
+  down: queryInterface => queryInterface.dropTable('Tags')
 };

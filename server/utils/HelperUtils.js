@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
-
-const sendGrid = require('@sendgrid/mail');
+import sendGrid from '@sendgrid/mail';
+import readingTime from 'reading-time';
 
 dotenv.config();
 
@@ -81,6 +81,16 @@ class HelperUtils {
       html: htmlMarkup
     };
     sendGrid.send(message);
+  }
+
+  /**
+   * @description Method that estimates the reading time for an article
+   * @param {string} articleBody
+   * @return {object} estimatedTime
+   */
+  static estimateReadingTime(articleBody) {
+    const estimatedTime = readingTime(articleBody);
+    return estimatedTime;
   }
 }
 
