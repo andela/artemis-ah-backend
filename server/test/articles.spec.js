@@ -186,4 +186,86 @@ describe('Testing Tags Endpoint', () => {
         done();
       });
   });
+
+  // Test endpoint to get all articles.
+  describe('Test endpoint to get all articles.', () => {
+    let pageOneFirstArticle = null;
+
+    it('should get an array containing the article created above', (done) => {
+      chai
+        .request(app)
+        .get('/api/articles')
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+
+          const { articles } = res.body;
+          expect(articles).to.be.an('array');
+          expect(articles.length).to.be.at.least(1);
+          const [article] = articles;
+          pageOneFirstArticle = article;
+
+          done();
+        });
+    });
+
+    // Test limit.
+    it('should return an empty array given limit is 0', (done) => {
+      chai
+        .request(app)
+        .get('/api/articles?limit=0')
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+
+          const { articles } = res.body;
+          expect(articles).to.be.an('array');
+          expect(articles.length).to.equal(0);
+
+          done();
+        });
+    });
+
+    // The second article article will be used to test pagination
+    it('should create another article', (done) => {
+      chai
+        .request(app)
+        .post('/api/articles')
+        .set('authorization', `Bearer ${userToken}`)
+        .send({
+          title: 'The second article',
+          description: 'This is the description of the second article',
+          body: 'Welcome to the second article'
+        })
+        .end((err, res) => {
+          expect(res.status).to.equal(201);
+
+          done();
+        });
+    });
+
+    // Test pagination.
+    it('should return the articles on page 2', (done) => {
+      chai
+        .request(app)
+        .get('/api/articles?page=2&limit=1')
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+
+          const { articles } = res.body;
+          expect(articles).to.be.an('array');
+
+          expect(articles).to.satisfy((arr) => {
+            if (arr.length === 0) {
+              // Assuming there is nothing on page 2
+              return true;
+            }
+            // Given that page=2 and limit=1, the id of first item on page 2 should 1 greater than
+            // the id of the first element on page 1 since the table contains only the 2
+            // articles created in this test file.
+            return arr[0].id === pageOneFirstArticle.id + 1;
+          });
+
+          done();
+        });
+    });
+  });
 });
