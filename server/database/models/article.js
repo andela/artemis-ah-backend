@@ -3,12 +3,17 @@ export default (sequelize, DataTypes) => {
     userId: DataTypes.INTEGER,
     title: DataTypes.STRING,
     description: DataTypes.STRING,
-    body: DataTypes.STRING,
+    body: DataTypes.TEXT,
     primaryImageUrl: DataTypes.STRING,
     totalClaps: DataTypes.INTEGER,
     slug: DataTypes.STRING,
+    tagId: DataTypes.INTEGER
   }, {});
   Article.associate = (models) => {
+    // associations can be defined here
+    Article.belongsTo(models.Tag, {
+      foreignKey: 'tagId',
+    });
     Article.belongsTo(models.User, {
       foreignKey: 'userId',
     });

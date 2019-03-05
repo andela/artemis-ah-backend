@@ -1,8 +1,7 @@
 import '@babel/polyfill';
 import dotenv from 'dotenv';
 import db from '../database/models';
-import HelperUtils from '../utils';
-import response from '../utils/response';
+import { HelperUtils, response } from '../utils';
 import verifyEmailMarkup from '../utils/markups/emailVerificationMarkup';
 import passwordResetMarkup from '../utils/markups/passwordResetMarkup';
 
@@ -216,6 +215,72 @@ export default class Users {
       response(res).serverError({
         message: 'token could not be generated, please try again later'
       });
+    }
+  }
+
+  /**
+   * @description controller function that handles user data retrieval
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} user
+   */
+  static async getUser(req, res) {
+    const { username } = req.params.username ? req.params : req.user;
+
+    try {
+      const user = await User.findOne({
+        where: { username },
+        attributes: ['username', 'email', 'bio', 'image']
+      });
+
+      if (!user) response(res).notFound({ message: 'user not found' });
+      else {
+        response(res).success({
+          message: 'user found',
+          user
+        });
+      }
+    } catch (err) {
+      response(res).serverError({ message: err });
+    }
+  }
+
+  /**
+   * @description contoller function that updates user information
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} updatedUser
+   */
+  static async updateUser(req, res) {
+    const { username } = req.user;
+    try {
+      const user = await User.findOne({
+        where: { username },
+        attributes: ['username', 'email', 'bio', 'image']
+      });
+
+      if (!user) response(res).notFound({ message: 'user not found' });
+      else {
+        const values = {
+          bio: req.body.bio || user.bio,
+          image: req.body.image || user.image,
+        };
+
+        const updateUser = await User.update(values, { returning: true, where: { username } });
+        const { email, bio, image } = updateUser[1][0];
+
+        response(res).success({
+          message: 'user updated',
+          user: {
+            username,
+            email,
+            bio,
+            image,
+          }
+        });
+      }
+    } catch (err) {
+      response(res).serverError({ message: err });
     }
   }
 }

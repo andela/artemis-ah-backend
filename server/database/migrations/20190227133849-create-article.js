@@ -20,7 +20,7 @@ export default {
         allowNull: false,
       },
       body: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       primaryImageUrl: {
@@ -32,6 +32,14 @@ export default {
       },
       slug: {
         type: Sequelize.STRING,
+      },
+      tagId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Tags',
+          key: 'id',
+          as: 'tagId'
+        },
       },
       createdAt: {
         allowNull: false,
