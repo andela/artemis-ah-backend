@@ -13,27 +13,28 @@ const wrongToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdG5hbWUiOiJBZGF
 let userToken;
 chai.use(chaiHttp);
 
+before('It should return a 201 and create a new user', (done) => {
+  const data = {
+    firstname: 'John',
+    lastname: 'Doe',
+    email: 'obiora@gmail.com',
+    username: 'john46',
+    password: '12345671'
+  };
+  chai
+    .request(app)
+    .post(signupURL)
+    .send(data)
+    .end((err, res) => {
+      expect(res.status).to.equal(201);
+      expect(res.body.message).to.be.a('string');
+      expect(res.body.message).to.equal('user created successfully');
+      userToken = res.body.user.token;
+      done();
+    });
+});
+
 describe('Get user data', () => {
-  before('It should return a 201 and create a new user', (done) => {
-    const data = {
-      firstname: 'John',
-      lastname: 'Doe',
-      email: 'obiora@gmail.com',
-      username: 'john46',
-      password: '1234567'
-    };
-    chai
-      .request(app)
-      .post(signupURL)
-      .send(data)
-      .end((err, res) => {
-        expect(res.status).to.equal(201);
-        expect(res.body.message).to.be.a('string');
-        expect(res.body.message).to.equal('user created successfully');
-        userToken = res.body.user.token;
-        done();
-      });
-  });
   describe('Get current user', () => {
     it('It should return 200 if user exists', (done) => {
       chai
