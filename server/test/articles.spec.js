@@ -12,7 +12,7 @@ chai.use(chaiHttp);
  */
 chai.Assertion.addMethod('number', value => typeof value === 'number');
 
-let userToken = null;
+let userToken, createdArticle;
 
 describe('Testing articles endpoint', () => {
   // Register a user to get jwt token.
@@ -62,6 +62,8 @@ describe('Testing articles endpoint', () => {
         expect(article.slug).to.equal(`${slugify(data.title, { lower: true })}-${article.id}`);
         expect(article.description).to.equal('This is the description of the article');
         expect(article.body).to.equal('This is the body of the article');
+
+        createdArticle = article;
 
         done();
       });
@@ -143,6 +145,71 @@ describe('Testing articles endpoint', () => {
             // articles created in this test file.
             return arr[0].id === pageOneFirstArticle.id + 1;
           });
+
+          done();
+        });
+    });
+  });
+
+  /*
+   * Test endpoint to like article.
+   */
+  describe('Test endpoint to like article comment: POST /articles/:slug/comments/:id/like', () => {
+    it('should return 404 for incorrect slug', (done) => {
+      chai
+        .request(app)
+        .post('/api/articles/this-article-does-not-exists-190893893974837/comments/0/like')
+        .set('authorization', `Bearer ${userToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
+          expect(res.body.message).to.equal('Article does not exists');
+
+          done();
+        });
+    });
+
+    it('should return 404 for incorrect comment id', (done) => {
+      chai
+        .request(app)
+        .post(`/api/articles/${createdArticle.slug}/comments/0/like`)
+        .set('authorization', `Bearer ${userToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
+          expect(res.body.message).to.equal('Comment does not exists');
+
+          done();
+        });
+    });
+
+    // MISSING: Add a comment before liking. Replace 1 with actual comment id.
+    // For now make sure a comment is added before running the test.
+    it('should add a like when called first time by a user', (done) => {
+      chai
+        .request(app)
+        .post(`/api/articles/${createdArticle.slug}/comments/1/like`)
+        .set('authorization', `Bearer ${userToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+
+          const { body } = res;
+          expect(body.totalLikes).to.equal(1);
+          expect(body.liked).to.equal(true);
+
+          done();
+        });
+    });
+
+    it('should remove a like when called second time by the same user', (done) => {
+      chai
+        .request(app)
+        .post(`/api/articles/${createdArticle.slug}/comments/1/like`)
+        .set('authorization', `Bearer ${userToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+
+          const { body } = res;
+          expect(body.totalLikes).to.equal(0);
+          expect(body.liked).to.equal(false);
 
           done();
         });
