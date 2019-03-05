@@ -12,6 +12,8 @@ router.post('/articles',
   createArticleValidation, // Validate user input
   controller.create.bind(controller));
 
+router.get('/articles/tags',
+  controller.getTags.bind(controller));
 router.get('/articles', controller.getAll.bind(controller));
 
 export default router;

@@ -1,45 +1,28 @@
 export default {
   up(queryInterface, Sequelize) {
-    return queryInterface.createTable('Articles', {
+    return queryInterface.createTable('ArticleComments', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      articleId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      title: {
+      comment: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      description: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      body: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-      },
-      primaryImageUrl: {
-        type: Sequelize.STRING,
-      },
-      totalClaps: {
+      totalLikes: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
-      },
-      slug: {
-        type: Sequelize.STRING,
-      },
-      tagId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'Tags',
-          key: 'id',
-          as: 'tagId'
-        },
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -51,5 +34,5 @@ export default {
       }
     });
   },
-  down: queryInterface => queryInterface.dropTable('Articles')
+  down: queryInterface => queryInterface.dropTable('ArticleComments')
 };
