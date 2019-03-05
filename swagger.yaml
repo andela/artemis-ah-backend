@@ -53,6 +53,49 @@ paths:
       responses:
         '200':
           description: user created successfully
+    get:
+      tags:
+        -user
+      summary: Gets current user
+      description: This endpont takes a token and returns corresponding user
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: user found
+        '400':
+          description: unauthorized
+        '404'
+          description: user not found
+    put:
+      tags:
+        -user
+      summary: Updates current user profile
+      description: This endpont takes a token and updates corresponding user data
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: bio
+          in: body
+          description: New user's biography
+          required: false
+          type: string
+        - name: image
+          in: body
+          description: New image string
+          required: true
+          type: string
+      responses:
+        '200':
+          description: user updated
+        '400':
+          description: unauthorized
+        '404'
+          description: user not found
   /users/verifyemail:
     get:
       tags:
@@ -164,6 +207,28 @@ paths:
           description: Success
       security:
         - authorization: []
+  /profiles/{username}:
+    tags:
+        -user
+      summary: Gets user profile
+      description: This endpont returns given user data
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: username
+          in: path
+          description: User's username
+          required: true
+          type: string
+      responses:
+        '200':
+          description: user found
+        '400':
+          description: unauthorized
+        '404'
+          description: user not found
   /profiles/followers:
     get:
       tags:
