@@ -37,7 +37,7 @@ describe('POST comment /api/articles/:id/comment', () => {
       .end((err, res) => {
         const { userComment } = res.body.message;
         expect(res.status).to.be.equal(201);
-        expect(userComment.articleId).to.be.equal(1);
+        expect(userComment.articleId).to.be.equal(3);
         expect(userComment.comment).to.be.equal('This is a random comment');
         done(err);
       });
