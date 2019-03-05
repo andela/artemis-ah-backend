@@ -234,11 +234,12 @@ export default class Users {
       });
 
       if (!user) response(res).notFound({ message: 'user not found' });
-
-      response(res).success({
-        message: 'user found',
-        user
-      });
+      else {
+        response(res).success({
+          message: 'user found',
+          user
+        });
+      }
     } catch (err) {
       response(res).serverError({ message: err });
     }
@@ -259,24 +260,25 @@ export default class Users {
       });
 
       if (!user) response(res).notFound({ message: 'user not found' });
+      else {
+        const values = {
+          bio: req.body.bio || user.bio,
+          image: req.body.image || user.image,
+        };
 
-      const values = {
-        bio: req.body.bio || user.bio,
-        image: req.body.image || user.image,
-      };
+        const updateUser = await User.update(values, { returning: true, where: { username } });
+        const { email, bio, image } = updateUser[1][0];
 
-      const updateUser = await User.update(values, { returning: true, where: { username } });
-      const { email, bio, image } = updateUser[1][0];
-
-      response(res).success({
-        message: 'user updated',
-        user: {
-          username,
-          email,
-          bio,
-          image,
-        }
-      });
+        response(res).success({
+          message: 'user updated',
+          user: {
+            username,
+            email,
+            bio,
+            image,
+          }
+        });
+      }
     } catch (err) {
       response(res).serverError({ message: err });
     }
