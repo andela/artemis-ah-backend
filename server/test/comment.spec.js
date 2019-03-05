@@ -4,13 +4,6 @@ import app from '../app';
 
 chai.use(chaiHttp);
 const { expect } = chai;
-const userData = {
-  firstname: 'Chris',
-  lastname: 'James',
-  email: 'chreez@gmail.com',
-  username: 'Chreez',
-  password: '12345678'
-};
 
 let userToken;
 
@@ -19,7 +12,13 @@ describe('POST comment /api/articles/:id/comment', () => {
     chai
       .request(app)
       .post('/api/users')
-      .send(userData)
+      .send({
+        firstname: 'Chris',
+        lastname: 'James',
+        email: 'chreez@gmail.com',
+        username: 'Chreez',
+        password: '12345678'
+      })
       .end((err, res) => {
         const { token } = res.body.user;
         userToken = token;
@@ -35,10 +34,102 @@ describe('POST comment /api/articles/:id/comment', () => {
         comment: 'This is a random comment'
       })
       .end((err, res) => {
-        const { userComment } = res.body.message;
+        const { articleId, comment } = res.body.userComment;
         expect(res.status).to.be.equal(201);
-        expect(userComment.articleId).to.be.equal(1);
-        expect(userComment.comment).to.be.equal('This is a random comment');
+        expect(articleId).to.be.equal(1);
+        expect(comment).to.be.equal('This is a random comment');
+        done(err);
+      });
+  });
+
+  it('should return an error if comment is blank', (done) => {
+    chai.request(app)
+      .post('/api/articles/this-is-an-article-1/comment')
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        comment: ''
+      })
+      .end((err, res) => {
+        const { comment } = res.body.errors;
+        expect(res.status).to.be.equal(400);
+        expect(comment[0]).to.be.equal('Comment must not be empty.');
+        done(err);
+      });
+  });
+
+  it('should return an error if comment is not provided', (done) => {
+    chai.request(app)
+      .post('/api/articles/this-is-an-article-1/comment')
+      .set('authorization', `Bearer ${userToken}`)
+      .send({})
+      .end((err, res) => {
+        const { comment } = res.body.errors;
+        expect(res.status).to.be.equal(400);
+        expect(comment[0]).to.be.equal('Comment field must be specified.');
+        done(err);
+      });
+  });
+});
+
+describe('PATCH update comment', () => {
+  before((done) => {
+    chai
+      .request(app)
+      .post('/api/users')
+      .send({
+        firstname: 'Chris',
+        lastname: 'James',
+        email: 'chreez2@gmail.com',
+        username: 'Chreez2',
+        password: '12345678'
+      })
+      .end((err, res) => {
+        const { token } = res.body.user;
+        userToken = token;
+        done(err);
+      });
+  });
+
+  it('should update a comment', (done) => {
+    chai.request(app)
+      .patch('/api/articles/this-is-an-article-1/comment')
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        comment: 'This is an updated random comment'
+      })
+      .end((err, res) => {
+        const { articleId, comment } = res.body.userComment;
+        expect(res.status).to.be.equal(200);
+        expect(articleId).to.be.equal(1);
+        expect(comment).to.be.equal('This is an updated random comment');
+        done(err);
+      });
+  });
+
+  it('should return an error if comment is blank', (done) => {
+    chai.request(app)
+      .patch('/api/articles/this-is-an-article-1/comment')
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        comment: ''
+      })
+      .end((err, res) => {
+        const { comment } = res.body.errors;
+        expect(res.status).to.be.equal(400);
+        expect(comment[0]).to.be.equal('Comment must not be empty.');
+        done(err);
+      });
+  });
+
+  it('should return an error if comment is not provided', (done) => {
+    chai.request(app)
+      .patch('/api/articles/this-is-an-article-1/comment')
+      .set('authorization', `Bearer ${userToken}`)
+      .send({})
+      .end((err, res) => {
+        const { comment } = res.body.errors;
+        expect(res.status).to.be.equal(400);
+        expect(comment[0]).to.be.equal('Comment field must be specified.');
         done(err);
       });
   });
