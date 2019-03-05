@@ -115,6 +115,111 @@ paths:
       summary: "Returns all tags"
       description: "Returns all the tags an article could have"
       produces:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: email
+          in: path
+          description: New user's email address
+          required: true
+          type: string
+        - name: hash
+          in: path
+          description: Encrypted data for comparism
+          required: true
+          type: string
+      responses:
+        '200':
+          description: email verified successfully
+        '400':
+          description: invalid email
+  /articles:
+    post:
+      tags:
+        - article
+      summary: Creates a new article
+      description: Creates a new article
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: article
+          description: Create an article
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              description:
+                type: string
+              body:
+                type: string
+      responses:
+        '200':
+          description: Success
+      security:
+        - authorization: []
+  /profiles/followers:
+    get:
+      tags:
+      - "profile"
+      summary: "fetch all authors following you"
+      description: "This endpoint gets all your followers"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "these are your followers"
+      security:
+        - authorization: []
+  /profiles/following:
+    get:
+      tags:
+      - "profile"
+      summary: "fetch all authors you are following"
+      description: "This endpoint gets all authors you are following"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "people you are following"
+      security:
+        - authorization: []
+  /profiles/{username}/follow:
+    get:
+      tags:
+      - "profile"
+      summary: "Follow an author by username"
+      description: "Follows a single author"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "path"
+        description: "username of author to return"
+        required: true
+        type: "string"
+      responses:
+        201:
+          description: "you just followed ${authors username}"
+        403:
+          description: "you cannot follow yourself"
+        200:
+          description: "you already following ${authors username}"
+      security:
+        - authorization: []
+    delete:
+      tags:
+      - "profile"
+      summary: "Unfollow an author by username"
+      description: "Unfollows a single author"
+      produces:
       - "application/xml"
       - "application/json"
       responses:
@@ -218,6 +323,52 @@ paths:
       responses:
         200:
           description: "user logged in successfully"
+      - name: "username"
+        in: "path"
+        description: "username of author to return"
+        required: true
+        type: "string"
+      responses:
+        403:
+          description: "you cannot unfollow yourself"
+        200:
+          description: "${authors username} has been unfollowed"
+        404:
+          description: "user not found"
+      security:
+        - authorization: []
+          description: "Success"
+  /users:
+  post:
+    tags:
+    - "users"
+    summary: "Signs up a new user"
+    description: "Creates a user"
+    consumes:
+      - "application/json"
+    produces:
+    - "application/json"
+    parameters:
+    - in: "body"
+      name: "users"
+      description: "Create a user"
+      required: true
+      schema:
+        type: "object"
+        properties:
+          firstname:
+            type: string
+          lastname:
+            type: string
+          username:
+            type: string
+          email:
+            type: string
+          password:
+            type: string
+    responses:
+      200:
+        description: "user created successfully"
 
   /users/verifyemail:
   get:
@@ -275,105 +426,5 @@ paths:
 securityDefinitions:
   authorization:
     type: "apiKey"
-    name: "api_key"
+    name: "authorization"
     in: "header"
-definitions:
-  Order:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      petId:
-        type: "integer"
-        format: "int64"
-      quantity:
-        type: "integer"
-        format: "int32"
-      shipDate:
-        type: "string"
-        format: "date-time"
-      status:
-        type: "string"
-        description: "Order Status"
-        enum:
-        - "placed"
-        - "approved"
-        - "delivered"
-      complete:
-        type: "boolean"
-        default: false
-    xml:
-      name: "Order"
-  Category:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Category"
-  User:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
-      email:
-        type: "string"
-      password:
-        type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
-    xml:
-      name: "User"
-  Tag:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Tag"
-  Pet:
-    type: "object"
-    required:
-    - "name"
-    - "photoUrls"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      category:
-        $ref: "#/definitions/Category"
-      name:
-        type: "string"
-        example: "doggie"
-      photoUrls:
-        type: "array"
-        xml:
-          name: "photoUrl"
-          wrapped: true
-        items:
-          type: "string"
-      tags:
-          
-securityDefinitions:
-  authorization:
-    type: apiKey
-    name: authorization
-    in: header

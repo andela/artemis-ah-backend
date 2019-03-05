@@ -14,7 +14,19 @@
     "reset:db": "npm run sequelize db:migrate:undo:all && npm run sequelize db:migrate && npm run reset:seeds",
     "start:dev": "npm run reset:db && npm run dev",
     "build": "rm -rf dist && mkdir dist && babel -d ./dist ./server -s",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm run build"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm run build",
+    "lint": "eslint ./server --fix"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "lint-staged": {
     "*.js": [
@@ -35,6 +47,7 @@
     "@babel/node": "^7.2.2",
     "@babel/polyfill": "^7.2.5",
     "@sendgrid/mail": "^6.3.1",
+    "babel-eslint": "^10.0.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",

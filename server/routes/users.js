@@ -8,12 +8,13 @@ authRoute.post('/users', Users.signupUser);
 authRoute.get('/users/verifyemail', Users.verifyUserEmail);
 authRoute.post('/users/reset-password', Users.resetPasswordEmail);
 authRoute.patch('/users/reset-password', Users.resetPassword);
-authRoute.get('/users/auth/google', passport.authenticate('google', {
-  scope: [
-    'https://www.googleapis.com/auth/userinfo.profile',
-    'https://www.googleapis.com/auth/userinfo.email'
-  ]
-}));
+authRoute.get('/users/auth/google',
+  passport.authenticate('google', {
+    scope: [
+      'https://www.googleapis.com/auth/userinfo.profile',
+      'https://www.googleapis.com/auth/userinfo.email'
+    ]
+  }));
 
 authRoute.get('/users/auth/google/redirect',
   passport.authenticate('google', { session: false }),
