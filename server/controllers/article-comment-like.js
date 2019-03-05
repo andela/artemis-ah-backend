@@ -77,6 +77,7 @@ class ArticleCommentLikeController {
       })
       .then(result => response(res).success(result)) // Send response
       .catch((e) => {
+        console.log(e);
         if (e.responseHandler) {
           response(res)[e.responseHandler](e.message);
         } else {
