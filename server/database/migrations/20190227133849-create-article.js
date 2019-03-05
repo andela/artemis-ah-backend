@@ -33,6 +33,14 @@ export default {
       slug: {
         type: Sequelize.STRING,
       },
+      tagId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Tags',
+          key: 'id',
+          as: 'tagId'
+        },
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

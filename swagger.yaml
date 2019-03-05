@@ -108,6 +108,62 @@ paths:
           description: Success
       security:
         - authorization: []
+  /articles/tags:
+    get:
+      tags:
+      - "article"
+      summary: "Returns all tags"
+      description: "Returns all the tags an article could have"
+      produces:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: email
+          in: path
+          description: New user's email address
+          required: true
+          type: string
+        - name: hash
+          in: path
+          description: Encrypted data for comparism
+          required: true
+          type: string
+      responses:
+        '200':
+          description: email verified successfully
+        '400':
+          description: invalid email
+  /articles:
+    post:
+      tags:
+        - article
+      summary: Creates a new article
+      description: Creates a new article
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: article
+          description: Create an article
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              description:
+                type: string
+              body:
+                type: string
+      responses:
+        '200':
+          description: Success
+      security:
+        - authorization: []
   /profiles/followers:
     get:
       tags:
@@ -166,7 +222,107 @@ paths:
       produces:
       - "application/xml"
       - "application/json"
+      responses:
+        200:
+          description: Success
+          
+  /profiles/followers:
+    get:
+      tags:
+        - profile
+      summary: fetch all authors following you
+      description: This endpoint gets all your followers
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: these are your followers
+      security:
+        - authorization: []
+  /profiles/following:
+    get:
+      tags:
+        - profile
+      summary: fetch all authors you are following
+      description: This endpoint gets all authors you are following
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: people you are following
+      security:
+        - authorization: []
+  /profiles/{username}/follow:
+    get:
+      tags:
+        - profile
+      summary: Follow an author by username
+      description: Follows a single author
+      produces:
+        - application/xml
+        - application/json
       parameters:
+        - name: username
+          in: path
+          description: username of author to return
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 'you already following ${authors username}'
+        '201':
+          description: 'you just followed ${authors username}'
+        '403':
+          description: you cannot follow yourself
+      security:
+        - authorization: []
+    delete:
+      tags:
+        - profile
+      summary: Unfollow an author by username
+      description: Unfollows a single author
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: username
+          in: path
+          description: username of author to return
+          required: true
+          type: string
+      responses:
+        '200':
+          description: '${authors username} has been unfollowed'
+        '403':
+          description: you cannot unfollow yourself
+        '404':
+          description: user not found
+      security:
+        - authorization: []
+  /users/auth/google:
+    get:
+      tags:
+      - "users"
+      summary: "Signs users in with google"
+      description: "Redirects to google authentication page to seek their permission to share their information with the platform"
+      produces:
+      - "text/html"
+      responses:
+        403:
+          description: "you cannot unfollow yourself"
+        200:
+          description: "user logged in successfully"
+  /users/auth/facebook:
+    get:
+      tags:
+      - "users"
+      summary: "Signs users in with facebook"
+      description: "Redirects to facebook authentication page to seek their permission to share their information with the platform"
+      produces:
+      - "text/html"
+      responses:
+        200:
+          description: "user logged in successfully"
       - name: "username"
         in: "path"
         description: "username of author to return"

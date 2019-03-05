@@ -7,8 +7,13 @@ export default (sequelize, DataTypes) => {
     primaryImageUrl: DataTypes.STRING,
     totalClaps: DataTypes.INTEGER,
     slug: DataTypes.STRING,
+    tagId: DataTypes.INTEGER
   }, {});
   Article.associate = (models) => {
+    // associations can be defined here
+    Article.belongsTo(models.Tag, {
+      foreignKey: 'tagId',
+    });
     Article.belongsTo(models.User, {
       foreignKey: 'userId',
     });
