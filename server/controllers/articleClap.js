@@ -23,7 +23,7 @@ export default class ArticleClapToggle {
 
     if (!getArticle) response(res).notFound({ message: 'article not found' });
 
-    else if (getArticle.userId === id) response(res).forbidden({ message: 'you cannot rate your own article' });
+    else if (getArticle.userId === id) response(res).forbidden({ message: 'you cannot clap for your own article' });
 
     else {
       const clap = await ArticleClap.findOrCreate({

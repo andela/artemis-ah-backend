@@ -108,7 +108,7 @@ describe('Clap endpoint test', () => {
       .end((err, res) => {
         expect(res.status).to.equal(403);
         expect(res.body.message).to.be.a('string');
-        expect(res.body.message).to.equal('you cannot rate your own article');
+        expect(res.body.message).to.equal('you cannot clap for your own article');
         done();
       });
   });
