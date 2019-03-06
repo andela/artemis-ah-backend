@@ -32,6 +32,7 @@ export default class Users {
     const formInputs = { ...body, password: hash };
     try {
       const createUser = await User.create(formInputs);
+      delete formInputs.password;
       const token = HelperUtils.generateToken({
         ...formInputs,
         id: createUser.id
