@@ -136,6 +136,9 @@ class ArticleController {
         'totalClaps',
         'createdAt',
         'updatedAt'
+      ],
+      order: [
+        ['id', 'ASC'],
       ]
     };
 

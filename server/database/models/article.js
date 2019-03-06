@@ -26,6 +26,11 @@ export default (sequelize, DataTypes) => {
     Article.hasMany(models.ArticleComment, {
       foreignKey: 'id',
     });
+
+    Article.hasMany(models.ArticleClap, {
+      foreignKey: 'articleId',
+      as: 'claps'
+    });
   };
   return Article;
 };

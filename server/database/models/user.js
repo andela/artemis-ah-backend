@@ -47,7 +47,7 @@ export default (sequelize, DataTypes) => {
     }
   }, {});
   User.associate = (models) => {
-    const { Follower } = models;
+    const { Follower, ArticleClap } = models;
     User.belongsToMany(User, {
       through: Follower,
       foreignKey: 'userId',
@@ -58,6 +58,10 @@ export default (sequelize, DataTypes) => {
       through: Follower,
       foreignKey: 'followerId',
       as: 'followers'
+    });
+
+    User.hasMany(ArticleClap, {
+      foreignKey: 'userId',
     });
 
     // Relations for articles.
