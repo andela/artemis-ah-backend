@@ -17,6 +17,7 @@ router.post('/articles/:slug/comment', AuthenticateUser.verifyUser, Comment.post
 router.get('/articles/tags',
   controller.getTags.bind(controller));
 router.get('/articles', controller.getAll.bind(controller));
+router.get('/articles/:slug', controller.getSingleArticle.bind(controller));
 
 const articleCommentLike = new ArticleCommentLikeController();
 router.post('/articles/:slug/comments/:id/like',

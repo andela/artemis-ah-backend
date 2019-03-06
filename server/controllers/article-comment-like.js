@@ -17,73 +17,53 @@ const { Article, ArticleComment, ArticleCommentLike } = models;
  */
 class ArticleCommentLikeController {
   /**
-   * @method promiseError
-   * @param {string} responseHandler method name of response object
-   * @param {*} message data to send back to client
-   * @returns {object} error
-   */
-  promiseError(responseHandler, message) {
-    return {
-      responseHandler, message,
-    };
-  }
-
-  /**
    * @method likeToggle
    * @param {object} req - The request object
    * @param {object} res - The response object
    * @returns {undefined} nothing
    */
-  likeToggle(req, res) {
+  async likeToggle(req, res) {
     const { user } = req;
 
-    // Find article by slug.
-    Article
-      .findOne({
+    try {
+      // Find article by slug.
+      const article = await Article.findOne({
         where: {
           slug: req.params.slug,
         },
-      })
-      .then((article) => {
-        // Does article exists?
-        if (!article) {
-          throw this.promiseError('notFound', 'Article does not exists');
-        } else {
-          return article;
-        }
-      })
-      .then(article => (ArticleComment.findOne({ // Get comment by article id and comment id.
+      });
+
+      // Does article exists?
+      if (!article) {
+        return response(res).notFound('Article does not exists');
+      }
+
+      // Get comment by article id and comment id.
+      const comment = await ArticleComment.findOne({
         where: {
           id: req.params.id,
           articleId: article.id,
         },
-      })
-      ))
-      .then((comment) => {
-        // Does comment exists?
-        if (!comment) {
-          throw this.promiseError('notFound', 'Comment does not exists');
-        } else {
-          return comment;
-        }
-      })
-      .then(comment => this.getUserLikeRecord(user, comment)) // Get user like record
-      .then((record) => {
-        // Has user liked before?
-        if (record.commentLike) {
-          return this.removeLike(user, record.comment);
-        }
-        return this.addLike(user, record.comment);
-      })
-      .then(result => response(res).success(result)) // Send response
-      .catch((e) => {
-        console.log(e);
-        if (e.responseHandler) {
-          response(res)[e.responseHandler](e.message);
-        } else {
-          response(res).serverError('Internal server error');
-        }
       });
+
+      // Does comment exists?
+      if (!comment) {
+        return response(res).notFound('Comment does not exists');
+      }
+
+      // Get user like record
+      const userLikeRecord = await this.getUserLikeRecord(user, comment);
+      let result;
+      // Has user liked before?
+      if (userLikeRecord) {
+        result = await this.removeLike(user, comment);
+      } else {
+        result = await this.addLike(user, comment);
+      }
+      response(res).success(result);
+    } catch (e) {
+      response(res).serverError('Something went wrong. Try again soon.');
+    }
   }
 
   /**
@@ -99,49 +79,45 @@ class ArticleCommentLikeController {
         commentId: comment.id,
         articleId: comment.articleId,
       },
-    })
-      .then(record => ({
-        comment,
-        commentLike: record,
-      }));
+    });
   }
 
   /**
    * @param {*} user The user object
    * @param {*} comment The comment record
-   * @returns {Promise} Returns a promise to add the user's like
+   * @returns {object} Returns the server response
    */
-  addLike(user, comment) {
-    return ArticleCommentLike.create({
+  async addLike(user, comment) {
+    await ArticleCommentLike.create({
       userId: user.id,
       articleId: comment.articleId,
       commentId: comment.id,
-    })
-      .then(() => comment.increment('totalLikes'))
-      .then(updatedComment => ({
-        totalLikes: updatedComment.totalLikes,
-        liked: true,
-      }));
+    });
+    const updatedComment = await comment.increment('totalLikes');
+    return {
+      totalLikes: updatedComment.totalLikes,
+      liked: true,
+    };
   }
 
   /**
    * @param {*} user The user object
    * @param {*} comment The comment record
-   * @returns {Promise} Returns a promise to remove the user's like
+   * @returns {object} Returns the server response
    */
-  removeLike(user, comment) {
-    return ArticleCommentLike.destroy({
+  async removeLike(user, comment) {
+    await ArticleCommentLike.destroy({
       where: {
         userId: user.id,
         commentId: comment.id,
         articleId: comment.articleId,
       },
-    })
-      .then(() => comment.decrement('totalLikes'))
-      .then(updatedComment => ({
-        totalLikes: updatedComment.totalLikes,
-        liked: false,
-      }));
+    });
+    const updatedComment = await comment.decrement('totalLikes');
+    return {
+      totalLikes: updatedComment.totalLikes,
+      liked: false,
+    };
   }
 }
 export default ArticleCommentLikeController;

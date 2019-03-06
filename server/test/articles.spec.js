@@ -267,3 +267,17 @@ describe('Test endpoint to like article comment: POST /articles/:slug/comments/:
       });
   });
 });
+
+describe('GET single article /api/articles/:slug', () => {
+  it('should return 200 if article exists', (done) => {
+    chai
+      .request(app)
+      .get('/api/articles/this-is-an-article-3')
+      .end((err, res) => {
+        const { id } = res.body.messages;
+        expect(res.status).to.be.equal(200);
+        expect(id).to.be.equal(3);
+        done(err);
+      });
+  });
+});
