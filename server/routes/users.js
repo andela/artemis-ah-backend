@@ -9,6 +9,10 @@ authRoute.post('/users',
   ValidateUser.validateMethods(),
   ValidateUser.validateUserDetails,
   Users.signupUser);
+authRoute.post('/users/login',
+  ValidateUser.validateLoginFields(),
+  ValidateUser.validateLogin,
+  Users.loginUser);
 authRoute.get('/users/verifyemail', Users.verifyUserEmail);
 authRoute.post('/users/reset-password', Users.resetPasswordEmail);
 authRoute.patch('/users/reset-password', Users.resetPassword);

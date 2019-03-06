@@ -7,6 +7,7 @@ import passport from 'passport';
 import dotenv from 'dotenv';
 import expressSession from 'express-session';
 import routes from './routes';
+import Trimmer from './middlewares/Trimmer';
 
 dotenv.config();
 
@@ -24,6 +25,9 @@ app.use(bodyParser.json());
 
 // Initializing Passport
 app.use(passport.initialize());
+
+// Trimming data
+app.use(Trimmer.trimBody);
 
 // Creating user session
 app.use(expressSession({

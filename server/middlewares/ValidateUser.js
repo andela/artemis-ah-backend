@@ -1,7 +1,8 @@
 import { check, validationResult } from 'express-validator/check';
 import Sequelize from 'sequelize';
+import bcrypt from 'bcryptjs';
 import models from '../database/models';
-import { response } from '../utils';
+import { response, validationErrors } from '../utils';
 
 const { Op } = Sequelize;
 const { User } = models;
@@ -82,6 +83,70 @@ class ValidateUser {
 
     const existingUserObject = await user;
     return user.length > 0 ? Object.keys(existingUserObject[0]) : [];
+  }
+
+  /**
+   * @method validateLoginFields
+   * @description Validates details provided by user when logging in
+   * @returns {array} - Array of validation methods
+   */
+  static validateLoginFields() {
+    return [
+      check('name')
+        .exists({
+          checkNull: true,
+          checkFalsy: true,
+        })
+        .withMessage('Email or Username is required to login'),
+
+      check('password')
+        .exists({
+          checkNull: true,
+          checkFalsy: true,
+        })
+        .withMessage('Password is required to login')
+    ];
+  }
+
+  /**
+   * @method validateLogin
+   * @description Validates details provided by user when logging in
+   * @param {object} req - request object
+   * @param {object} res - response object
+   * @param {object} next - function to pass to next middleware
+   * @returns {undefined}
+   */
+  static async validateLogin(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return response(res).badRequest({
+        errors: validationErrors(errors)
+      });
+    }
+    const { name, password } = req.body;
+    const user = await User.findOne({
+      where: {
+        [Op.or]: [{ email: name }, { username: name }]
+      }
+    });
+    if (!user) {
+      return response(res).notFound({
+        message: 'invalid credentials'
+      });
+    }
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return response(res).forbidden({
+        message: 'invalid credentials'
+      });
+    }
+    if (!user.verifiedEmail) {
+      return response(res).forbidden({
+        message: 'You have to verify your email before you login'
+      });
+    }
+    req.user = user;
+    next();
   }
 }
 
