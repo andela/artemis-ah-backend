@@ -22,204 +22,12 @@ tags:
 schemes:
   - https
 paths:
-  /users:
-    post:
-      tags:
-        - user
-      summary: Creates a new user
-      description: This endpoint signup a new user
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: user
-          description: User details
-          required: true
-          schema:
-            type: object
-            properties:
-              firstname:
-                type: string
-              lastname:
-                type: string
-              username:
-                type: string
-              email:
-                type: string
-              password:
-                type: string
-      responses:
-        '200':
-          description: user created successfully
-    get:
-      tags:
-        -user
-      summary: Gets current user
-      description: This endpont takes a token and returns corresponding user
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: user found
-        '400':
-          description: unauthorized
-        '404'
-          description: user not found
-    put:
-      tags:
-        -user
-      summary: Updates current user profile
-      description: This endpont takes a token and updates corresponding user data
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: bio
-          in: body
-          description: New user's biography
-          required: false
-          type: string
-        - name: image
-          in: body
-          description: New image string
-          required: true
-          type: string
-      responses:
-        '200':
-          description: user updated
-        '400':
-          description: unauthorized
-        '404'
-          description: user not found
-  /users/verifyemail:
-    get:
-      tags:
-        - user
-      summary: Verify a new user's email
-      description: This endpoint verifies a new user's email
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: email
-          in: path
-          description: New user's email address
-          required: true
-          type: string
-        - name: hash
-          in: path
-          description: Encrypted data for comparism
-          required: true
-          type: string
-      responses:
-        '200':
-          description: email verified successfully
-        '400':
-          description: invalid email
-  /users/login:
-    post:
-      tags:
-        - user
-      summary: Logs a user in
-      description: This endpoint logs a user in using their password and email/username
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: name
-          in: body
-          description: Email/username of the user
-          required: true
-          type: string
-        - name: password
-          in: body
-          description: User's password
-          required: true
-          type: string
-      responses:
-        '200':
-          description: user logged in successfully
-        '400':
-          description: Email or Username is required to login
-        '400':
-          description: Password is required to login
-        '403':
-          description: invalid credentials
-  /articles:
-    post:
-      tags:
-        - article
-      summary: Creates a new article
-      description: Creates a new article
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: article
-          description: Create an article
-          required: true
-          schema:
-            type: object
-            properties:
-              title:
-                type: string
-              description:
-                type: string
-              body:
-                type: string
-      responses:
-        '200':
-          description: Success
-      security:
-        - authorization: []
   /articles/ratings:
     post:
       tags:
-      - "article", "ratings"
-      summary: "Adds rating to article"
-      description: "Calculates the average rating of an article"
-      produces:
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: slug
-          in: path
-          description: Article's slug
-          required: true
-          type: string
-        - name: rating
-          in: body
-          description: The new rating to be given to the article
-          required: true
-          type: number
-      responses:
-        '200':
-          description: You have successfully rated this article
-        '400':
-          description: Rating already given for this article
-        '403':
-        description: You cant rate your own article
-        '404':
-        description: Article not found
-
-  /articles/ratings:
-    post:
-      tags:
-      - "article", "ratings"
+        - "article"
       summary: "Get all ratings assigned to an article"
       description: "Calculates the average rating of an article"
-      produces:
       consumes:
         - application/json
       produces:
@@ -234,15 +42,14 @@ paths:
         '200':
           description: List of ratings
         '404':
-        description: Article not found
+          description: Article not found
           
   /articles/tags:
     get:
       tags:
-      - "article"
+        - "article"
       summary: "Returns all tags"
       description: "Returns all the tags an article could have"
-      produces:
       consumes:
         - application/json
       produces:
@@ -292,36 +99,40 @@ paths:
           description: Success
       security:
         - authorization: []
-  /profiles/{username}:
-    tags:
-        -user
-      summary: Gets user profile
-      description: This endpont returns given user data
-      consumes:
-        - application/json
+  /articles/{slug}/comments/{id}/like:
+    post:
+      tags:
+        - "article"
+      summary: "Toggle like on a comment for an article"
+      description: "This endpoint toggles a user's like on a comment for an article"
       produces:
-        - application/json
+        - "application/json"
       parameters:
-        - name: username
-          in: path
-          description: User's username
+        - name: "slug"
+          in: "path"
+          description: "slug of the article the comment belongs to"
           required: true
-          type: string
+          type: "string"
+        - name: "id"
+          in: "path"
+          description: "the id of the comment"
+          required: true
+          type: "integer"
       responses:
-        '200':
-          description: user found
-        '400':
-          description: unauthorized
-        '404'
-          description: user not found
+        200:
+          description: "like action toggled successfully"
+        404:
+          description: "if article or comment does not exists"
+      security:
+        - authorization: []
   /profiles/followers:
     get:
       tags:
-      - "profile"
+        - "profile"
       summary: "fetch all authors following you"
       description: "This endpoint gets all your followers"
       produces:
-      - "application/json"
+        - "application/json"
       responses:
         200:
           description: "these are your followers"
@@ -330,11 +141,11 @@ paths:
   /profiles/following:
     get:
       tags:
-      - "profile"
+        - "profile"
       summary: "fetch all authors you are following"
       description: "This endpoint gets all authors you are following"
       produces:
-      - "application/json"
+        - "application/json"
       responses:
         200:
           description: "people you are following"
@@ -343,18 +154,17 @@ paths:
   /profiles/{username}/follow:
     get:
       tags:
-      - "profile"
+        - "profile"
       summary: "Follow an author by username"
       description: "Follows a single author"
       produces:
-      - "application/xml"
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "username"
-        in: "path"
-        description: "username of author to return"
-        required: true
-        type: "string"
+        - name: "username"
+          in: "path"
+          description: "username of author to return"
+          required: true
+          type: "string"
       responses:
         201:
           description: "you just followed ${authors username}"
@@ -366,118 +176,17 @@ paths:
         - authorization: []
     delete:
       tags:
-      - "profile"
+        - "profile"
       summary: "Unfollow an author by username"
       description: "Unfollows a single author"
       produces:
-      - "application/xml"
-      - "application/json"
-      responses:
-        200:
-          description: Success
-          
-  /profiles/followers:
-    get:
-      tags:
-        - profile
-      summary: fetch all authors following you
-      description: This endpoint gets all your followers
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: these are your followers
-      security:
-        - authorization: []
-  /profiles/following:
-    get:
-      tags:
-        - profile
-      summary: fetch all authors you are following
-      description: This endpoint gets all authors you are following
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: people you are following
-      security:
-        - authorization: []
-  /profiles/{username}/follow:
-    get:
-      tags:
-        - profile
-      summary: Follow an author by username
-      description: Follows a single author
-      produces:
-        - application/xml
-        - application/json
+        - "application/json"
       parameters:
-        - name: username
-          in: path
-          description: username of author to return
+        - name: "username"
+          in: "path"
+          description: "username of author to return"
           required: true
-          type: string
-      responses:
-        '200':
-          description: 'you already following ${authors username}'
-        '201':
-          description: 'you just followed ${authors username}'
-        '403':
-          description: you cannot follow yourself
-      security:
-        - authorization: []
-    delete:
-      tags:
-        - profile
-      summary: Unfollow an author by username
-      description: Unfollows a single author
-      produces:
-        - application/xml
-        - application/json
-      parameters:
-        - name: username
-          in: path
-          description: username of author to return
-          required: true
-          type: string
-      responses:
-        '200':
-          description: '${authors username} has been unfollowed'
-        '403':
-          description: you cannot unfollow yourself
-        '404':
-          description: user not found
-      security:
-        - authorization: []
-  /users/auth/google:
-    get:
-      tags:
-      - "users"
-      summary: "Signs users in with google"
-      description: "Redirects to google authentication page to seek their permission to share their information with the platform"
-      produces:
-      - "text/html"
-      responses:
-        403:
-          description: "you cannot unfollow yourself"
-        200:
-          description: "user logged in successfully"
-  /users/auth/facebook:
-    get:
-      tags:
-      - "users"
-      summary: "Signs users in with facebook"
-      description: "Redirects to facebook authentication page to seek their permission to share their information with the platform"
-      produces:
-      - "text/html"
-      responses:
-        200:
-          description: "user logged in successfully"
-      - name: "username"
-        in: "path"
-        description: "username of author to return"
-        required: true
-        type: "string"
+          type: "string"
       responses:
         403:
           description: "you cannot unfollow yourself"
@@ -487,92 +196,89 @@ paths:
           description: "user not found"
       security:
         - authorization: []
-          description: "Success"
   /users:
-  post:
-    tags:
-    - "users"
-    summary: "Signs up a new user"
-    description: "Creates a user"
-    consumes:
-      - "application/json"
-    produces:
-    - "application/json"
-    parameters:
-    - in: "body"
-      name: "users"
-      description: "Create a user"
-      required: true
-      schema:
-        type: "object"
-        properties:
-          firstname:
-            type: string
-          lastname:
-            type: string
-          username:
-            type: string
-          email:
-            type: string
-          password:
-            type: string
-    responses:
-      200:
-        description: "user created successfully"
+    post:
+      tags:
+        - "users"
+      summary: "Signs up a new user"
+      description: "Creates a user"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "users"
+          description: "Create a user"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              firstname:
+                type: string
+              lastname:
+                type: string
+              username:
+                type: string
+              email:
+                type: string
+              password:
+                type: string
+      responses:
+        200:
+          description: "user created successfully"
 
   /users/verifyemail:
-  get:
-    tags:
-    - "users"
-    summary: "Verifies a new user"
-    description: "Verifies a new users email"
-    consumes:
-      - "application/json"
-    produces:
-    - "application/json"
-    parameters:
-    - in: "body"
-    responses:
-      200:
-        description: "email verified successfully"
-      400:
-        description: "invalid email"
+    get:
+      tags:
+        - "users"
+      summary: "Verifies a new user"
+      description: "Verifies a new users email"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "email verified successfully"
+        400:
+          description: "invalid email"
 
   /users/auth/google:
-  get:
-    tags:
-    - "users"
-    summary: "Signs users in with google"
-    description: "Redirects to google authentication page to seek their permission to share their information with the platform"
-    produces:
-    - "text/html"
-    responses:
-      200:
-        description: "user logged in successfully"
+    get:
+      tags:
+        - "users"
+      summary: "Signs users in with google"
+      description: "Redirects to google authentication page to seek their permission to share their information with the platform"
+      produces:
+        - "text/html"
+      responses:
+        200:
+          description: "user logged in successfully"
 
   /users/auth/facebook:
-  get:
-    tags:
-    - "users"
-    summary: "Signs users in with facebook"
-    description: "Redirects to facebook authentication page to seek their permission to share their information with the platform"
-    produces:
-    - "text/html"
-    responses:
-      200:
-        description: "user logged in successfully"
+    get:
+      tags:
+        - "users"
+      summary: "Signs users in with facebook"
+      description: "Redirects to facebook authentication page to seek their permission to share their information with the platform"
+      produces:
+        - "text/html"
+      responses:
+        200:
+          description: "user logged in successfully"
 
   /users/auth/twitter:
-  get:
-    tags:
-    - "users"
-    summary: "Signs users in with twitter"
-    description: "Redirects to twitter authentication page to seek their permission to share their information with the platform"
-    produces:
-    - "text/html"
-    responses:
-      200:
-        description: "user logged in successfully"
+    get:
+      tags:
+        - "users"
+      summary: "Signs users in with twitter"
+      description: "Redirects to twitter authentication page to seek their permission to share their information with the platform"
+      produces:
+        - "text/html"
+      responses:
+        200:
+          description: "user logged in successfully"
 securityDefinitions:
   authorization:
     type: "apiKey"
