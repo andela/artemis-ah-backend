@@ -1,3 +1,4 @@
+/* eslint class-methods-use-this: "off" */
 import slugify from 'slug';
 import { validationResult } from 'express-validator/check';
 import { HelperUtils, response } from '../utils';
@@ -99,7 +100,6 @@ class ArticleController {
    * @returns {object} - Article details
    */
   getAll(req, res) {
-    // let limit = this.defaultLimit; // Default limit.
     let offset = 0; // Default offset.
 
     const { query } = req;
@@ -147,6 +147,24 @@ class ArticleController {
         })
       });
     });
+  }
+
+  /**
+   * @method getSingleArticle
+   * @description Get a single article
+   * @param {object} req - The request object
+   * @param {object} res - The response object
+   * @returns {object} A single article object
+   */
+  async getSingleArticle(req, res) {
+    const { slug } = req.params;
+    const article = await Article.findOne({
+      where: {
+        slug
+      }
+    });
+
+    response(res).success({ messages: article });
   }
 }
 
