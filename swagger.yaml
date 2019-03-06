@@ -122,6 +122,36 @@ paths:
           description: email verified successfully
         '400':
           description: invalid email
+  /users/login:
+    post:
+      tags:
+        - user
+      summary: Logs a user in
+      description: This endpoint logs a user in using their password and email/username
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: name
+          in: body
+          description: Email/username of the user
+          required: true
+          type: string
+        - name: password
+          in: body
+          description: User's password
+          required: true
+          type: string
+      responses:
+        '200':
+          description: user logged in successfully
+        '400':
+          description: Email or Username is required to login
+        '400':
+          description: Password is required to login
+        '403':
+          description: invalid credentials
   /articles:
     post:
       tags:
