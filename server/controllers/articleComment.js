@@ -46,21 +46,14 @@ class Comment {
    * @returns {object} - The updated article object
    */
   static async updateComment(req, res) {
-    const { slug } = req.params;
+    const { commentRow } = req;
     const { comment } = req.body;
 
     try {
-      const article = await Article.findOne({
-        attributes: ['id'],
-        where: {
-          slug
-        }
-      });
-
-      const articleId = article.id;
+      const { id } = commentRow;
       const articleUpdate = await ArticleComment.update({ comment }, {
         where: {
-          articleId
+          id
         },
         returning: true,
         raw: true

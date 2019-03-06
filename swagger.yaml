@@ -122,6 +122,36 @@ paths:
           description: email verified successfully
         '400':
           description: invalid email
+  /users/login:
+    post:
+      tags:
+        - user
+      summary: Logs a user in
+      description: This endpoint logs a user in using their password and email/username
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: name
+          in: body
+          description: Email/username of the user
+          required: true
+          type: string
+        - name: password
+          in: body
+          description: User's password
+          required: true
+          type: string
+      responses:
+        '200':
+          description: user logged in successfully
+        '400':
+          description: Email or Username is required to login
+        '400':
+          description: Password is required to login
+        '403':
+          description: invalid credentials
   /articles:
     post:
       tags:
@@ -151,6 +181,61 @@ paths:
           description: Success
       security:
         - authorization: []
+  /articles/ratings:
+    post:
+      tags:
+      - "article", "ratings"
+      summary: "Adds rating to article"
+      description: "Calculates the average rating of an article"
+      produces:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: slug
+          in: path
+          description: Article's slug
+          required: true
+          type: string
+        - name: rating
+          in: body
+          description: The new rating to be given to the article
+          required: true
+          type: number
+      responses:
+        '200':
+          description: You have successfully rated this article
+        '400':
+          description: Rating already given for this article
+        '403':
+        description: You cant rate your own article
+        '404':
+        description: Article not found
+
+  /articles/ratings:
+    post:
+      tags:
+      - "article", "ratings"
+      summary: "Get all ratings assigned to an article"
+      description: "Calculates the average rating of an article"
+      produces:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: slug
+          in: path
+          description: Article's slug
+          required: true
+          type: string
+      responses:
+        '200':
+          description: List of ratings
+        '404':
+        description: Article not found
+          
   /articles/tags:
     get:
       tags:

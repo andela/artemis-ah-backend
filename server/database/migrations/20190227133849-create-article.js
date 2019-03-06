@@ -41,6 +41,9 @@ export default {
           as: 'tagId'
         },
       },
+      rating: {
+        type: Sequelize.DECIMAL
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

@@ -284,4 +284,31 @@ export default class Users {
       response(res).serverError({ message: err });
     }
   }
+
+  /**
+   * @description contoller function that logs a user in
+   * @param {object} req - request object
+   * @param {object} res - response object
+   * @returns {object} user - Logged in user
+   */
+  static async loginUser(req, res) {
+    const { email, username, bio, image } = req.user.dataValues;
+    try {
+      const userToken = await HelperUtils.generateToken(req.user.dataValues);
+      response(res).success({
+        message: 'user logged in successfully',
+        user: {
+          email,
+          username,
+          bio,
+          image,
+          token: userToken
+        }
+      });
+    } catch (error) {
+      response(res).serverError({
+        message: 'Could not generate token'
+      });
+    }
+  }
 }

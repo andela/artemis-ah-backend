@@ -92,7 +92,7 @@ describe('PATCH update comment', () => {
 
   it('should update a comment', (done) => {
     chai.request(app)
-      .patch('/api/articles/this-is-an-article-1/comment')
+      .patch('/api/articles/this-is-an-article-1/comment/1')
       .set('authorization', `Bearer ${userToken}`)
       .send({
         comment: 'This is an updated random comment'
@@ -108,7 +108,7 @@ describe('PATCH update comment', () => {
 
   it('should return an error if comment is blank', (done) => {
     chai.request(app)
-      .patch('/api/articles/this-is-an-article-1/comment')
+      .patch('/api/articles/this-is-an-article-1/comment/1')
       .set('authorization', `Bearer ${userToken}`)
       .send({
         comment: ''
@@ -123,13 +123,28 @@ describe('PATCH update comment', () => {
 
   it('should return an error if comment is not provided', (done) => {
     chai.request(app)
-      .patch('/api/articles/this-is-an-article-1/comment')
+      .patch('/api/articles/this-is-an-article-1/comment/1')
       .set('authorization', `Bearer ${userToken}`)
       .send({})
       .end((err, res) => {
         const { comment } = res.body.errors;
         expect(res.status).to.be.equal(400);
         expect(comment[0]).to.be.equal('Comment field must be specified.');
+        done(err);
+      });
+  });
+
+  it('should return an error if comment does not exist', (done) => {
+    chai.request(app)
+      .patch('/api/articles/this-is-an-article-1/comment/4')
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        comment: 'This is an updated random comment'
+      })
+      .end((err, res) => {
+        const { comment } = res.body.errors;
+        expect(res.status).to.be.equal(404);
+        expect(comment[0]).to.be.equal('Comment not found.');
         done(err);
       });
   });
