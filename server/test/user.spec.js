@@ -17,6 +17,12 @@ const resetPasswordURL = `/api/users/reset-password${QueryURL}`;
 const invalidResetPasswordURL = `/api/users/reset-password${invalidQueryURL}`;
 const verifyURL = `/api/users/verifyemail${QueryURL}`;
 const invalidVerifyURL = `/api/users/verifyemail${invalidQueryURL}`;
+const secondTestEmail = 'thatsecondemail@yahoo.com';
+const secondQueryURL = `?email=${secondTestEmail}&hash=${HelperUtils.hashPassword(secondTestEmail)}`;
+const secondVerifyURL = `/api/users/verifyemail${secondQueryURL}`;
+const thirdTestEmail = 'thatthirdemail@yahoo.com';
+const loginURL = '/api/users/login';
+
 
 describe('Test signup endpoint and email verification endpoint', () => {
   it("It should return a 404 if user don't exist during email verification", (done) => {
@@ -283,6 +289,152 @@ describe('Social Login with Facebook', () => {
       .end((err, res) => {
         expect(res.redirects[0]).to.contain('https://www.facebook.com');
         expect(res.redirects[0]).to.contain('oauth');
+        done();
+      });
+  });
+});
+
+describe('Test login endpoint', () => {
+  before((done) => {
+    const secondData = {
+      firstname: 'John',
+      lastname: 'Doe',
+      email: secondTestEmail,
+      username: 'numerotwo222',
+      password: '22222222'
+    };
+    chai
+      .request(app)
+      .post(signupURL)
+      .send(secondData)
+      .end(() => {
+        chai
+          .request(app)
+          .get(secondVerifyURL)
+          .end(() => {
+            const thirdData = {
+              firstname: 'John',
+              lastname: 'Doe',
+              email: thirdTestEmail,
+              username: 'numerothree333',
+              password: '33333333'
+            };
+            chai
+              .request(app)
+              .post(signupURL)
+              .send(thirdData)
+              .end(() => {
+                done();
+              });
+          });
+      });
+  });
+  it('should log in a user who has verified his email when name is set to email', (done) => {
+    const data = {
+      name: secondTestEmail,
+      password: '22222222'
+    };
+    chai
+      .request(app)
+      .post(loginURL)
+      .send(data)
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        const { message, user } = res.body;
+        expect(message).to.equal('user logged in successfully');
+        expect(user.email).to.equal(secondTestEmail);
+        expect(user.username).to.equal('numerotwo222');
+        done();
+      });
+  });
+  it('should log in a user who has verified his email when name is set to username', (done) => {
+    const data = {
+      name: 'numerotwo222',
+      password: '22222222'
+    };
+    chai
+      .request(app)
+      .post(loginURL)
+      .send(data)
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        const { message, user } = res.body;
+        expect(message).to.equal('user logged in successfully');
+        expect(user.email).to.equal(secondTestEmail);
+        expect(user.username).to.equal('numerotwo222');
+        done();
+      });
+  });
+  it('should not log in a user who hasnt verified his email', (done) => {
+    const data = {
+      name: thirdTestEmail,
+      password: '33333333'
+    };
+    chai
+      .request(app)
+      .post(loginURL)
+      .send(data)
+      .end((err, res) => {
+        expect(res.status).to.equal(403);
+        expect(res.body.message).to.equal('You have to verify your email before you login');
+        done();
+      });
+  });
+  it('should not log in a user with wrong password', (done) => {
+    const data = {
+      name: secondTestEmail,
+      password: '77777777'
+    };
+    chai
+      .request(app)
+      .post(loginURL)
+      .send(data)
+      .end((err, res) => {
+        expect(res.status).to.equal(403);
+        expect(res.body.message).to.equal('invalid credentials');
+        done();
+      });
+  });
+  it('should not log in a user with wrong username and email', (done) => {
+    const data = {
+      name: `${secondTestEmail}djdhff`,
+      password: '22222222'
+    };
+    chai
+      .request(app)
+      .post(loginURL)
+      .send(data)
+      .end((err, res) => {
+        expect(res.status).to.equal(404);
+        expect(res.body.message).to.equal('invalid credentials');
+        done();
+      });
+  });
+  it('should not log in a user without password', (done) => {
+    const data = {
+      name: secondTestEmail,
+    };
+    chai
+      .request(app)
+      .post(loginURL)
+      .send(data)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.errors.password[0]).to.equal('Password is required to login');
+        done();
+      });
+  });
+  it('should not log in a user without email or username', (done) => {
+    const data = {
+      password: '22222222'
+    };
+    chai
+      .request(app)
+      .post(loginURL)
+      .send(data)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.errors.name[0]).to.equal('Email or Username is required to login');
         done();
       });
   });
