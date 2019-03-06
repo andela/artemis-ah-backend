@@ -29,7 +29,7 @@ describe('POST comment /api/articles/:id/comment', () => {
 
   it('should create a new comment', (done) => {
     chai.request(app)
-      .post('/api/articles/this-is-an-article-1/comment')
+      .post('/api/articles/this-is-an-article-3/comment')
       .set('authorization', `Bearer ${userToken}`)
       .send({
         comment: 'This is a random comment'
@@ -37,7 +37,7 @@ describe('POST comment /api/articles/:id/comment', () => {
       .end((err, res) => {
         const { userComment } = res.body.message;
         expect(res.status).to.be.equal(201);
-        expect(userComment.articleId).to.be.equal(1);
+        expect(userComment.articleId).to.be.equal(3);
         expect(userComment.comment).to.be.equal('This is a random comment');
         done(err);
       });
