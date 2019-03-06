@@ -14,8 +14,9 @@ class Trimmer {
     const dataKeys = Object.keys(data);
     const trimmedData = {};
     for (let i = 0; i < dataKeys.length; i += 1) {
-      const value = data[dataKeys[i]];
-      trimmedData[dataKeys[i]] = typeof value === 'string' ? value.trim() : value;
+      const key = dataKeys[i];
+      const value = data[key];
+      trimmedData[key] = (key !== 'password' && typeof value === 'string') ? value.trim() : value;
     }
     return trimmedData;
   }
