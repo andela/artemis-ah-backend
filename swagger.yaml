@@ -22,6 +22,54 @@ tags:
 schemes:
   - https
 paths:
+  /articles/ratings:
+    post:
+      tags:
+        - "article"
+      summary: "Get all ratings assigned to an article"
+      description: "Calculates the average rating of an article"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: slug
+          in: path
+          description: Article's slug
+          required: true
+          type: string
+      responses:
+        '200':
+          description: List of ratings
+        '404':
+          description: Article not found
+          
+  /articles/tags:
+    get:
+      tags:
+        - "article"
+      summary: "Returns all tags"
+      description: "Returns all the tags an article could have"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: email
+          in: path
+          description: New user's email address
+          required: true
+          type: string
+        - name: hash
+          in: path
+          description: Encrypted data for comparism
+          required: true
+          type: string
+      responses:
+        '200':
+          description: email verified successfully
+        '400':
+          description: invalid email
   /articles:
     post:
       tags:

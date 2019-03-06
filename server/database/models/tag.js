@@ -6,7 +6,8 @@ export default (sequelize, DataTypes) => {
     // associations can be defined here
     Tag.hasMany(models.Article, {
       foreignKey: 'tagId',
-      as: 'articles'
+      as: 'articles',
+      onDelete: 'CASCADE'
     });
   };
   return Tag;

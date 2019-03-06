@@ -5,7 +5,9 @@ import { HelperUtils } from '../utils';
 import response, { validationErrors } from '../utils/response';
 import db from '../database/models';
 
-const { Article, Tag, User } = db;
+const {
+  Article, Tag, User, Rating
+} = db;
 
 /**
  * @class ArticleController
@@ -18,6 +20,8 @@ class ArticleController {
     this.defaultLimit = 20;
     this.article = {};
     this.tags = [];
+    this.rating = 0;
+    this.ratings = [];
   }
 
   /**
@@ -128,6 +132,7 @@ class ArticleController {
         'title',
         'description',
         'body',
+        'rating',
         'totalClaps',
         'createdAt',
         'updatedAt'
@@ -151,7 +156,79 @@ class ArticleController {
   }
 
   /**
-   * @method getSingleArticle
+* rates an article
+* @method rateArticle
+* @param {object} req The request object from the route
+* @param {object} res The response object from the route
+* @returns {object} - Success message
+*/
+  async rateArticle(req, res) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return response(res).badRequest({
+        errors: validationErrors(errors)
+      });
+    }
+    const { rating } = req.body;
+    this.rating = Number(rating);
+    const articleId = req.article.id;
+    if (req.article.userId === req.user.id) {
+      return response(res).forbidden({
+        message: 'You cant rate your own article'
+      });
+    }
+    try {
+      const existingRatings = await Rating.findAll({ where: { articleId } });
+      const userExistingRating = existingRatings.find(r => r.userId === req.user.id);
+      if (userExistingRating) {
+        return response(res).badRequest({
+          message: 'Rating already given for this article'
+        });
+      }
+      await Rating.create({
+        userId: req.user.id,
+        articleId,
+        rating
+      });
+
+      await req.article.update({
+        rating: HelperUtils
+          .calcArticleRating(existingRatings.length,
+            req.article.rating,
+            this.rating)
+      });
+
+      return response(res).success({
+        message: 'You have successfully rated this article'
+      });
+    } catch (error) {
+      return response(res).serverError({
+        message: 'Could not get ratings'
+      });
+    }
+  }
+
+  /**
+  * rates an article
+  * @method getRatings
+  * @param {object} req The request object from the route
+  * @param {object} res The response object from the route
+  * @returns {object} - Ratings for the article
+  */
+  async getRatings(req, res) {
+    try {
+      this.ratings = await Rating.findAll({ where: { articleId: req.article.id } });
+      response(res).success({
+        ratings: this.ratings
+      });
+    } catch (error) {
+      response(res).serverError({
+        message: 'Couldnt get ratings'
+      });
+    }
+  }
+
+  /** @method getSingleArticle
    * @description Get a single article
    * @param {object} req - The request object
    * @param {object} res - The response object

@@ -15,7 +15,10 @@ const { ArticleComment } = models;
  */
 chai.Assertion.addMethod('number', value => typeof value === 'number');
 
-let userToken, createdArticle;
+let userToken = null;
+let createdArticle;
+let secondUserToken;
+let articleSlug;
 
 describe('Testing articles endpoint', () => {
   // Register a user to get jwt token.
@@ -33,7 +36,6 @@ describe('Testing articles endpoint', () => {
       .send(data)
       .end((err, res) => {
         expect(res.status).to.equal(201);
-
         const { body } = res;
         expect(body.message).to.be.a('string');
         expect(body.message).to.equal('user created successfully');
@@ -219,7 +221,6 @@ describe('Test endpoint to like article comment: POST /articles/:slug/comments/:
       .end((err, res) => {
         expect(res.status).to.equal(404);
         expect(res.body.message).to.equal('Comment does not exists');
-
         done();
       });
   });
@@ -268,6 +269,174 @@ describe('Test endpoint to like article comment: POST /articles/:slug/comments/:
   });
 });
 
+describe('Testing ratings functionality', () => {
+  before((done) => {
+    const data = {
+      firstname: 'Great',
+      lastname: 'Author',
+      email: 'greatestauthor@gmail.com',
+      username: 'greatestauthor',
+      password: '12345678'
+    };
+    chai
+      .request(app)
+      .post('/api/users')
+      .send(data)
+      .end((err, res) => {
+        expect(res.status).to.equal(201);
+
+        const { body } = res;
+        expect(body.message).to.be.a('string');
+        expect(body.message).to.equal('user created successfully');
+
+        secondUserToken = body.user.token;
+
+        const articleData = {
+          title: 'This is an article',
+          description: 'This is the description of the article',
+          body: 'This is the body of the article',
+          tagId: 1
+        };
+        chai
+          .request(app)
+          .post('/api/articles')
+          .set('authorization', `Bearer ${secondUserToken}`)
+          .send(articleData)
+          .end((err, res) => {
+            expect(res.status).to.equal(201);
+            articleSlug = res.body.article.slug;
+            done();
+          });
+      });
+  });
+
+  it('should not allow user rate less than 1', (done) => {
+    chai
+      .request(app)
+      .post(`/api/articles/rating/${articleSlug}`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send({ rating: 0.1 })
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.errors.rating[0]).to.equal('Rating must be between 1 and 5');
+        done();
+      });
+  });
+  it('should not allow user rate greater than 5', (done) => {
+    chai
+      .request(app)
+      .post(`/api/articles/rating/${articleSlug}`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send({ rating: 6 })
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.errors.rating[0]).to.equal('Rating must be between 1 and 5');
+        done();
+      });
+  });
+  it('should not work if rating is not a number', (done) => {
+    chai
+      .request(app)
+      .post(`/api/articles/rating/${articleSlug}`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send({ rating: 'yyy' })
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.errors.rating[0]).to.equal('Rating must be a number');
+        done();
+      });
+  });
+  it('should not work if rating is not present', (done) => {
+    chai
+      .request(app)
+      .post(`/api/articles/rating/${articleSlug}`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send({})
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.errors.rating[0]).to.equal('Rating is required');
+        done();
+      });
+  });
+  it('should not work if article does not exist', (done) => {
+    chai
+      .request(app)
+      .post(`/api/articles/rating/${articleSlug}673536`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send({})
+      .end((err, res) => {
+        expect(res.status).to.equal(404);
+        expect(res.body.message).to.equal('article not found');
+
+        done();
+      });
+  });
+
+  it('should update the rating of an article if fields are valid', (done) => {
+    chai
+      .request(app)
+      .post(`/api/articles/rating/${articleSlug}`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send({ rating: 3 })
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.message).to.equal('You have successfully rated this article');
+        chai
+          .request(app)
+          .get('/api/articles')
+          .end((err, res) => {
+            expect(res.status).to.equal(200);
+            const { articles } = res.body;
+            const exactArticle = articles.find(a => a.slug === articleSlug);
+            expect(Number(exactArticle.rating)).to.equal(3);
+
+            done();
+          });
+      });
+  });
+
+  it('should not work if user has already rated article', (done) => {
+    chai
+      .request(app)
+      .post(`/api/articles/rating/${articleSlug}`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send({ rating: 4 })
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.message).to.equal('Rating already given for this article');
+        done();
+      });
+  });
+
+  it('should not allow user rate his own article', (done) => {
+    chai
+      .request(app)
+      .post(`/api/articles/rating/${articleSlug}`)
+      .set('authorization', `Bearer ${secondUserToken}`)
+      .send({ rating: 3 })
+      .end((err, res) => {
+        expect(res.status).to.equal(403);
+        expect(res.body.message).to.equal('You cant rate your own article');
+        done();
+      });
+  });
+
+  it('should return all the ratings for the article', (done) => {
+    chai
+      .request(app)
+      .get(`/api/articles/rating/${articleSlug}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        const { ratings } = res.body;
+        expect(ratings).to.be.an('array');
+        expect(ratings.length).to.be.at.least(1);
+        expect(Number(ratings[0].rating)).to.equal(3);
+
+        done();
+      });
+  });
+});
+
 describe('GET single article /api/articles/:slug', () => {
   it('should return 200 if article exists', (done) => {
     chai
@@ -277,6 +446,7 @@ describe('GET single article /api/articles/:slug', () => {
         const { id } = res.body.messages;
         expect(res.status).to.be.equal(200);
         expect(id).to.be.equal(3);
+
         done(err);
       });
   });
