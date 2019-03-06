@@ -236,13 +236,28 @@ class ArticleController {
    */
   async getSingleArticle(req, res) {
     const { slug } = req.params;
-    const article = await Article.findOne({
-      where: {
-        slug
-      }
-    });
-
-    response(res).success({ messages: article });
+    try {
+      const article = await Article.findOne({
+        where: {
+          slug
+        },
+        attributes: {
+          exclude: [
+            'id',
+            'userId'
+          ]
+        },
+        include: [
+          {
+            model: User,
+            attributes: ['firstname', 'lastname', 'username', 'email', 'image']
+          }
+        ]
+      });
+      response(res).success({ messages: article });
+    } catch (err) {
+      response(res).serverError({ message: err });
+    }
   }
 }
 

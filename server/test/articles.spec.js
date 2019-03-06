@@ -19,6 +19,8 @@ let userToken = null;
 let createdArticle;
 let secondUserToken;
 let articleSlug;
+const testData = [];
+export default testData;
 
 describe('Testing articles endpoint', () => {
   // Register a user to get jwt token.
@@ -39,9 +41,7 @@ describe('Testing articles endpoint', () => {
         const { body } = res;
         expect(body.message).to.be.a('string');
         expect(body.message).to.equal('user created successfully');
-
         userToken = body.user.token;
-
         done();
       });
   });
@@ -69,6 +69,8 @@ describe('Testing articles endpoint', () => {
         expect(article.description).to.equal('This is the description of the article');
         expect(article.body).to.equal('This is the body of the article');
         expect(article.tagId).to.equal(1);
+        testData.push(`${slugify(data.title, { lower: true })}-${article.id}`);
+        testData.push(userToken);
         done();
       });
   });
@@ -443,10 +445,7 @@ describe('GET single article /api/articles/:slug', () => {
       .request(app)
       .get('/api/articles/this-is-an-article-3')
       .end((err, res) => {
-        const { id } = res.body.messages;
         expect(res.status).to.be.equal(200);
-        expect(id).to.be.equal(3);
-
         done(err);
       });
   });
