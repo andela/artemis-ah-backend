@@ -353,7 +353,7 @@ describe('Testing ratings functionality', () => {
       });
   });
 });
-      
+
 describe('GET single article /api/articles/:slug', () => {
   it('should return 200 if article exists', (done) => {
     chai

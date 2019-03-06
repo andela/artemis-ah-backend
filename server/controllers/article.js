@@ -155,7 +155,7 @@ class ArticleController {
     });
   }
 
-/**
+  /**
 * rates an article
 * @method rateArticle
 * @param {object} req The request object from the route
@@ -226,8 +226,9 @@ class ArticleController {
         message: 'Couldnt get ratings'
       });
     }
-    
-   * @method getSingleArticle
+  }
+
+  /** @method getSingleArticle
    * @description Get a single article
    * @param {object} req - The request object
    * @param {object} res - The response object
