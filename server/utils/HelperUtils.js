@@ -92,6 +92,24 @@ class HelperUtils {
     const estimatedTime = readingTime(articleBody);
     return estimatedTime;
   }
+
+  /**
+* @method calcArticleRating
+* @description Method that calculates new article rating
+* @param {number} currentRatingNo
+* @param {number} currentRating
+* @param {number} newRating
+* @return {unumber} The new rating for the article
+*/
+  static calcArticleRating(currentRatingNo, currentRating, newRating) {
+    if (currentRatingNo === 0) {
+      return newRating;
+    }
+    const currTotal = currentRating * currentRatingNo;
+    const newTotal = currTotal + newRating;
+    const totalReviewNo = currentRatingNo + 1;
+    return newTotal / totalReviewNo;
+  }
 }
 
 export default HelperUtils;
