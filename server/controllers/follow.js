@@ -181,7 +181,7 @@ export default class Follow {
 
     try {
       const allUsers = await User.findAll({
-        attributes: ['username', 'bio', 'image'],
+        attributes: ['username', 'bio', 'image', 'id'],
         where: {
           username: {
             [Op.ne]: username
@@ -205,7 +205,7 @@ export default class Follow {
       const profiles = allUsers.map((item) => {
         item.dataValues.following = false;
         if (followerId.includes(item.dataValues.id)) item.dataValues.following = true;
-
+        delete item.dataValues.id;
         return item.dataValues;
       });
 

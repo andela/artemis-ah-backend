@@ -10,7 +10,9 @@ const signupURL = '/api/users';
 const userURL = '/api/user';
 const profileURL = '/api/profiles';
 const wrongToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdG5hbWUiOiJBZGFlemUiLCJsYXN0bmFtZSI6Ik9kdXJ1a3dlIiwidXNlcm5hbWUiOiJtZW93d3d3d3ciLCJlbWFpbCI6ImRhaXp5b2R1cnVrd2VAZ21haWwuY29tIiwicGFzc3dvcmQiOiIkMmEkMDgkMWtBNDh4SmtDSTQ4ME15d3c1TlBDdU1Ma1pnekxiMjZUZnQ3NDF0ZDVkdTl0ek1WcS5BMC4iLCJpYXQiOjE1NTE1MjAxODl9.aCGlw9rbj_PRTMhxQJE0kM1cSUzUbygfzVW8bjtNAUQ';
+const followUserUrl = '/api/profiles';
 let userToken;
+let secondUserToken;
 chai.use(chaiHttp);
 
 before('It should return a 201 and create a new user', (done) => {
@@ -30,11 +32,41 @@ before('It should return a 201 and create a new user', (done) => {
       expect(res.body.message).to.be.a('string');
       expect(res.body.message).to.equal('user created successfully');
       userToken = res.body.user.token;
-      done();
+      const secondData = {
+        firstname: 'John',
+        lastname: 'Doe',
+        email: 'obiora2@gmail.com',
+        username: 'john461',
+        password: '12345671'
+      };
+      chai
+        .request(app)
+        .post(signupURL)
+        .send(secondData)
+        .end((error, response) => {
+          expect(response.status).to.equal(201);
+          expect(response.body.message).to.be.a('string');
+          expect(response.body.message).to.equal('user created successfully');
+          secondUserToken = response.body.user.token;
+          done();
+        });
     });
 });
 
 describe('Fetch all user profiles', () => {
+  before((done) => {
+    chai
+      .request(app)
+      .post(`${followUserUrl}/john46/follow`)
+      .set('authorization', `Bearer ${secondUserToken}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(201);
+        expect(res.body.message).to.be.a('string');
+        expect(res.body.message).to.equal('you just followed john46');
+        done();
+      });
+  });
+
   it('It should test for Headers', () => {
     chai
       .request(app)
@@ -46,13 +78,17 @@ describe('Fetch all user profiles', () => {
       });
   });
 
-  it('It should fetch all profiles', () => {
+  it('It should fetch all profiles', (done) => {
     chai
       .request(app)
       .get(profileURL)
       .set('Authorization', `Bearer ${userToken}`)
       .end((err, res) => {
-        expect(res.body.profiles).to.be.an('array');
+        const { profiles } = res.body;
+        expect(profiles).to.be.an('array');
+        const followedUser = profiles.find(p => p.username === 'john461');
+        expect(followedUser.following).to.equal(true);
+        done();
       });
   });
 
