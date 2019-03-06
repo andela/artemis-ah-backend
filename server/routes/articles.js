@@ -1,8 +1,8 @@
 import express from 'express';
 import { ArticleController, Comment } from '../controllers';
 import createArticleValidation from '../validations/create-article';
-import AuthenticateUser from '../middlewares/AuthenticateUser';
 import ArticleCommentLikeController from '../controllers/article-comment-like';
+import { AuthenticateUser, ValidateComment } from '../middlewares';
 import rateArticleValidation from '../validations/rate-article';
 import AuthenticateArticle from '../middlewares/AuthenticateArticle';
 
@@ -14,7 +14,11 @@ router.post('/articles',
   AuthenticateUser.verifyUser, // User must be logged in first
   createArticleValidation, // Validate user input
   controller.create.bind(controller));
-router.post('/articles/:slug/comment', AuthenticateUser.verifyUser, Comment.postComment);
+router.post('/articles/:slug/comment',
+  AuthenticateUser.verifyUser,
+  ValidateComment.validateMethods(),
+  ValidateComment.validateComment,
+  Comment.postComment);
 
 router.get('/articles/tags',
   controller.getTags.bind(controller));
@@ -35,5 +39,11 @@ router.post('/articles/rating/:slug',
 router.get('/articles/rating/:slug',
   AuthenticateArticle.verifyArticle,
   controller.getRatings.bind(controller));
+
+router.patch('/articles/:slug/comment/:commentId',
+  AuthenticateUser.verifyUser,
+  ValidateComment.validateMethods(true),
+  ValidateComment.validateComment,
+  Comment.updateComment);
 
 export default router;
