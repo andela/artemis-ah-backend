@@ -350,6 +350,9 @@ describe('Testing ratings functionality', () => {
         expect(ratings.length).to.be.at.least(1);
         expect(Number(ratings[0].rating)).to.equal(3);
         done();
+      });
+  });
+});
       
 describe('GET single article /api/articles/:slug', () => {
   it('should return 200 if article exists', (done) => {
