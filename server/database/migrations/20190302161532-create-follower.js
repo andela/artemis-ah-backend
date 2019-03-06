@@ -12,7 +12,12 @@ export default {
     },
     followerId: {
       type: Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'Users',
+        key: 'id',
+        as: 'follow'
+      }
     },
     followee: {
       type: Sequelize.STRING,
