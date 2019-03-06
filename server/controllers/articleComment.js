@@ -32,7 +32,10 @@ class Comment {
       const articleId = article.id;
       const userComment = await ArticleComment.create({ articleId, comment, userId });
       delete userComment.dataValues.id;
-      return response(res).created({ userComment });
+      return response(res).created({
+        message: 'Comment created successfully',
+        userComment
+      });
     } catch (error) {
       return response(res).serverError({ errors: { server: ['database error'] } });
     }
@@ -55,12 +58,37 @@ class Comment {
         where: {
           id
         },
-        returning: true,
-        raw: true
+        returning: true
       });
       const userComment = articleUpdate[1][0];
       delete userComment.id;
-      return response(res).success({ userComment });
+      return response(res).success({
+        message: 'Comment updated successfully',
+        userComment
+      });
+    } catch (error) {
+      return response(res).serverError({ errors: { server: ['database error'] } });
+    }
+  }
+
+  /**
+   * @method deleteComment
+   * @description - Deletes comment
+   * @param {object} req - The request object
+   * @param {object} res - The response object
+   * @returns {object} - The updated article object
+   */
+  static async deleteComment(req, res) {
+    const { commentRow } = req;
+
+    try {
+      const { id } = commentRow;
+      await ArticleComment.destroy({
+        where: {
+          id
+        }
+      });
+      return response(res).success({ message: 'Comment has been deleted successfully.' });
     } catch (error) {
       return response(res).serverError({ errors: { server: ['database error'] } });
     }

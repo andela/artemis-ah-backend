@@ -7,7 +7,7 @@ const { expect } = chai;
 
 let userToken;
 
-describe('POST comment /api/articles/:id/comment', () => {
+describe('POST comment /api/articles/:slug/comment', () => {
   before((done) => {
     chai
       .request(app)
@@ -34,9 +34,8 @@ describe('POST comment /api/articles/:id/comment', () => {
         comment: 'This is a random comment'
       })
       .end((err, res) => {
-        const { articleId, comment } = res.body.userComment;
+        const { comment } = res.body.userComment;
         expect(res.status).to.be.equal(201);
-        expect(articleId).to.be.equal(1);
         expect(comment).to.be.equal('This is a random comment');
         done(err);
       });
@@ -98,9 +97,8 @@ describe('PATCH update comment', () => {
         comment: 'This is an updated random comment'
       })
       .end((err, res) => {
-        const { articleId, comment } = res.body.userComment;
+        const { comment } = res.body.userComment;
         expect(res.status).to.be.equal(200);
-        expect(articleId).to.be.equal(1);
         expect(comment).to.be.equal('This is an updated random comment');
         done(err);
       });
@@ -145,6 +143,38 @@ describe('PATCH update comment', () => {
         const { comment } = res.body.errors;
         expect(res.status).to.be.equal(404);
         expect(comment[0]).to.be.equal('Comment not found.');
+        done(err);
+      });
+  });
+});
+
+describe('DELETE user comment', () => {
+  before((done) => {
+    chai
+      .request(app)
+      .post('/api/users')
+      .send({
+        firstname: 'Chris',
+        lastname: 'James',
+        email: 'chreez3@gmail.com',
+        username: 'Chreez3',
+        password: '12345678'
+      })
+      .end((err, res) => {
+        const { token } = res.body.user;
+        userToken = token;
+        done(err);
+      });
+  });
+
+  it('should delete a comment', (done) => {
+    chai.request(app)
+      .delete('/api/articles/this-is-an-article-1/comment/1')
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        const { message } = res.body;
+        expect(res.status).to.be.equal(200);
+        expect(message).to.be.equal('Comment has been deleted successfully.');
         done(err);
       });
   });
