@@ -59,7 +59,7 @@ class ValidateComment {
     }
 
     if (commentId) {
-      const commentRow = await ValidateComment.doesCommentExist(commentId, res);
+      const commentRow = await ValidateComment.verifyComment(commentId, res);
       if (!commentRow || slug !== commentRow['Article.slug']) {
         return response(res).notFound({ errors: { comment: ['Comment not found.'] } });
       }
@@ -77,12 +77,12 @@ class ValidateComment {
   }
 
   /**
-   * @method doesCommentExist
+   * @method verifyComment
    * @param {integer} commentId - The comment ID
    * @param {object} res - The response object
    * @returns {Promise} Article Comment Promise
    */
-  static async doesCommentExist(commentId, res) {
+  static async verifyComment(commentId, res) {
     try {
       const commentRow = await ArticleComment.findOne({
         include: [{

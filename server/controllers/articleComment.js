@@ -31,7 +31,6 @@ class Comment {
 
       const articleId = article.id;
       const userComment = await ArticleComment.create({ articleId, comment, userId });
-      delete userComment.dataValues.id;
       return response(res).created({
         message: 'Comment created successfully',
         userComment
@@ -61,7 +60,6 @@ class Comment {
         returning: true
       });
       const userComment = articleUpdate[1][0];
-      delete userComment.id;
       return response(res).success({
         message: 'Comment updated successfully',
         userComment
