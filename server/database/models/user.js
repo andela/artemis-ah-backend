@@ -63,12 +63,15 @@ export default (sequelize, DataTypes) => {
     // Relations for articles.
     User.hasMany(models.Article, {
       foreignKey: 'id',
+      onDelete: 'CASCADE'
     });
     User.hasMany(models.ArticleComment, {
       foreignKey: 'id',
+      onDelete: 'CASCADE'
     });
     User.hasMany(models.ArticleCommentLike, {
       foreignKey: 'id',
+      onDelete: 'CASCADE'
     });
   };
   return User;

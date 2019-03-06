@@ -362,6 +362,12 @@ Example request body:
 Authentication required, returns the created Comment
 Required field: `body`
 
+### Toggle like on a comment for an Article
+
+`POST /api/articles/:slug/comments/:id/like`
+
+Authentication required, returns the total likes on the comment and a flag whether the like was added or removed
+
 ### Get Comments from an Article
 
 `GET /api/articles/:slug/comments`
