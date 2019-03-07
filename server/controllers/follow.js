@@ -1,11 +1,8 @@
 import Sequelize from 'sequelize';
-import '@babel/polyfill';
-import dotenv from 'dotenv';
 import db from '../database/models';
 import response from '../utils/response';
 
 const { User, Follower } = db;
-dotenv.config();
 
 /**
  * @description Controller to authenticate users

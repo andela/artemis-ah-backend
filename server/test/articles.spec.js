@@ -292,6 +292,7 @@ describe('Testing ratings functionality', () => {
         expect(body.message).to.equal('user created successfully');
 
         secondUserToken = body.user.token;
+        testData.push(secondUserToken);
 
         const articleData = {
           title: 'This is an article',
@@ -315,7 +316,7 @@ describe('Testing ratings functionality', () => {
   it('should not allow user rate less than 1', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/rating/${articleSlug}`)
+      .post(`/api/articles/${articleSlug}/rating`)
       .set('authorization', `Bearer ${userToken}`)
       .send({ rating: 0.1 })
       .end((err, res) => {
@@ -327,7 +328,7 @@ describe('Testing ratings functionality', () => {
   it('should not allow user rate greater than 5', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/rating/${articleSlug}`)
+      .post(`/api/articles/${articleSlug}/rating`)
       .set('authorization', `Bearer ${userToken}`)
       .send({ rating: 6 })
       .end((err, res) => {
@@ -339,7 +340,7 @@ describe('Testing ratings functionality', () => {
   it('should not work if rating is not a number', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/rating/${articleSlug}`)
+      .post(`/api/articles/${articleSlug}/rating`)
       .set('authorization', `Bearer ${userToken}`)
       .send({ rating: 'yyy' })
       .end((err, res) => {
@@ -351,7 +352,7 @@ describe('Testing ratings functionality', () => {
   it('should not work if rating is not present', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/rating/${articleSlug}`)
+      .post(`/api/articles/${articleSlug}/rating`)
       .set('authorization', `Bearer ${userToken}`)
       .send({})
       .end((err, res) => {
@@ -363,7 +364,7 @@ describe('Testing ratings functionality', () => {
   it('should not work if article does not exist', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/rating/${articleSlug}673536`)
+      .post(`/api/articles/${articleSlug}673536/rating`)
       .set('authorization', `Bearer ${userToken}`)
       .send({})
       .end((err, res) => {
@@ -377,7 +378,7 @@ describe('Testing ratings functionality', () => {
   it('should update the rating of an article if fields are valid', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/rating/${articleSlug}`)
+      .post(`/api/articles/${articleSlug}/rating`)
       .set('authorization', `Bearer ${userToken}`)
       .send({ rating: 3 })
       .end((err, res) => {
@@ -400,7 +401,7 @@ describe('Testing ratings functionality', () => {
   it('should not work if user has already rated article', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/rating/${articleSlug}`)
+      .post(`/api/articles/${articleSlug}/rating`)
       .set('authorization', `Bearer ${userToken}`)
       .send({ rating: 4 })
       .end((err, res) => {
@@ -413,7 +414,7 @@ describe('Testing ratings functionality', () => {
   it('should not allow user rate his own article', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/rating/${articleSlug}`)
+      .post(`/api/articles/${articleSlug}/rating`)
       .set('authorization', `Bearer ${secondUserToken}`)
       .send({ rating: 3 })
       .end((err, res) => {
@@ -426,7 +427,7 @@ describe('Testing ratings functionality', () => {
   it('should return all the ratings for the article', (done) => {
     chai
       .request(app)
-      .get(`/api/articles/rating/${articleSlug}`)
+      .get(`/api/articles/${articleSlug}/rating`)
       .end((err, res) => {
         expect(res.status).to.equal(200);
         const { ratings } = res.body;
@@ -446,10 +447,49 @@ describe('GET single article /api/articles/:slug', () => {
       .get('/api/articles/this-is-an-article-1')
       .end((err, res) => {
         expect(res.status).to.be.equal(200);
-        const { title } = res.body.message;
+        const { title } = res.body.article;
         expect(res.status).to.be.equal(200);
         expect(title).to.be.equal('This is an article');
         done(err);
+      });
+  });
+});
+
+describe('Stats Functionality', () => {
+  it('should log history when a user views someone else\'s article', (done) => {
+    chai
+      .request(app)
+      .get('/api/articles/this-is-an-article-1')
+      .set('authorization', `Bearer ${secondUserToken}`)
+      .end(() => {
+        chai
+          .request(app)
+          .get('/api/users/stats')
+          .set('authorization', `Bearer ${secondUserToken}`)
+          .end((err, res) => {
+            expect(res.status).to.equal(200);
+            const { history } = res.body;
+            expect(history[0].Article.title).to.equal('This is an article');
+            done();
+          });
+      });
+  });
+  it('should not log history when a user views his own article', (done) => {
+    chai
+      .request(app)
+      .get('/api/articles/this-is-an-article-1')
+      .set('authorization', `Bearer ${userToken}`)
+      .end(() => {
+        chai
+          .request(app)
+          .get('/api/users/stats')
+          .set('authorization', `Bearer ${userToken}`)
+          .end((err, res) => {
+            expect(res.status).to.equal(200);
+            const { history } = res.body;
+            expect(history.length).to.equal(0);
+            done();
+          });
       });
   });
 });
