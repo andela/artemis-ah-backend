@@ -84,15 +84,8 @@ export default class BookmarkController {
       });
 
       if (bookmarkData.length < 1) return response(res).notFound({ message: 'bookmark doesn\'t exist' });
-
-      if (id !== bookmarkData[0].userId) {
-        response(res).forbidden({
-          message: 'this bookmark doesn\'t belong to you'
-        });
-      } else {
-        await bookmarkData[0].destroy();
-        response(res).success({ message: 'bookmark removed successfully' });
-      }
+      await bookmarkData[0].destroy();
+      response(res).success({ message: 'bookmark removed successfully' });
     } catch (err) {
       response(res).sendData(500, { message: 'Server Error' });
     }

@@ -251,12 +251,21 @@ class ArticleController {
           {
             model: User,
             attributes: ['firstname', 'lastname', 'username', 'email', 'image']
+          },
+          {
+            model: Tag,
+            attributes: ['name']
           }
         ]
       });
-      response(res).success({ messages: article });
+      const readTime = await HelperUtils.estimateReadingTime(article.body);
+      response(res).success({ messages: [article].map((data) => {
+        data.dataValues.readTime = readTime;
+        return data;
+      })
+      });
     } catch (err) {
-      response(res).serverError({ message: err });
+      response(res).serverError({ message: 'server error' });
     }
   }
 }
