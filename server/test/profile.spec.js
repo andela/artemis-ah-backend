@@ -1,7 +1,6 @@
 import chaiHttp from 'chai-http';
 import chai, { expect } from 'chai';
 import dotenv from 'dotenv';
-// import HelperUtils from '../utils';
 import app from '../app';
 
 dotenv.config();
@@ -19,7 +18,7 @@ before('It should return a 201 and create a new user', (done) => {
   const data = {
     firstname: 'John',
     lastname: 'Doe',
-    email: 'obiora@gmail.com',
+    email: 'obiora200@gmail.com',
     username: 'john46',
     password: '12345671'
   };

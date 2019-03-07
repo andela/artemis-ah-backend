@@ -28,15 +28,14 @@ describe('POST comment /api/articles/:id/comment', () => {
 
   it('should create a new comment', (done) => {
     chai.request(app)
-      .post('/api/articles/this-is-an-article-1/comment')
+      .post('/api/articles/this-is-an-article-2/comment')
       .set('authorization', `Bearer ${userToken}`)
       .send({
         comment: 'This is a random comment'
       })
       .end((err, res) => {
-        const { articleId, comment } = res.body.userComment;
+        const { comment } = res.body.userComment;
         expect(res.status).to.be.equal(201);
-        expect(articleId).to.be.equal(1);
         expect(comment).to.be.equal('This is a random comment');
         done(err);
       });
@@ -98,9 +97,8 @@ describe('PATCH update comment', () => {
         comment: 'This is an updated random comment'
       })
       .end((err, res) => {
-        const { articleId, comment } = res.body.userComment;
+        const { comment } = res.body.userComment;
         expect(res.status).to.be.equal(200);
-        expect(articleId).to.be.equal(1);
         expect(comment).to.be.equal('This is an updated random comment');
         done(err);
       });
