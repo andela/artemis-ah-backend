@@ -3,7 +3,13 @@ import ArticleController from './article';
 import Comment from './articleComment';
 import Follow from './follow';
 import ArticleClap from './articleClap';
+import BookmarkController from './bookmark';
 
 export {
-  Users, ArticleController, Comment, Follow, ArticleClap
+  Users,
+  ArticleController,
+  Follow,
+  Comment,
+  BookmarkController,
+  ArticleClap
 };
