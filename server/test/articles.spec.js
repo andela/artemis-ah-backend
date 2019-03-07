@@ -18,6 +18,7 @@ chai.Assertion.addMethod('number', value => typeof value === 'number');
 let userToken = null;
 let createdArticle;
 let secondUserToken;
+let thirdUserToken;
 let articleSlug;
 const testData = [];
 export default testData;
@@ -308,7 +309,22 @@ describe('Testing ratings functionality', () => {
           .end((err, res) => {
             expect(res.status).to.equal(201);
             articleSlug = res.body.article.slug;
-            done();
+            const secondData = {
+              firstname: 'Great',
+              lastname: 'Author',
+              email: 'kini@gmail.com',
+              username: 'kinimaster',
+              password: '12345678'
+            };
+            chai
+              .request(app)
+              .post('/api/users')
+              .send(secondData)
+              .end((error, response) => {
+                expect(res.status).to.equal(201);
+                thirdUserToken = response.body.user.token;
+                done();
+              });
           });
       });
   });
@@ -374,7 +390,6 @@ describe('Testing ratings functionality', () => {
         done();
       });
   });
-
   it('should update the rating of an article if fields are valid', (done) => {
     chai
       .request(app)
@@ -392,6 +407,29 @@ describe('Testing ratings functionality', () => {
             const { articles } = res.body;
             const exactArticle = articles.find(a => a.slug === articleSlug);
             expect(Number(exactArticle.rating)).to.equal(3);
+
+            done();
+          });
+      });
+  });
+
+  it('should calculate and give the average rating of an article if fields are valid', (done) => {
+    chai
+      .request(app)
+      .post(`/api/articles/${articleSlug}/rating`)
+      .set('authorization', `Bearer ${thirdUserToken}`)
+      .send({ rating: 5 })
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.message).to.equal('You have successfully rated this article');
+        chai
+          .request(app)
+          .get('/api/articles')
+          .end((err, res) => {
+            expect(res.status).to.equal(200);
+            const { articles } = res.body;
+            const exactArticle = articles.find(a => a.slug === articleSlug);
+            expect(Number(exactArticle.rating)).to.equal(4);
 
             done();
           });

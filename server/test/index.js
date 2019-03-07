@@ -3,5 +3,5 @@ import './articles.spec';
 import './comment.spec';
 import './follow.spec';
 import './profile.spec';
-import './bookmark';
+import './bookmark.spec';
 import './articleClap.spec';

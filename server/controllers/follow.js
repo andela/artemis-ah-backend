@@ -41,7 +41,7 @@ export default class Follow {
         });
       }
     } catch (err) {
-      response(res).sendData(500, err);
+      response(res).serverError({ message: 'Couldnt get followers' });
     }
   }
 
@@ -77,7 +77,7 @@ export default class Follow {
         });
       }
     } catch (err) {
-      response(res).sendData(500, err);
+      response(res).serverError({ message: 'Couldnt get following' });
     }
   }
 
@@ -122,7 +122,7 @@ export default class Follow {
         }
       }
     } catch (err) {
-      response(res).sendData(500, err);
+      response(res).serverError({ message: 'Couldnt follow user' });
     }
   }
 
@@ -161,7 +161,7 @@ export default class Follow {
         }
       }
     } catch (err) {
-      response(res).sendData(500, err);
+      response(res).serverError({ message: 'Couldnt unfollow user' });
     }
   }
 
@@ -210,9 +210,7 @@ export default class Follow {
         profiles
       });
     } catch (err) {
-      response(res).sendData(500, {
-        message: err
-      });
+      response(res).serverError({ message: 'Couldnt get user profiles' });
     }
   }
 }

@@ -303,9 +303,7 @@ export default class Users {
         }
       });
     } catch (error) {
-      response(res).serverError({
-        message: 'Could not generate token'
-      });
+      response(res).serverError({ message: 'Could not generate token' });
     }
   }
 
@@ -326,9 +324,7 @@ export default class Users {
         history: userHistory
       });
     } catch (err) {
-      response(res).serverError({
-        message: 'Could not get stats, please try again later'
-      });
+      response(res).serverError({ message: 'Could not get stats, please try again later' });
     }
   }
 }
