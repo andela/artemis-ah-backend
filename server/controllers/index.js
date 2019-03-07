@@ -2,6 +2,7 @@ import Users from './user';
 import ArticleController from './article';
 import Comment from './articleComment';
 import Follow from './follow';
+import ArticleClap from './articleClap';
 import BookmarkController from './bookmark';
 
 export {
@@ -9,5 +10,6 @@ export {
   ArticleController,
   Follow,
   Comment,
-  BookmarkController
+  BookmarkController,
+  ArticleClap
 };

@@ -136,6 +136,9 @@ class ArticleController {
         'totalClaps',
         'createdAt',
         'updatedAt'
+      ],
+      order: [
+        ['id', 'ASC'],
       ]
     };
 
@@ -259,13 +262,13 @@ class ArticleController {
         ]
       });
       const readTime = await HelperUtils.estimateReadingTime(article.body);
-      response(res).success({ messages: [article].map((data) => {
+      const singleArticle = [article].map((data) => {
         data.dataValues.readTime = readTime;
         return data;
-      })
       });
-    } catch (err) {
-      response(res).serverError({ message: 'server error' });
+      response(res).success({ message: singleArticle[0] });
+    } catch (error) {
+      return response(res).serverError({ errors: { server: ['database error'] } });
     }
   }
 }

@@ -279,6 +279,82 @@ paths:
       responses:
         200:
           description: "user logged in successfully"
+          
+  /api/articles/{slug}/clapToggle:
+    post:
+      tags:
+        - "article"
+      summary: "Claps for articles"
+      description: "Claps for and retrieves clap for an article"
+      parameters:
+        - name: "slug"
+          in: "path"
+          description: "slug of article to clap for"
+          required: true
+          type: "string"
+      responses:
+        201:
+          description: "you just clapped for this article"
+        200:
+          description: "you just retrieved your clap"
+        403:
+          description: "you cannot clap for your own article"
+  /user:
+    get:
+      tags:
+        - "user"
+      summary: "Gets a single user"
+      description: "gets single user by username returned from header"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "user found"
+        404:
+          description: "user not found"
+    put:
+      tags:
+        - "user"
+      summary: "Update user"
+      description: "updates user bio and image"
+      parameters:
+        - in: "body"
+          name: "update"
+          description: "Update a user"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              bio:
+                type: string
+              image:
+                type: string
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "user updated"
+        404:
+          description: "user not found"
+  /profiles/{username}:
+    get:
+      tags:
+        - "profile"
+      summary: "Get user profile"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "username"
+          in: "path"
+          description: "username of user to return"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "user found"
+        403:
+          description: "user not found"
+
 securityDefinitions:
   authorization:
     type: "apiKey"

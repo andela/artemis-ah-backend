@@ -30,6 +30,10 @@ export default (sequelize, DataTypes) => {
       through: 'Bookmark',
       foreignKey: 'articleId',
     });
+    Article.hasMany(models.ArticleClap, {
+      foreignKey: 'articleId',
+      as: 'claps'
+    });
   };
   return Article;
 };
