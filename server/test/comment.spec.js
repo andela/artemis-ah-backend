@@ -29,7 +29,7 @@ describe('POST comment /api/articles/:slug/comment', () => {
 
   it('should create a new comment', (done) => {
     chai.request(app)
-      .post('/api/articles/this-is-an-article-2/comment')
+      .post('/api/articles/this-is-an-article-1/comment')
       .set('authorization', `Bearer ${userToken}`)
       .send({
         comment: 'This is a random comment'

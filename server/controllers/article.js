@@ -239,13 +239,16 @@ class ArticleController {
    */
   async getSingleArticle(req, res) {
     const { slug } = req.params;
-    const article = await Article.findOne({
-      where: {
-        slug
-      }
-    });
-
-    response(res).success({ messages: article });
+    try {
+      const article = await Article.findOne({
+        where: {
+          slug
+        }
+      });
+      return response(res).success({ message: article });
+    } catch (error) {
+      return response(res).serverError({ errors: { server: ['database error'] } });
+    }
   }
 }
 
