@@ -441,12 +441,11 @@ describe('GET single article /api/articles/:slug', () => {
   it('should return 200 if article exists', (done) => {
     chai
       .request(app)
-      .get('/api/articles/the-second-article-3')
+      .get('/api/articles/this-is-an-article-1')
       .end((err, res) => {
-        const { id } = res.body.messages;
+        const { title } = res.body.message;
         expect(res.status).to.be.equal(200);
-        expect(id).to.be.equal(3);
-
+        expect(title).to.be.equal('This is an article');
         done(err);
       });
   });
