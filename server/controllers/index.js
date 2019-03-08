@@ -4,6 +4,7 @@ import Comment from './articleComment';
 import Follow from './follow';
 import ArticleClap from './articleClap';
 import BookmarkController from './bookmark';
+import ArticleSearch from './articleSearch';
 
 export {
   Users,
@@ -11,5 +12,6 @@ export {
   Follow,
   Comment,
   BookmarkController,
-  ArticleClap
+  ArticleClap,
+  ArticleSearch
 };
