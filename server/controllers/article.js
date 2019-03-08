@@ -6,7 +6,7 @@ import response, { validationErrors } from '../utils/response';
 import db from '../database/models';
 
 const {
-  Article, Tag, User, Rating
+  Article, Tag, User, Rating, History
 } = db;
 
 /**
@@ -226,7 +226,7 @@ class ArticleController {
       });
     } catch (error) {
       response(res).serverError({
-        message: 'Couldnt get ratings'
+        message: 'Could not get ratings'
       });
     }
   }
@@ -240,36 +240,52 @@ class ArticleController {
   async getSingleArticle(req, res) {
     const { slug } = req.params;
     try {
-      const article = await Article.findOne({
-        where: {
-          slug
-        },
-        attributes: {
-          exclude: [
-            'id',
-            'userId'
-          ]
-        },
-        include: [
-          {
-            model: User,
-            attributes: ['firstname', 'lastname', 'username', 'email', 'image']
-          },
-          {
-            model: Tag,
-            attributes: ['name']
-          }
-        ]
-      });
+      const article = await this.getArticle(slug);
       const readTime = await HelperUtils.estimateReadingTime(article.body);
       const singleArticle = [article].map((data) => {
         data.dataValues.readTime = readTime;
         return data;
       });
-      response(res).success({ message: singleArticle[0] });
+      if (req.user.id && req.user.id !== req.article.userId) {
+        await History.create({
+          userId: req.user.id,
+          articleId: req.article.id,
+          readingTime: readTime.text.split(' read')[0]
+        });
+      }
+      response(res).success({ article: singleArticle[0] });
     } catch (error) {
       return response(res).serverError({ errors: { server: ['database error'] } });
     }
+  }
+
+  /** @method getArticle
+   * @description Get an article with all it's details
+   * @param {object} slug - Article slug
+   * @returns {object} A single article object
+   */
+  getArticle(slug) {
+    return Article.findOne({
+      where: {
+        slug
+      },
+      attributes: {
+        exclude: [
+          'id',
+          'userId'
+        ]
+      },
+      include: [
+        {
+          model: User,
+          attributes: ['firstname', 'lastname', 'username', 'email', 'image']
+        },
+        {
+          model: Tag,
+          attributes: ['name']
+        }
+      ]
+    });
   }
 }
 

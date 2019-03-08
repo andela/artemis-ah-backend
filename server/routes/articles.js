@@ -23,20 +23,23 @@ router.post('/articles/:slug/comment',
 router.get('/articles/tags',
   controller.getTags.bind(controller));
 router.get('/articles', controller.getAll.bind(controller));
-router.get('/articles/:slug', controller.getSingleArticle.bind(controller));
+router.get('/articles/:slug',
+  AuthenticateArticle.verifyArticle,
+  AuthenticateUser.identifyUser,
+  controller.getSingleArticle.bind(controller));
 
 const articleCommentLike = new ArticleCommentLikeController();
 router.post('/articles/:slug/comments/:id/like',
   AuthenticateUser.verifyUser, // User has to logged in first
   articleCommentLike.likeToggle.bind(articleCommentLike));
 
-router.post('/articles/rating/:slug',
+router.post('/articles/:slug/rating/',
   AuthenticateUser.verifyUser,
   rateArticleValidation, // Validate user input
   AuthenticateArticle.verifyArticle,
   controller.rateArticle.bind(controller));
 
-router.get('/articles/rating/:slug',
+router.get('/articles/:slug/rating',
   AuthenticateArticle.verifyArticle,
   controller.getRatings.bind(controller));
 

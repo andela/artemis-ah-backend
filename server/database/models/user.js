@@ -83,6 +83,11 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId'
     });
 
+    User.hasMany(models.History, {
+      foreignKey: 'id',
+      onDelete: 'CASCADE'
+    });
+
     User.hasMany(Bookmark, {
       foreignKey: 'userId',
       onDelete: 'CASCADE',

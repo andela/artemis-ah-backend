@@ -1,11 +1,8 @@
 import Sequelize from 'sequelize';
-import '@babel/polyfill';
-import dotenv from 'dotenv';
 import db from '../database/models';
 import response from '../utils/response';
 
 const { User, Follower } = db;
-dotenv.config();
 
 /**
  * @description Controller to authenticate users
@@ -44,7 +41,7 @@ export default class Follow {
         });
       }
     } catch (err) {
-      response(res).sendData(500, err);
+      response(res).serverError({ message: 'Could not get followers' });
     }
   }
 
@@ -80,7 +77,7 @@ export default class Follow {
         });
       }
     } catch (err) {
-      response(res).sendData(500, err);
+      response(res).serverError({ message: 'Could not get following' });
     }
   }
 
@@ -125,7 +122,7 @@ export default class Follow {
         }
       }
     } catch (err) {
-      response(res).sendData(500, err);
+      response(res).serverError({ message: 'Could not follow user' });
     }
   }
 
@@ -164,7 +161,7 @@ export default class Follow {
         }
       }
     } catch (err) {
-      response(res).sendData(500, err);
+      response(res).serverError({ message: 'Could not unfollow user' });
     }
   }
 
@@ -213,9 +210,7 @@ export default class Follow {
         profiles
       });
     } catch (err) {
-      response(res).sendData(500, {
-        message: err
-      });
+      response(res).serverError({ message: 'Could not get user profiles' });
     }
   }
 }

@@ -14,10 +14,6 @@ const invalidUser = HelperUtils.generateToken({
   id: 10000
 });
 
-const userToken = HelperUtils.generateToken({
-  id: 2
-});
-
 describe('Test for the bookmark route', () => {
   it('It should return 201 if the bookmark is created', (done) => {
     chai
@@ -45,15 +41,14 @@ describe('Test for the bookmark route', () => {
       });
   });
 
-  it('It should return 404 if a user isn\'t found', (done) => {
+  it('It should return 401 if token is invalid', (done) => {
     chai
       .request(app)
       .post(`/api/bookmark/${testData[0]}`)
       .set('authorization', `Bearer ${invalidUser}`)
       .end((err, res) => {
-        expect(res.status).to.equal(404);
-        expect(res.body.message).to.be.a('string');
-        expect(res.body.message).to.equal('user not found');
+        expect(res.status).to.equal(401);
+        expect(res.body.error.token[0]).to.equal('The provided token is invalid');
         done();
       });
   });
@@ -75,7 +70,7 @@ describe('Test for the bookmark route', () => {
     chai
       .request(app)
       .delete(`/api/articles/${testData[0]}/bookmark`)
-      .set('authorization', `Bearer ${invalidUser}`)
+      .set('authorization', `Bearer ${testData[2]}`)
       .end((err, res) => {
         expect(res.status).to.equal(404);
         expect(res.body.message).to.be.a('string');
@@ -92,20 +87,19 @@ describe('Test for the bookmark route', () => {
       .end((err, res) => {
         expect(res.status).to.equal(404);
         expect(res.body.message).to.be.a('string');
-        expect(res.body.message).to.equal('article doesn\'t exist or has been deleted');
+        expect(res.body.message).to.equal('article not found');
         done();
       });
   });
 
-  it('It should return 404 if a user isn\'t found', (done) => {
+  it('It should return 401 if token is invalid', (done) => {
     chai
       .request(app)
       .get('/api/bookmark')
       .set('authorization', `Bearer ${invalidUser}`)
       .end((err, res) => {
-        expect(res.status).to.equal(404);
-        expect(res.body.message).to.be.a('string');
-        expect(res.body.message).to.equal('user not found');
+        expect(res.status).to.equal(401);
+        expect(res.body.error.token[0]).to.equal('The provided token is invalid');
         done();
       });
   });
@@ -114,7 +108,7 @@ describe('Test for the bookmark route', () => {
     chai
       .request(app)
       .get('/api/bookmark')
-      .set('authorization', `Bearer ${userToken}`)
+      .set('authorization', `Bearer ${testData[2]}`)
       .end((err, res) => {
         expect(res.status).to.equal(200);
         expect(res.body.message).to.be.a('string');
