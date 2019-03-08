@@ -22,7 +22,7 @@ export default class ArticleSearch {
   }
 
   /**
-   * @description search controller
+   * @description search method
    * @param {*} req
    * @param {*} res
    * @returns {Array} articles
@@ -40,7 +40,7 @@ export default class ArticleSearch {
   }
 
   /**
-   * @description filter controller
+   * @description filter method
    * @param {*} req
    * @param {*} res
    * @returns {object} filtered articles
