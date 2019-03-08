@@ -243,9 +243,30 @@ class ArticleController {
       const article = await Article.findOne({
         where: {
           slug
-        }
+        },
+        attributes: {
+          exclude: [
+            'id',
+            'userId'
+          ]
+        },
+        include: [
+          {
+            model: User,
+            attributes: ['firstname', 'lastname', 'username', 'email', 'image']
+          },
+          {
+            model: Tag,
+            attributes: ['name']
+          }
+        ]
       });
-      return response(res).success({ message: article });
+      const readTime = await HelperUtils.estimateReadingTime(article.body);
+      const singleArticle = [article].map((data) => {
+        data.dataValues.readTime = readTime;
+        return data;
+      });
+      response(res).success({ message: singleArticle[0] });
     } catch (error) {
       return response(res).serverError({ errors: { server: ['database error'] } });
     }

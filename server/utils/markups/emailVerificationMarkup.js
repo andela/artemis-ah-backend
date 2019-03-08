@@ -1,3 +1,5 @@
+export const host = process.env.ENVIRONMENT === 'development' ? 'http://localhost:3000/' : 'https://authorshaven.herokuapp.com/';
+
 const verifyEmailMarkup = (username, email, hash) => (
   `<head>
       <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
@@ -72,7 +74,7 @@ const verifyEmailMarkup = (username, email, hash) => (
         </p>
         <p class="message">Please click the button below to proceed.</p>
       </div>
-        <a class="verifyLink" href="http://localhost:3000/api/users/verifyemail?email=${email}&hash=${hash}" target="_blank">
+        <a class="verifyLink" href="${host}api/users/verifyemail?email=${email}&hash=${hash}" target="_blank">
           Verify Email
         </a>
       </div>
