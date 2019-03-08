@@ -5,3 +5,4 @@ import './follow.spec';
 import './profile.spec';
 import './bookmark.spec';
 import './articleClap.spec';
+import './articleSearch.spec';
