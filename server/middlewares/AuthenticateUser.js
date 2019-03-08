@@ -64,7 +64,7 @@ class AuthenticateUser {
 
   /**
    * @method identifyUser
-   * @description Verifies the token provided by the user
+   * @description Identifies logged in users
    * @param {object} req - The Request Object
    * @param {object} res - The Response Object
    * @param {callback} next - Callback method
@@ -72,10 +72,7 @@ class AuthenticateUser {
    */
   static async identifyUser(req, res, next) {
     const payload = await AuthenticateUser.verifyAuthHeader(req);
-    if (!payload.error) {
-      req.user = payload;
-    }
-
+    req.user = payload.error ? {} : payload;
     return next();
   }
 }

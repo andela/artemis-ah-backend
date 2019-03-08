@@ -226,7 +226,7 @@ class ArticleController {
       });
     } catch (error) {
       response(res).serverError({
-        message: 'Couldnt get ratings'
+        message: 'Could not get ratings'
       });
     }
   }
@@ -246,14 +246,12 @@ class ArticleController {
         data.dataValues.readTime = readTime;
         return data;
       });
-      if (req.user) {
-        if (req.user.id !== req.article.userId) {
-          await History.create({
-            userId: req.user.id,
-            articleId: req.article.id,
-            readingTime: readTime.text.split(' read')[0]
-          });
-        }
+      if (req.user.id && req.user.id !== req.article.userId) {
+        await History.create({
+          userId: req.user.id,
+          articleId: req.article.id,
+          readingTime: readTime.text.split(' read')[0]
+        });
       }
       response(res).success({ article: singleArticle[0] });
     } catch (error) {
