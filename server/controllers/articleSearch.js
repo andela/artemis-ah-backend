@@ -30,7 +30,10 @@ export default class ArticleSearch {
   static async search(req, res) {
     try {
       const keyword = ArticleSearch.modifyString(req.query.title);
-      const articles = await Article.findAll({ where: { title: { [Op.iLike]: `%${keyword}%` } } });
+      const articles = await Article.findAll({
+        where: { title: { [Op.iLike]: `%${keyword}%` } },
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+      });
 
       if (!articles[0]) response(res).notFound({ message: 'no article found, redefine keyword' });
       else response(res).success({ articles });
@@ -49,7 +52,10 @@ export default class ArticleSearch {
     try {
       const title = ArticleSearch.modifyString(req.query.title);
 
-      const articles = await Article.findAll({ where: { title: { [Op.iLike]: `%${title}` } } });
+      const articles = await Article.findAll({
+        where: { title: { [Op.iLike]: `%${title}` } },
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+      });
 
       if (!articles[0]) response(res).notFound({ message: `no article found with title '${title}'` });
       else response(res).success({ articles });
