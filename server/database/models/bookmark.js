@@ -2,20 +2,25 @@ export default (sequelize, DataTypes) => {
   const Bookmark = sequelize.define('Bookmark', {
     articleId: {
       type: DataTypes.INTEGER,
-      defaultValue: false
+      allowNull: false
     },
     userId: {
       type: DataTypes.INTEGER,
-      defaultValue: false
+      allowNull: false
+    },
+    articleAuthor: {
+      type: DataTypes.STRING,
+      allowNull: false
     }
   }, {});
   Bookmark.associate = (models) => {
-    Bookmark.belongsTo(models.User, {
+    const { User, Article } = models;
+    Bookmark.belongsTo(User, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
 
-    Bookmark.belongsTo(models.Article, {
+    Bookmark.belongsTo(Article, {
       foreignKey: 'articleId',
       onDelete: 'CASCADE'
     });

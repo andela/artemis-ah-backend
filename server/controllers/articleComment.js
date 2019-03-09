@@ -1,7 +1,8 @@
 import models from '../database/models';
 import response from '../utils/response';
+import { favouriteArticleNotification, HelperUtils } from '../utils';
 
-const { ArticleComment, Article } = models;
+const { ArticleComment, Article, Bookmark, User } = models;
 
 /**
  * @class ArticleComment
@@ -31,9 +32,27 @@ class Comment {
 
       const articleId = article.id;
       const userComment = await ArticleComment.create({ articleId, comment, userId });
-      return response(res).created({
+
+      response(res).created({
         message: 'Comment created successfully',
         userComment
+      });
+
+      const bookmarks = await Bookmark.findAll({
+        where: { articleId }
+      }).map(user => user.userId);
+
+      bookmarks.forEach(async (usersId) => {
+        const userData = await User.findOne({
+          attributes: ['email', 'username'],
+          where: { id: usersId }
+        });
+
+        await HelperUtils.sendMail(userData.email,
+          'Authors Haven <notification@authorshaven.com>',
+          'Bookmarked Article Notification',
+          'Comment Notification',
+          favouriteArticleNotification(userData.username, slug));
       });
     } catch (error) {
       return response(res).serverError({ errors: { server: ['database error'] } });
