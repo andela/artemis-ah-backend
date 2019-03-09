@@ -16,28 +16,31 @@ export default class ArticleClapToggle {
   static async clapToggle(req, res) {
     const { id } = req.user;
     const { slug } = req.params;
+    try {
+      const getArticle = await Article.findOne({ where: { slug } });
 
-    const getArticle = await Article.findOne({ where: { slug } });
+      if (!getArticle) response(res).notFound({ message: 'article not found' });
 
-    if (!getArticle) response(res).notFound({ message: 'article not found' });
-
-    else if (getArticle.userId === id) response(res).forbidden({ message: 'you cannot clap for your own article' });
-
-    else {
-      const clap = await ArticleClap.findOrCreate({
-        where: { userId: id, articleId: getArticle.id },
-        defaults: { clap: true }
-      });
-
-      if (clap[1] === true) response(res).created({ message: 'you just clapped for this article' });
+      else if (getArticle.userId === id) response(res).forbidden({ message: 'you cannot clap for your own article' });
 
       else {
-        await ArticleClap.destroy({
-          where: { userId: id, articleId: getArticle.id }
+        const clap = await ArticleClap.findOrCreate({
+          where: { userId: id, articleId: getArticle.id },
+          defaults: { clap: true }
         });
 
-        response(res).success({ message: 'you just retrieved your clap' });
+        if (clap[1] === true) response(res).created({ message: 'you just clapped for this article' });
+
+        else {
+          await ArticleClap.destroy({
+            where: { userId: id, articleId: getArticle.id }
+          });
+
+          response(res).success({ message: 'you just retrieved your clap' });
+        }
       }
+    } catch (err) {
+      return response(res).serverError({ errors: { server: ['database error'] } });
     }
   }
 }

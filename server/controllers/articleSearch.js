@@ -38,7 +38,7 @@ export default class ArticleSearch {
       if (!articles[0]) response(res).notFound({ message: 'no article found, redefine keyword' });
       else response(res).success({ articles });
     } catch (err) {
-      response(res).serverError();
+      response(res).serverError({ errors: { server: ['database error'] } });
     }
   }
 
@@ -60,7 +60,7 @@ export default class ArticleSearch {
       if (!articles[0]) response(res).notFound({ message: `no article found with title '${title}'` });
       else response(res).success({ articles });
     } catch (err) {
-      response(res).serverError();
+      response(res).serverError({ errors: { server: ['database error'] } });
     }
   }
 }

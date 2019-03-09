@@ -95,7 +95,7 @@ class ArticleController {
         response(res).success({ message: 'article successfully deleted' });
       }
     } catch (err) {
-      response(res).serverError({ message: err });
+      response(res).serverError({ errors: { server: ['database error'] } });
     }
   }
 
