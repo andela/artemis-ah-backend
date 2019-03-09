@@ -13,6 +13,12 @@ router.post('/articles',
   AuthenticateUser.verifyUser, // User must be logged in first
   createArticleValidation, // Validate user input
   controller.create.bind(controller));
+
+router.delete('/articles/:slug',
+  AuthenticateUser.verifyUser,
+  AuthenticateArticle.verifyArticle,
+  controller.delete.bind(controller));
+
 router.post('/articles/:slug/comment',
   AuthenticateUser.verifyUser,
   AuthenticateArticle.verifyArticle,
@@ -23,7 +29,7 @@ router.post('/articles/:slug/comment',
 router.get('/articles/tags',
   controller.getTags.bind(controller));
 router.get('/articles', controller.getAll.bind(controller));
-router.get('/articles/:slug', controller.getSingleArticle.bind(controller));
+router.get('/articles/:slug', AuthenticateArticle.verifyArticle, controller.getSingleArticle.bind(controller));
 
 const articleCommentLike = new ArticleCommentLikeController();
 router.post('/articles/:slug/comments/:id/like',

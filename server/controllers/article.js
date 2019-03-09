@@ -79,6 +79,27 @@ class ArticleController {
   }
 
   /**
+   * @description Deletes an article
+   * @param {*} req Request object
+   * @param {*} res Response object
+   * @returns {object} delete article confirmation
+   */
+  async delete(req, res) {
+    try {
+      const { article, user } = req;
+      const { id } = article;
+
+      if (article.userId !== user.id) response(res).forbidden({ message: 'forbidden' });
+      else {
+        await Article.destroy({ where: { id } });
+        response(res).success({ message: 'successfully deleted' });
+      }
+    } catch (err) {
+      response(res).serverError({ message: err });
+    }
+  }
+
+  /**
    * Returns all tags
    * @method getTags
    * @param {object} req The request object
