@@ -34,6 +34,9 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'articleId',
       as: 'claps'
     });
+    Article.hasMany(models.History, {
+      foreignKey: 'id',
+    });
   };
   return Article;
 };

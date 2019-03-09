@@ -1,6 +1,6 @@
 import express from 'express';
 import { Users } from '../controllers';
-import { ValidateUser } from '../middlewares';
+import { ValidateUser, AuthenticateUser } from '../middlewares';
 import passport from '../config/passport';
 
 const authRoute = express.Router();
@@ -44,5 +44,9 @@ authRoute.get('/users/auth/twitter',
 authRoute.get('/users/auth/twitter/redirect',
   passport.authenticate('twitter', { session: false }),
   Users.socialLogin);
+
+authRoute.get('/users/stats',
+  AuthenticateUser.verifyUser,
+  Users.getStats);
 
 export default authRoute;

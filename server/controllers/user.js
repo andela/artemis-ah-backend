@@ -1,12 +1,9 @@
-import '@babel/polyfill';
-import dotenv from 'dotenv';
 import db from '../database/models';
 import { HelperUtils, response } from '../utils';
 import verifyEmailMarkup from '../utils/markups/emailVerificationMarkup';
 import passwordResetMarkup from '../utils/markups/passwordResetMarkup';
 
-const { User } = db;
-dotenv.config();
+const { User, History, Article } = db;
 
 /**
  * @description Controller to authenticate users
@@ -306,9 +303,28 @@ export default class Users {
         }
       });
     } catch (error) {
-      response(res).serverError({
-        message: 'Could not generate token'
+      response(res).serverError({ message: 'Could not generate token' });
+    }
+  }
+
+
+  /** @method getStats
+   * @description Get the reading stats for the user
+   * @param {object} req - The request object
+   * @param {object} res - The response object
+   * @returns {object} A single article object
+   */
+  static async getStats(req, res) {
+    try {
+      const userHistory = await History.findAll({
+        where: { userId: req.user.id },
+        include: [{ model: Article, attributes: ['title'] }]
       });
+      response(res).success({
+        history: userHistory
+      });
+    } catch (err) {
+      response(res).serverError({ message: 'Could not get stats, please try again later' });
     }
   }
 }
