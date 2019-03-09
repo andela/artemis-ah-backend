@@ -1,9 +1,7 @@
-import dotenv from 'dotenv';
 import db from '../database/models';
 import { response } from '../utils';
 
 const { ArticleClap, Article } = db;
-dotenv.config();
 
 /**
  * @description Class to implement clap and unclap
