@@ -12,7 +12,7 @@ describe('test search', () => {
       .get('/api/search?title= This')
       .end((err, res) => {
         expect(res).to.have.status(200);
-        expect(res.body.articles).to.be.an('array');
+        expect(res.body.allResults).to.be.an('array');
         done();
       });
   });
