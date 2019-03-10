@@ -530,4 +530,20 @@ describe('Stats Functionality', () => {
           });
       });
   });
+
+  it('should update user article', (done) => {
+    chai
+      .request(app)
+      .patch('/api/articles/this-is-an-article-1')
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        title: 'Title has changed',
+        body: 'Body has been modified',
+        description: 'Description has been transformed'
+      })
+      .end((err, res) => {
+        expect(res.status).to.be.equal(200);
+        done(err);
+      });
+  });
 });

@@ -43,6 +43,11 @@ router.get('/articles/:slug/rating',
   AuthenticateArticle.verifyArticle,
   controller.getRatings.bind(controller));
 
+router.patch('/articles/:slug',
+  AuthenticateUser.verifyUser,
+  AuthenticateArticle.verifyArticle,
+  createArticleValidation,
+  controller.updateArticle.bind(controller));
 router.patch('/articles/:slug/comment/:commentId',
   AuthenticateUser.verifyUser,
   AuthenticateArticle.verifyArticle,
