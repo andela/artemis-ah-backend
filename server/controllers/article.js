@@ -6,7 +6,11 @@ import response, { validationErrors } from '../utils/response';
 import db from '../database/models';
 
 const {
-  Article, Tag, User, Rating, History
+  Article,
+  Tag,
+  User,
+  Rating,
+  History
 } = db;
 
 /**
@@ -122,7 +126,8 @@ class ArticleController {
       include: [{
         model: User,
         attributes: ['username', 'bio', 'image'],
-      }, {
+      },
+      {
         model: Tag,
         attributes: ['name']
       }],

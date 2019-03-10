@@ -23,11 +23,11 @@ const favouriteArticleNotification = (username, slug) => (
             width: 70px;
           }
         .username {
-          font-size: 1em;
+          font-size: 1.5em;
           color: white;
           }
         .message{
-          font-size: 1em;
+          font-size: 1.2em;
           color: white;
           padding: 0 20px;
           }
@@ -79,9 +79,9 @@ const favouriteArticleNotification = (username, slug) => (
           Activites were spotted on a post you bookmarked.
           A comment has been added to the post.<br>
         </p>
-        <p class="message">Click the button below to read comment.</p>
+        <p class="message">Click the button below to see comment.</p>
       </div>
-        <a class="verifyLink" href="${host}api/articles/${slug}" target="_blank">
+        <a class="verifyLink" href="${host}api/articles/${slug}" target="_blank" style="color: rgb(255, 255, 255)">
           Read Article
         </a>
       </div>

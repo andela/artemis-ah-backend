@@ -82,7 +82,7 @@ const verifyEmailMarkup = (username, email, hash) => (
         </p>
         <p class="message">Please click the button below to proceed.</p>
       </div>
-        <a class="verifyLink" href="${host}api/users/verifyemail?email=${email}&hash=${hash}" target="_blank">
+        <a class="verifyLink" href="${host}api/users/verifyemail?email=${email}&hash=${hash}" target="_blank" style="color: rgb(255, 255, 255)">
           Verify Email
         </a>
       </div>  

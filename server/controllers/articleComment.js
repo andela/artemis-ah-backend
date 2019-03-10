@@ -44,15 +44,16 @@ class Comment {
 
       bookmarks.forEach(async (usersId) => {
         const userData = await User.findOne({
-          attributes: ['email', 'username'],
+          attributes: ['email', 'username', 'notification'],
           where: { id: usersId }
         });
-
-        await HelperUtils.sendMail(userData.email,
-          'Authors Haven <notification@authorshaven.com>',
-          'Bookmarked Article Notification',
-          'Comment Notification',
-          favouriteArticleNotification(userData.username, slug));
+        if (userData.notification === true) {
+          await HelperUtils.sendMail(userData.email,
+            'Authors Haven <notification@authorshaven.com>',
+            'Bookmarked Article Notification',
+            'Comment Notification',
+            favouriteArticleNotification(userData.username, slug));
+        }
       });
     } catch (error) {
       return response(res).serverError({ errors: { server: ['database error'] } });
