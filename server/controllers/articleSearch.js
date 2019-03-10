@@ -112,7 +112,7 @@ export default class ArticleSearch {
         }
       });
       if (req.params.authors && users[0]) {
-        return response(res).success(users);
+        return response(res).success({ users });
       }
       if (req.params.authors && !users[0]) {
         return response(res).notFound({ message: 'No such author exists.' });
