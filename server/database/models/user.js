@@ -107,6 +107,12 @@ export default (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     });
 
+    User.belongsToMany(models.Article, {
+      through: 'ArticlaClaps',
+      foreignKey: 'userId',
+      as: 'clapped'
+    });
+
     User.hasMany(Bookmark, {
       foreignKey: 'userId',
       onDelete: 'CASCADE',

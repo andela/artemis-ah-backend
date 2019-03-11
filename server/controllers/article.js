@@ -1,4 +1,4 @@
-/* eslint class-methods-use-this: "off" */
+/* eslint-disable class-methods-use-this */
 import slugify from 'slug';
 import { validationResult } from 'express-validator/check';
 import { HelperUtils } from '../utils';
