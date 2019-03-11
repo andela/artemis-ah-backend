@@ -2,10 +2,10 @@
   "root": true,
   "extends": [
     "airbnb-base",
-    "eslint-config-prettier"
+    "prettier"
   ],
   "plugins": [
-    "eslint-plugin-prettier"
+    "prettier"
   ],
   "env": {
     "node": true,
