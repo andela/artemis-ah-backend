@@ -165,6 +165,17 @@ describe('PATCH update comment', () => {
   });
 });
 
+describe('GET comments of a single article', () => {
+  it('should return 200 and get comments for an article', (done) => {
+    chai.request(app)
+      .get('/api/articles/this-is-an-article-1/comments')
+      .end((err, res) => {
+        expect(res.status).to.be.equal(200);
+        done(err);
+      });
+  });
+});
+
 describe('DELETE user comment', () => {
   before((done) => {
     chai
