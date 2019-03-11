@@ -4,7 +4,8 @@ export default (sequelize, DataTypes) => {
     metaId: DataTypes.INTEGER,
     type: DataTypes.STRING,
     url: DataTypes.STRING
-  }, {});
+  },
+  {});
   Notification.associate = () => {
     // associations can be defined here
   };

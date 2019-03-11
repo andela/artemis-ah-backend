@@ -5,27 +5,27 @@ export default {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       message: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       metaId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       type: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       url: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DATE
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DATE
       }
     });
   },
