@@ -1,6 +1,9 @@
 {
   "root": true,
-  "extends": "airbnb-base",
+  "extends": [
+    "airbnb-base",
+    "eslint-config-prettier"
+  ],
   "env": {
     "node": true,
     "es6": true,
