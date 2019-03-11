@@ -30,9 +30,16 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'articleId',
       as: 'reports'
     });
+    Article.belongsToMany(models.User, {
+      through: 'Bookmark',
+      foreignKey: 'articleId',
+    });
     Article.hasMany(models.ArticleClap, {
       foreignKey: 'articleId',
       as: 'claps'
+    });
+    Article.hasMany(models.History, {
+      foreignKey: 'id',
     });
   };
   return Article;

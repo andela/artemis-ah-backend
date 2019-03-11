@@ -47,7 +47,7 @@ export default (sequelize, DataTypes) => {
     }
   }, {});
   User.associate = (models) => {
-    const { Follower, ArticleClap, Report } = models;
+    const { Follower, Bookmark, Article, ArticleClap, Report } = models;
     User.belongsToMany(User, {
       through: Follower,
       foreignKey: 'userId',
@@ -82,6 +82,22 @@ export default (sequelize, DataTypes) => {
     User.hasMany(Report, {
       foreignKey: 'userId',
       as: 'reports'
+    });
+
+    User.belongsToMany(Article, {
+      through: 'Bookmark',
+      foreignKey: 'userId'
+    });
+
+    User.hasMany(models.History, {
+      foreignKey: 'id',
+      onDelete: 'CASCADE'
+    });
+
+    User.hasMany(Bookmark, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
     });
   };
   return User;
