@@ -54,7 +54,7 @@ export default class Users {
         }
       });
     } catch (err) {
-      response(res).sendData(500, err);
+      return response(res).sendData(500, err);
     }
   }
 
@@ -210,7 +210,7 @@ export default class Users {
         }
       });
     } catch (err) {
-      response(res).serverError({
+      return response(res).serverError({
         message: 'token could not be generated, please try again later'
       });
     }
@@ -239,7 +239,7 @@ export default class Users {
         });
       }
     } catch (err) {
-      response(res).serverError({ message: err });
+      return response(res).serverError({ message: err });
     }
   }
 
@@ -278,7 +278,7 @@ export default class Users {
         });
       }
     } catch (err) {
-      response(res).serverError({ message: err });
+      return response(res).serverError({ message: err });
     }
   }
 
@@ -303,7 +303,7 @@ export default class Users {
         }
       });
     } catch (error) {
-      response(res).serverError({ message: 'Could not generate token' });
+      return response(res).serverError({ message: 'Could not generate token' });
     }
   }
 
@@ -324,7 +324,7 @@ export default class Users {
         history: userHistory
       });
     } catch (err) {
-      response(res).serverError({ message: 'Could not get stats, please try again later' });
+      return response(res).serverError({ message: 'Could not get stats, please try again later' });
     }
   }
 }

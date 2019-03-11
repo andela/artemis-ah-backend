@@ -37,7 +37,7 @@ export default class BookmarkController {
         });
       }
     } catch (err) {
-      response(res).sendData(500, 'Server Error');
+      return response(res).sendData(500, 'Server Error');
     }
   }
 
@@ -63,7 +63,7 @@ export default class BookmarkController {
       await bookmarkData[0].destroy();
       response(res).success({ message: 'bookmark removed successfully' });
     } catch (err) {
-      response(res).sendData(500, { message: 'Server Error' });
+      return response(res).sendData(500, { message: 'Server Error' });
     }
   }
 
@@ -109,7 +109,7 @@ export default class BookmarkController {
         });
       }
     } catch (error) {
-      response(res).serverError({ message: 'Server Error' });
+      return response(res).serverError({ message: 'Server Error' });
     }
   }
 }
