@@ -56,7 +56,6 @@ router.get('/articles/:slug/rating',
 router.patch('/articles/:slug',
   AuthenticateUser.verifyUser,
   AuthenticateArticle.verifyArticle,
-  createArticleValidation,
   controller.updateArticle.bind(controller));
 router.patch('/articles/:slug/comment/:commentId',
   AuthenticateUser.verifyUser,

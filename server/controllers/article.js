@@ -308,7 +308,10 @@ class ArticleController {
         returning: true
       });
 
-      return response(res).success({ updatedArticle });
+      return response(res).success({
+        message: 'Article updated successfully',
+        article: updatedArticle[1][0]
+      });
     } catch (error) {
       return response(res).serverError({ errors: { server: ['database error'] } });
     }

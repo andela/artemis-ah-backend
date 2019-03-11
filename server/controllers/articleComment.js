@@ -1,7 +1,7 @@
 import models from '../database/models';
 import response from '../utils/response';
 
-const { ArticleComment, Article } = models;
+const { ArticleComment } = models;
 
 /**
  * @class ArticleComment
@@ -48,27 +48,14 @@ class Comment {
    * @returns {object} - The comment object
    */
   static async postComment(req, res) {
-    const { slug } = req.params;
     const userId = req.user.id;
     const { comment } = req.body;
-
-    try {
-      const article = await Article.findOne({
-        attributes: ['id'],
-        where: {
-          slug
-        }
-      });
-
-      const articleId = article.id;
-      const userComment = await ArticleComment.create({ articleId, comment, userId });
-      return response(res).created({
-        message: 'Comment created successfully',
-        userComment
-      });
-    } catch (error) {
-      return response(res).serverError({ errors: { server: ['database error'] } });
-    }
+    const articleId = req.article.id;
+    const userComment = await ArticleComment.create({ articleId, comment, userId });
+    return response(res).created({
+      message: 'Comment created successfully',
+      userComment
+    });
   }
 
   /**

@@ -543,6 +543,8 @@ describe('Stats Functionality', () => {
         description: 'Description has been transformed'
       })
       .end((err, res) => {
+        const { article } = res.body;
+        expect(article.title).to.equal('Title has changed');
         expect(res.status).to.be.equal(200);
         done(err);
       });
@@ -558,7 +560,8 @@ describe('DELETE article /api/articles/:slug', () => {
       .send({
         title: 'some title',
         description: 'some weird talky',
-        body: 'article body' })
+        body: 'article body'
+      })
       .end((err, res) => {
         secondArticleSlug = res.body.article.slug;
         done();
