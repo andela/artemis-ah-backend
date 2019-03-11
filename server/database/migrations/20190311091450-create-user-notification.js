@@ -23,7 +23,5 @@ export default {
       }
     });
   },
-  down(queryInterface) {
-    return queryInterface.dropTable('UserNotifications');
-  }
+  down: queryInterface => queryInterface.dropTable('UserNotifications')
 };

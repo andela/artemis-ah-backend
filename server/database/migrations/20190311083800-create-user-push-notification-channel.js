@@ -23,7 +23,5 @@ export default {
       }
     });
   },
-  down(queryInterface) {
-    return queryInterface.dropTable('UserPushNotificationChannels');
-  }
+  down: queryInterface => queryInterface.dropTable('UserPushNotificationChannels')
 };
