@@ -1,7 +1,7 @@
 /**
  * @class Trimmer
  * @description Trims data
- * @exports AuthenticateUser
+ * @exports Trimmer
  */
 class Trimmer {
   /**
@@ -26,13 +26,11 @@ class Trimmer {
    * @description Trims the request body
    * @param {object} req - The Request Object
    * @param {object} res - The Response Object
-   * @param {callback} next - Callback method
-   * @returns {undefined} -
+   * @param {function} next - Function for passing on to next middleware
+   * @returns {function} next - Invokes next function and passes on to next middleware
    */
   static trimBody(req, res, next) {
-    if (req.body) {
-      req.body = Trimmer.trimValues(req.body);
-    }
+    req.body = req.body ? Trimmer.trimValues(req.body) : {};
     return next();
   }
 }

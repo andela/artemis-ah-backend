@@ -5,7 +5,9 @@ import { HelperUtils } from '../utils';
 import response, { validationErrors } from '../utils/response';
 import db from '../database/models';
 
-const { Article, Tag, User, Rating } = db;
+const {
+  Article, Tag, User, Rating, History, ArticleClap
+} = db;
 
 /**
  * @class ArticleController
@@ -136,6 +138,9 @@ class ArticleController {
         'totalClaps',
         'createdAt',
         'updatedAt'
+      ],
+      order: [
+        ['id', 'ASC'],
       ]
     };
 
@@ -224,7 +229,7 @@ class ArticleController {
       });
     } catch (error) {
       response(res).serverError({
-        message: 'Couldnt get ratings'
+        message: 'Could not get ratings'
       });
     }
   }
@@ -237,13 +242,73 @@ class ArticleController {
    */
   async getSingleArticle(req, res) {
     const { slug } = req.params;
-    const article = await Article.findOne({
+    const { id } = req.user;
+
+    try {
+      const article = await this.getArticle(slug);
+      const readTime = await HelperUtils.estimateReadingTime(article.body);
+      const singleArticle = [article].map((data) => {
+        data.dataValues.readTime = readTime;
+        return data;
+      });
+
+      const clap = await this.getClap(id, article.id);
+
+      if (req.user.id && req.user.id !== req.article.userId) {
+        await History.create({
+          userId: req.user.id,
+          articleId: req.article.id,
+          readingTime: readTime.text.split(' read')[0]
+        });
+      }
+      response(res).success({ article: singleArticle[0], clap });
+    } catch (error) {
+      return response(res).serverError({ errors: { server: error } });
+    }
+  }
+
+  /** @method getArticle
+   * @description Get an article with all it's details
+   * @param {object} slug - Article slug
+   * @returns {object} A single article object
+   */
+  getArticle(slug) {
+    return Article.findOne({
       where: {
         slug
-      }
+      },
+      attributes: {
+        exclude: [
+          'userId'
+        ]
+      },
+      include: [
+        {
+          model: User,
+          attributes: ['firstname', 'lastname', 'username', 'email', 'image']
+        },
+        {
+          model: Tag,
+          attributes: ['name']
+        },
+      ]
     });
+  }
 
-    response(res).success({ messages: article });
+  /**
+   * @describe get user clap
+   * @param {*} userId
+   * @param {*} articleId
+   * @returns {boolean} true or false
+   */
+  getClap(userId, articleId) {
+    return ArticleClap.findOne({
+      where: {
+        userId,
+        articleId
+      },
+      attributes: ['clap']
+    });
   }
 }
 

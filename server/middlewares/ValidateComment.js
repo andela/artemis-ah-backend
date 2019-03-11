@@ -2,7 +2,7 @@ import { check, validationResult } from 'express-validator/check';
 import { response } from '../utils';
 import models from '../database/models';
 
-const { ArticleComment } = models;
+const { ArticleComment, Article } = models;
 
 /**
  * @class ValidateComment
@@ -11,19 +11,22 @@ const { ArticleComment } = models;
  */
 class ValidateComment {
   /**
-   * @method validateMethods
-   * @description Validates registration details provided by user
-   * @param {object} commentId - Boolean to check if comment id is specified
-   * @returns {array} - Array of validation methods
-   */
-  static validateMethods(commentId = false) {
-    const propsToValidate = [
-      check('comment')
+     * @method validateMethods
+     * @description Validates registration details provided by user
+     * @param {string} requestType - The request type being sent
+     * @param {boolean} commentId - Boolean to check if comment id is specified
+     * @returns {array} - Array of validation methods
+     */
+  static validateMethods(requestType, commentId = false) {
+    const propsToValidate = [];
+
+    if (requestType === 'update' || requestType === 'create') {
+      propsToValidate.push([check('comment')
         .exists()
         .withMessage('Comment field must be specified.')
         .isLength({ min: 1 })
-        .withMessage('Comment must not be empty.')
-    ];
+        .withMessage('Comment must not be empty.')]);
+    }
 
     if (commentId) {
       propsToValidate.push([
@@ -47,7 +50,7 @@ class ValidateComment {
    * @returns {object} - JSON response object
    */
   static async validateComment(req, res, next) {
-    const { commentId } = req.params;
+    const { commentId, slug } = req.params;
     const errorFormatter = ({ msg }) => [msg];
     const errorMessages = validationResult(req).formatWith(errorFormatter);
 
@@ -55,20 +58,43 @@ class ValidateComment {
       return response(res).badRequest({ errors: errorMessages.mapped() });
     }
 
+    if (commentId) {
+      const commentRow = await ValidateComment.verifyComment(commentId, res);
+      if (!commentRow || slug !== commentRow['Article.slug']) {
+        return response(res).notFound({ errors: { comment: ['Comment not found.'] } });
+      }
+
+      if (commentRow.userId !== req.user.id) {
+        return response(res).forbidden({
+          errors: {
+            comment: ['You are not permitted to make changes to this article']
+          }
+        });
+      }
+      req.commentRow = commentRow;
+    }
+    next();
+  }
+
+  /**
+   * @method verifyComment
+   * @param {integer} commentId - The comment ID
+   * @param {object} res - The response object
+   * @returns {Promise} Article Comment Promise
+   */
+  static async verifyComment(commentId, res) {
     try {
       const commentRow = await ArticleComment.findOne({
+        include: [{
+          model: Article,
+          attributes: ['slug']
+        }],
         where: {
           id: commentId
         },
         raw: true
       });
-      if (commentId && !commentRow) {
-        return response(res).notFound({
-          errors: { comment: ['Comment not found.'] }
-        });
-      }
-      req.commentRow = commentRow;
-      return next();
+      return commentRow;
     } catch (error) {
       return response(res).serverError({
         errors: { server: ['database error'] }

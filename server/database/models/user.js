@@ -50,7 +50,7 @@ export default (sequelize, DataTypes) => {
     },
     {});
   User.associate = (models) => {
-    const { Follower } = models;
+    const { Follower, Bookmark, Article, ArticleClap } = models;
     User.belongsToMany(User, {
       through: Follower,
       foreignKey: 'userId',
@@ -61,6 +61,10 @@ export default (sequelize, DataTypes) => {
       through: Follower,
       foreignKey: 'followerId',
       as: 'followers'
+    });
+
+    User.hasMany(ArticleClap, {
+      foreignKey: 'userId',
     });
 
     // Relations for articles.
@@ -75,6 +79,28 @@ export default (sequelize, DataTypes) => {
     User.hasMany(models.ArticleCommentLike, {
       foreignKey: 'id',
       onDelete: 'CASCADE'
+    });
+
+    User.belongsToMany(Article, {
+      through: 'Bookmark',
+      foreignKey: 'userId'
+    });
+
+    User.hasMany(models.History, {
+      foreignKey: 'id',
+      onDelete: 'CASCADE'
+    });
+
+    User.belongsToMany(models.Article, {
+      through: 'ArticlaClaps',
+      foreignKey: 'userId',
+      as: 'clapped'
+    });
+
+    User.hasMany(Bookmark, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
     });
   };
   return User;

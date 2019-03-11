@@ -1,4 +1,7 @@
-const passwordResetMarkup = (username, email, hash) => `<!DOCTYPE html>
+import { host } from './emailVerificationMarkup';
+
+const passwordResetMarkup = (username, email, hash) => (
+  `<!DOCTYPE html>
     <html lang="en"> 
     <head>
       <meta charset="UTF-8">
@@ -76,12 +79,12 @@ const passwordResetMarkup = (username, email, hash) => `<!DOCTYPE html>
         </p><br>
         <p class="message">Please, click the button below to proceed.</p>
       </div>
-        <a class="verifyLink" href="http://localhost:3000/api/users/reset-password?email=${email}&hash=${hash}" target="_blank">
+        <a class="verifyLink" href="${host}api/users/reset-password?email=${email}&hash=${hash}" target="_blank">
           Reset Password
         </a>
       </div>      
     </body>
   </html>
-`;
+`);
 
 export default passwordResetMarkup;
