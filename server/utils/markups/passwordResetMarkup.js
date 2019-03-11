@@ -1,7 +1,6 @@
 import { host } from './emailVerificationMarkup';
 
-const passwordResetMarkup = (username, email, hash) => 
-  `<!DOCTYPE html>
+const passwordResetMarkup = (username, email, hash) => `<!DOCTYPE html>
     <html lang="en"> 
     <head>
       <meta charset="UTF-8">
