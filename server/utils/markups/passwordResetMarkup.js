@@ -1,6 +1,6 @@
 import { host } from './emailVerificationMarkup';
 
-const passwordResetMarkup = (username, email, hash) => (
+const passwordResetMarkup = (username, email, hash) => 
   `<!DOCTYPE html>
     <html lang="en"> 
     <head>
@@ -85,6 +85,6 @@ const passwordResetMarkup = (username, email, hash) => (
       </div>      
     </body>
   </html>
-`);
+`;
 
 export default passwordResetMarkup;
