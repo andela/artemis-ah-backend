@@ -4,3 +4,4 @@ import './comment.spec';
 import './follow.spec';
 import './profile.spec';
 import './articleClap.spec';
+import './report.spec';

@@ -199,7 +199,7 @@ describe('Test signup endpoint and email verification endpoint', () => {
 
 describe('Test reset password mail endpoint and password link endpoint', () => {
   it('It should return a 404 if user records not found', (done) => {
-    const data = { email: 'ayo-oluwa.adebayo@andela.com' };
+    const data = { email: 'ayo-oluwa.adebayo@andela.co' };
     chai
       .request(app)
       .post(resetPassword)

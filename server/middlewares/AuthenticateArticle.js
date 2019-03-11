@@ -27,7 +27,7 @@ class AuthenticateArticle {
         return next();
       }
       response(res).notFound({
-        message: 'article not found'
+        message: 'Article not found'
       });
     } catch (error) {
       response(res).serverError({

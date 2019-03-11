@@ -54,6 +54,23 @@ class AuthenticateUser {
     req.user = payload;
     return next();
   }
+
+  /**
+   * @method isAdmin
+   * @description Verifies that logged user is admin
+   * @param {object} req - The Request Object
+   * @param {object} res - The Response Object
+   * @param {callback} next - Callback method
+   * @returns {object} - JSON response object
+   */
+  static isAdmin(req, res, next) {
+    if (!req.user.isAdmin) {
+      return response(res).unauthorized({
+        message: 'You are Unauthorized to access this page'
+      });
+    }
+    return next();
+  }
 }
 
 export default AuthenticateUser;
