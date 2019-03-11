@@ -150,7 +150,7 @@ describe('POST report /api/reports/:slug', () => {
       .end((err, res) => {
         expect(res.status).to.be.equal(404);
         expect(res.body.message).to.be.a('string');
-        expect(res.body.message).to.equal('Article not found');
+        expect(res.body.message).to.equal('article not found');
         done(err);
       });
   });

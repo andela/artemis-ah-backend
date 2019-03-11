@@ -385,7 +385,7 @@ describe('Testing ratings functionality', () => {
       .send({})
       .end((err, res) => {
         expect(res.status).to.equal(404);
-        expect(res.body.message).to.equal('Article not found');
+        expect(res.body.message).to.equal('article not found');
 
         done();
       });

@@ -61,7 +61,7 @@ describe('Test for the bookmark route', () => {
       .end((err, res) => {
         expect(res.status).to.equal(404);
         expect(res.body.message).to.be.a('string');
-        expect(res.body.message).to.equal('Article not found');
+        expect(res.body.message).to.equal('article not found');
         done();
       });
   });
@@ -87,7 +87,7 @@ describe('Test for the bookmark route', () => {
       .end((err, res) => {
         expect(res.status).to.equal(404);
         expect(res.body.message).to.be.a('string');
-        expect(res.body.message).to.equal('Article not found');
+        expect(res.body.message).to.equal('article not found');
         done();
       });
   });
