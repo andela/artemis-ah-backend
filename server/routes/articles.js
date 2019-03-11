@@ -13,6 +13,12 @@ router.post('/articles',
   AuthenticateUser.verifyUser, // User must be logged in first
   createArticleValidation, // Validate user input
   controller.create.bind(controller));
+
+router.delete('/articles/:slug',
+  AuthenticateUser.verifyUser,
+  AuthenticateArticle.verifyArticle,
+  controller.delete.bind(controller));
+
 router.post('/articles/:slug/comment',
   AuthenticateUser.verifyUser,
   AuthenticateArticle.verifyArticle,
