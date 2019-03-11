@@ -65,6 +65,7 @@ export default (sequelize, DataTypes) => {
       ArticleComment,
       ArticleCommentLike,
       History,
+      Report
     } = models;
 
     User.belongsToMany(User, {
@@ -95,6 +96,12 @@ export default (sequelize, DataTypes) => {
     User.hasMany(ArticleCommentLike, {
       foreignKey: 'id',
       onDelete: 'CASCADE'
+    });
+
+    // Relations for reports.
+    User.hasMany(Report, {
+      foreignKey: 'userId',
+      as: 'reports'
     });
 
     User.belongsToMany(Article, {
