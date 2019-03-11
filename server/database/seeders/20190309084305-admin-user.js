@@ -1,3 +1,7 @@
+import { HelperUtils } from '../../utils';
+
+const password = 'admin123456';
+
 export default {
   up(queryInterface) {
     return queryInterface.bulkInsert('Users', [{
@@ -5,7 +9,7 @@ export default {
       lastname: 'admin',
       username: 'admin',
       email: 'ayooluwabayo@gmail.com',
-      password: '$2a$08$G/5b9Oq3rla2pjb/imcZ8u.m0EQlbKfG.gwGJG6iOfPVm9rZqNVmC',
+      password: HelperUtils.hashPassword(password),
       verifiedEmail: true,
       isAdmin: true,
       createdAt: new Date(),
@@ -16,7 +20,7 @@ export default {
       lastname: 'ayo',
       username: 'ayo',
       email: 'ayo-oluwa.adebayo@andela.com',
-      password: '$2a$08$G/5b9Oq3rla2pjb/imcZ8u.m0EQlbKfG.gwGJG6iOfPVm9rZqNVmC',
+      password: HelperUtils.hashPassword(password),
       verifiedEmail: true,
       isAdmin: false,
       createdAt: new Date(),
@@ -27,7 +31,7 @@ export default {
       lastname: 'bayo',
       username: 'bayo',
       email: 'uniqueayo@yahoo.com',
-      password: '$2a$08$G/5b9Oq3rla2pjb/imcZ8u.m0EQlbKfG.gwGJG6iOfPVm9rZqNVmC',
+      password: HelperUtils.hashPassword(password),
       verifiedEmail: true,
       isAdmin: false,
       createdAt: new Date(),
