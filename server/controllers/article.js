@@ -92,10 +92,10 @@ class ArticleController {
       if (article.userId !== user.id) response(res).forbidden({ message: 'forbidden' });
       else {
         await Article.destroy({ where: { id } });
-        response(res).success({ message: 'article successfully deleted' });
+        return response(res).success({ message: 'article successfully deleted' });
       }
     } catch (err) {
-      response(res).serverError({ errors: { server: ['database error'] } });
+      return response(res).serverError({ errors: { server: ['database error'] } });
     }
   }
 
