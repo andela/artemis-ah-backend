@@ -6,7 +6,7 @@ import response, { validationErrors } from '../utils/response';
 import db from '../database/models';
 
 const {
-  Article, Tag, User, Rating, History
+  Article, Tag, User, Rating, History, ArticleClap
 } = db;
 
 /**
@@ -239,6 +239,8 @@ class ArticleController {
    */
   async getSingleArticle(req, res) {
     const { slug } = req.params;
+    const { id } = req.user;
+
     try {
       const article = await this.getArticle(slug);
       const readTime = await HelperUtils.estimateReadingTime(article.body);
@@ -246,6 +248,9 @@ class ArticleController {
         data.dataValues.readTime = readTime;
         return data;
       });
+
+      const clap = await this.getClap(id, article.id);
+
       if (req.user.id && req.user.id !== req.article.userId) {
         await History.create({
           userId: req.user.id,
@@ -253,9 +258,9 @@ class ArticleController {
           readingTime: readTime.text.split(' read')[0]
         });
       }
-      response(res).success({ article: singleArticle[0] });
+      response(res).success({ article: singleArticle[0], clap });
     } catch (error) {
-      return response(res).serverError({ errors: { server: ['database error'] } });
+      return response(res).serverError({ errors: { server: error } });
     }
   }
 
@@ -271,7 +276,6 @@ class ArticleController {
       },
       attributes: {
         exclude: [
-          'id',
           'userId'
         ]
       },
@@ -283,8 +287,24 @@ class ArticleController {
         {
           model: Tag,
           attributes: ['name']
-        }
+        },
       ]
+    });
+  }
+
+  /**
+   * @describe get user clap
+   * @param {*} userId
+   * @param {*} articleId
+   * @returns {boolean} true or false
+   */
+  getClap(userId, articleId) {
+    return ArticleClap.findOne({
+      where: {
+        userId,
+        articleId
+      },
+      attributes: ['clap']
     });
   }
 }
