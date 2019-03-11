@@ -5,9 +5,7 @@ import { AuthenticateUser } from '../middlewares';
 const profileRoutes = express.Router();
 
 // Fetch all users
-profileRoutes.get('/profiles',
-  AuthenticateUser.verifyUser,
-  Follow.profileList);
+profileRoutes.get('/profiles', AuthenticateUser.verifyUser, Follow.profileList);
 
 // Fetch all users following you
 profileRoutes.get('/profiles/followers',
@@ -30,17 +28,12 @@ profileRoutes.delete('/profiles/:username/follow',
   Follow.unfollowUser);
 
 // Get current profile
-profileRoutes.get('/user',
-  AuthenticateUser.verifyUser,
-  Users.getUser);
+profileRoutes.get('/user', AuthenticateUser.verifyUser, Users.getUser);
 
 // Update user profile
-profileRoutes.put('/user',
-  AuthenticateUser.verifyUser,
-  Users.updateUser);
+profileRoutes.put('/user', AuthenticateUser.verifyUser, Users.updateUser);
 
 // Get user profile
-profileRoutes.get('/profiles/:username',
-  Users.getUser);
+profileRoutes.get('/profiles/:username', Users.getUser);
 
 export default profileRoutes;

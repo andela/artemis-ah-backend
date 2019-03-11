@@ -197,8 +197,8 @@ describe('Testing Tags Endpoint', () => {
 });
 
 /*
-  * Test endpoint to like article.
-  */
+ * Test endpoint to like article.
+ */
 describe('Test endpoint to like article comment: POST /articles/:slug/comments/:id/like', () => {
   it('should return 404 for incorrect slug', (done) => {
     chai
@@ -227,29 +227,28 @@ describe('Test endpoint to like article comment: POST /articles/:slug/comments/:
 
   let commentId;
   it('should add a like when called first time by a user', (done) => {
-    ArticleComment
-      .create({
-        userId: 1,
-        articleId: createdArticle.id,
-        comment: 'This is a comment to test endpoint to toggle like an article comment',
-      })
-      .then((comment) => {
-        commentId = comment.id;
+    ArticleComment.create({
+      userId: 1,
+      articleId: createdArticle.id,
+      comment:
+        'This is a comment to test endpoint to toggle like an article comment'
+    }).then((comment) => {
+      commentId = comment.id;
 
-        chai
-          .request(app)
-          .post(`/api/articles/${createdArticle.slug}/comments/${commentId}/like`)
-          .set('authorization', `Bearer ${userToken}`)
-          .end((err, res) => {
-            expect(res.status).to.equal(200);
+      chai
+        .request(app)
+        .post(`/api/articles/${createdArticle.slug}/comments/${commentId}/like`)
+        .set('authorization', `Bearer ${userToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
 
-            const { body } = res;
-            expect(body.totalLikes).to.equal(1);
-            expect(body.liked).to.equal(true);
+          const { body } = res;
+          expect(body.totalLikes).to.equal(1);
+          expect(body.liked).to.equal(true);
 
-            done();
-          });
-      });
+          done();
+        });
+    });
   });
 
   it('should remove a like when called second time by the same user', (done) => {

@@ -3,6 +3,4 @@ import ArticleController from './article';
 import Comment from './articleComment';
 import Follow from './follow';
 
-export {
-  Users, ArticleController, Follow, Comment
-};
+export { Users, ArticleController, Follow, Comment };

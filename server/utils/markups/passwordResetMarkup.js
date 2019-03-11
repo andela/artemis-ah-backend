@@ -1,5 +1,4 @@
-const passwordResetMarkup = (username, email, hash) => (
-  `<!DOCTYPE html>
+const passwordResetMarkup = (username, email, hash) => `<!DOCTYPE html>
     <html lang="en"> 
     <head>
       <meta charset="UTF-8">
@@ -83,7 +82,6 @@ const passwordResetMarkup = (username, email, hash) => (
       </div>      
     </body>
   </html>
-`
-);
+`;
 
 export default passwordResetMarkup;

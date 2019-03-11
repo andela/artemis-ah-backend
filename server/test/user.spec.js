@@ -23,7 +23,6 @@ const secondVerifyURL = `/api/users/verifyemail${secondQueryURL}`;
 const thirdTestEmail = 'thatthirdemail@yahoo.com';
 const loginURL = '/api/users/login';
 
-
 describe('Test signup endpoint and email verification endpoint', () => {
   it("It should return a 404 if user don't exist during email verification", (done) => {
     chai
@@ -412,7 +411,7 @@ describe('Test login endpoint', () => {
   });
   it('should not log in a user without password', (done) => {
     const data = {
-      name: secondTestEmail,
+      name: secondTestEmail
     };
     chai
       .request(app)

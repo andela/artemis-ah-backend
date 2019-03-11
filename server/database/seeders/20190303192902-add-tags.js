@@ -1,16 +1,24 @@
 export default {
   up(queryInterface) {
-    return queryInterface.bulkInsert('Tags', [{
-      name: 'Food'
-    }, {
-      name: 'Technology'
-    }, {
-      name: 'Art'
-    }, {
-      name: 'Finance'
-    }, {
-      name: 'Health'
-    }], {});
+    return queryInterface.bulkInsert('Tags',
+      [
+        {
+          name: 'Food'
+        },
+        {
+          name: 'Technology'
+        },
+        {
+          name: 'Art'
+        },
+        {
+          name: 'Finance'
+        },
+        {
+          name: 'Health'
+        }
+      ],
+      {});
   },
 
   down(queryInterface) {

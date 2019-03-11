@@ -1,5 +1,4 @@
-const verifyEmailMarkup = (username, email, hash) => (
-  `<head>
+const verifyEmailMarkup = (username, email, hash) => `<head>
       <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
       <style>
         * {
@@ -87,7 +86,6 @@ const verifyEmailMarkup = (username, email, hash) => (
     })
     </script>
   </html>
-`
-);
+`;
 
 export default verifyEmailMarkup;

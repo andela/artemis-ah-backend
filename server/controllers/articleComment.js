@@ -30,11 +30,17 @@ class Comment {
       });
 
       const articleId = article.id;
-      const userComment = await ArticleComment.create({ articleId, comment, userId });
+      const userComment = await ArticleComment.create({
+        articleId,
+        comment,
+        userId
+      });
       delete userComment.dataValues.id;
       return response(res).created({ userComment });
     } catch (error) {
-      return response(res).serverError({ errors: { server: ['database error'] } });
+      return response(res).serverError({
+        errors: { server: ['database error'] }
+      });
     }
   }
 
@@ -51,18 +57,21 @@ class Comment {
 
     try {
       const { id } = commentRow;
-      const articleUpdate = await ArticleComment.update({ comment }, {
-        where: {
-          id
-        },
-        returning: true,
-        raw: true
-      });
+      const articleUpdate = await ArticleComment.update({ comment },
+        {
+          where: {
+            id
+          },
+          returning: true,
+          raw: true
+        });
       const userComment = articleUpdate[1][0];
       delete userComment.id;
       return response(res).success({ userComment });
     } catch (error) {
-      return response(res).serverError({ errors: { server: ['database error'] } });
+      return response(res).serverError({
+        errors: { server: ['database error'] }
+      });
     }
   }
 }

@@ -29,7 +29,7 @@ export default class Follow {
             model: User,
             as: 'follower',
             attributes: ['firstname', 'lastname', 'email', 'username', 'image']
-          },
+          }
         ]
       });
       if (users.length < 1) {
@@ -65,7 +65,7 @@ export default class Follow {
             model: User,
             as: 'following',
             attributes: ['firstname', 'lastname', 'email', 'username', 'image']
-          },
+          }
         ]
       });
       if (following.length < 1) {
@@ -148,13 +148,13 @@ export default class Follow {
         const follow = await Follower.find({
           where: {
             userId: id,
-            followee: username,
-          },
+            followee: username
+          }
         });
 
         if (!follow) {
           response(res).notFound({
-            message: 'user not found',
+            message: 'user not found'
           });
         } else {
           await follow.destroy();
@@ -196,7 +196,7 @@ export default class Follow {
             model: User,
             as: 'follower',
             attributes: ['id']
-          },
+          }
         ]
       });
 

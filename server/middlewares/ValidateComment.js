@@ -11,11 +11,11 @@ const { ArticleComment } = models;
  */
 class ValidateComment {
   /**
-     * @method validateMethods
-     * @description Validates registration details provided by user
-     * @param {object} commentId - Boolean to check if comment id is specified
-     * @returns {array} - Array of validation methods
-     */
+   * @method validateMethods
+   * @description Validates registration details provided by user
+   * @param {object} commentId - Boolean to check if comment id is specified
+   * @returns {array} - Array of validation methods
+   */
   static validateMethods(commentId = false) {
     const propsToValidate = [
       check('comment')
@@ -39,13 +39,13 @@ class ValidateComment {
   }
 
   /**
-     * @method validateUserDetails
-     * @description Validates registration details provided by user
-     * @param {object} req - The request object
-     * @param {object} res - The response object
-     * @param {callback} next - Callback method
-     * @returns {object} - JSON response object
-     */
+   * @method validateUserDetails
+   * @description Validates registration details provided by user
+   * @param {object} req - The request object
+   * @param {object} res - The response object
+   * @param {callback} next - Callback method
+   * @returns {object} - JSON response object
+   */
   static async validateComment(req, res, next) {
     const { commentId } = req.params;
     const errorFormatter = ({ msg }) => [msg];
@@ -63,12 +63,16 @@ class ValidateComment {
         raw: true
       });
       if (commentId && !commentRow) {
-        return response(res).notFound({ errors: { comment: ['Comment not found.'] } });
+        return response(res).notFound({
+          errors: { comment: ['Comment not found.'] }
+        });
       }
       req.commentRow = commentRow;
       return next();
     } catch (error) {
-      return response(res).serverError({ errors: { server: ['database error'] } });
+      return response(res).serverError({
+        errors: { server: ['database error'] }
+      });
     }
   }
 }

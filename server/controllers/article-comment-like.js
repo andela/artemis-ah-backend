@@ -29,8 +29,8 @@ class ArticleCommentLikeController {
       // Find article by slug.
       const article = await Article.findOne({
         where: {
-          slug: req.params.slug,
-        },
+          slug: req.params.slug
+        }
       });
 
       // Does article exists?
@@ -42,8 +42,8 @@ class ArticleCommentLikeController {
       const comment = await ArticleComment.findOne({
         where: {
           id: req.params.id,
-          articleId: article.id,
-        },
+          articleId: article.id
+        }
       });
 
       // Does comment exists?
@@ -77,8 +77,8 @@ class ArticleCommentLikeController {
       where: {
         userId: user.id,
         commentId: comment.id,
-        articleId: comment.articleId,
-      },
+        articleId: comment.articleId
+      }
     });
   }
 
@@ -91,12 +91,12 @@ class ArticleCommentLikeController {
     await ArticleCommentLike.create({
       userId: user.id,
       articleId: comment.articleId,
-      commentId: comment.id,
+      commentId: comment.id
     });
     const updatedComment = await comment.increment('totalLikes');
     return {
       totalLikes: updatedComment.totalLikes,
-      liked: true,
+      liked: true
     };
   }
 
@@ -110,13 +110,13 @@ class ArticleCommentLikeController {
       where: {
         userId: user.id,
         commentId: comment.id,
-        articleId: comment.articleId,
-      },
+        articleId: comment.articleId
+      }
     });
     const updatedComment = await comment.decrement('totalLikes');
     return {
       totalLikes: updatedComment.totalLikes,
-      liked: false,
+      liked: false
     };
   }
 }

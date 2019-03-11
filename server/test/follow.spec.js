@@ -169,7 +169,7 @@ describe('Test user follow and unfollow on user profile endpoint', () => {
       });
   });
 
-  it('It should return a 200 if a user isn\'t following anyone', (done) => {
+  it("It should return a 200 if a user isn't following anyone", (done) => {
     chai
       .request(app)
       .get(getUsersFollowingURL)
@@ -195,7 +195,7 @@ describe('Test user follow and unfollow on user profile endpoint', () => {
       });
   });
 
-  it('It should return 404 if user isn\'t found', (done) => {
+  it("It should return 404 if user isn't found", (done) => {
     chai
       .request(app)
       .delete(`${unfollowUserURL}/iSeeiReport/follow`)

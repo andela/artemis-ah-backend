@@ -94,13 +94,13 @@ class HelperUtils {
   }
 
   /**
-* @method calcArticleRating
-* @description Method that calculates new article rating
-* @param {number} currentRatingNo
-* @param {number} currentRating
-* @param {number} newRating
-* @return {unumber} The new rating for the article
-*/
+   * @method calcArticleRating
+   * @description Method that calculates new article rating
+   * @param {number} currentRatingNo
+   * @param {number} currentRating
+   * @param {number} newRating
+   * @return {unumber} The new rating for the article
+   */
   static calcArticleRating(currentRatingNo, currentRating, newRating) {
     if (currentRatingNo === 0) {
       return newRating;
