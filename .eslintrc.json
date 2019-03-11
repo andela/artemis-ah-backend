@@ -4,6 +4,9 @@
     "airbnb-base",
     "eslint-config-prettier"
   ],
+  "plugins": [
+    "eslint-plugin-prettier"
+  ],
   "env": {
     "node": true,
     "es6": true,
