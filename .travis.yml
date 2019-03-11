@@ -19,7 +19,6 @@ script:
   - export FACEBOOK_APP_SECRET="f63a934f47f2499286c251cc530b443c"
   - export FACEBOOK_RETURN_URL="/api/users/auth/facebook/redirect"
   - export SESSION_SECRET="asdfghjhkjlqwer"
-  - export SENDGRID_API_KEY="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"
   - npm test
   - npm run coveralls
 
