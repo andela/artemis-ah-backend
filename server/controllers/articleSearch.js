@@ -56,7 +56,7 @@ export default class ArticleSearch {
 
       return articles;
     } catch (err) {
-      return response(res).serverError();
+      return response(res).serverError({ errors: { server: ['database error'] } });
     }
   }
 
