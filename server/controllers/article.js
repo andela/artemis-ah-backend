@@ -10,7 +10,8 @@ const {
   Tag,
   User,
   Rating,
-  History
+  History,
+  ArticleComment
 } = db;
 
 /**
@@ -109,67 +110,66 @@ class ArticleController {
    * @returns {object} - Article details
    */
   getAll(req, res) {
-    let offset = 0; // Default offset.
+    try {
+      let offset = 0; // Default offset.
+      const { query } = req;
+      // If limit is specified.
+      const limit = query.limit ? query.limit : this.defaultLimit;
+      // If page is specified.
+      if (query.page) {
+        offset = (query.page - 1) * limit;
+      }
 
-    const { query } = req;
-    // If limit is specified.
-    const limit = query.limit ? query.limit : this.defaultLimit;
-    // If page is specified.
-    if (query.page) {
-      offset = (query.page - 1) * limit;
-    }
+      const sequelizeOptions = {
+        where: {},
+        offset, // Default is page 1
+        limit,
+        include: [
+          {
+            model: ArticleComment,
+            attributes: ['comment', 'totalLikes', 'updatedAt', 'createdAt']
+          },
+          {
+            model: User,
+            attributes: ['username', 'bio', 'image'],
+          },
+          {
+            model: Tag,
+            attributes: ['name']
+          }],
+        order: [
+          ['id', 'ASC'],
+        ]
+      };
 
-    const sequelizeOptions = {
-      where: {},
-      offset, // Default is page 1
-      limit,
-      include: [{
-        model: User,
-        attributes: ['username', 'bio', 'image'],
-      },
-      {
-        model: Tag,
-        attributes: ['name']
-      }],
-      attributes: [
-        'id',
-        'slug',
-        'title',
-        'description',
-        'body',
-        'rating',
-        'totalClaps',
-        'createdAt',
-        'updatedAt'
-      ],
-      order: [
-        ['id', 'ASC'],
-      ]
-    };
+      // If query author=? is in url, filter by author.
+      if (query.author) {
+        sequelizeOptions.where['$User.username$'] = query.author;
+      }
 
-    // If query author=? is in url, filter by author.
-    if (query.author) {
-      sequelizeOptions.where['$User.username$'] = query.author;
-    }
-
-    Article.findAll(sequelizeOptions).then((articles) => {
-      response(res).success({
-        articles: articles.map((article) => {
-          const readTime = HelperUtils.estimateReadingTime(article.body);
-          article.dataValues.readTime = readTime;
-          return article;
-        })
+      Article.findAll(sequelizeOptions).then((articles) => {
+        response(res).success({
+          articles: articles.map((article) => {
+            const readTime = HelperUtils.estimateReadingTime(article.body);
+            article.dataValues.readTime = readTime;
+            return article;
+          })
+        });
       });
-    });
+    } catch (err) {
+      response(res).serverError({
+        message: 'Server Error'
+      });
+    }
   }
 
   /**
-* rates an article
-* @method rateArticle
-* @param {object} req The request object from the route
-* @param {object} res The response object from the route
-* @returns {object} - Success message
-*/
+   * rates an article
+   * @method rateArticle
+   * @param {object} req The request object from the route
+   * @param {object} res The response object from the route
+   * @returns {object} - Success message
+   */
   async rateArticle(req, res) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -251,6 +251,20 @@ class ArticleController {
         data.dataValues.readTime = readTime;
         return data;
       });
+      const comments = await ArticleComment.findAll({
+        where: {
+          articleId: article.id
+        },
+        attributes: {
+          exclude: ['id', 'articleId', 'userId'],
+        },
+        include: [
+          {
+            model: User,
+            attributes: ['firstname', 'lastname', 'username', 'email', 'image']
+          }
+        ]
+      });
       if (req.user.id && req.user.id !== req.article.userId) {
         await History.create({
           userId: req.user.id,
@@ -258,7 +272,11 @@ class ArticleController {
           readingTime: readTime.text.split(' read')[0]
         });
       }
-      response(res).success({ article: singleArticle[0] });
+      response(res).success({ article: singleArticle.map((oneArticle) => {
+        oneArticle.dataValues.comments = comments;
+        return oneArticle;
+      })[0]
+      });
     } catch (error) {
       return response(res).serverError({ errors: { server: ['database error'] } });
     }
@@ -273,12 +291,6 @@ class ArticleController {
     return Article.findOne({
       where: {
         slug
-      },
-      attributes: {
-        exclude: [
-          'id',
-          'userId'
-        ]
       },
       include: [
         {

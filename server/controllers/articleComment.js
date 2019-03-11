@@ -1,6 +1,7 @@
 import models from '../database/models';
 import response from '../utils/response';
 import { favouriteArticleNotification, HelperUtils } from '../utils';
+import host from '../utils/markups';
 
 const { ArticleComment, Article, Bookmark, User } = models;
 
@@ -53,6 +54,11 @@ class Comment {
             'Bookmarked Article Notification',
             'Comment Notification',
             favouriteArticleNotification(userData.username, slug));
+
+          await HelperUtils.pusher('my-channel', 'my-event', {
+            data: 'Comment Update Alert',
+            link: `${host}api/articles/${slug}`
+          });
         }
       });
     } catch (error) {

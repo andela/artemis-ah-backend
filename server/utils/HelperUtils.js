@@ -126,7 +126,7 @@ class HelperUtils {
       key: process.env.PUSHER_APP_KEY,
       secret: process.env.PUSHER_APP_SECRET,
       cluster: 'eu',
-      encrypted: true
+      useTLS: true
     });
 
     pusher.trigger(channel, event, {
