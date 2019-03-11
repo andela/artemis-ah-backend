@@ -41,30 +41,34 @@ export default class ArticleClapToggle {
     const { id } = req.user;
     const { article } = req;
 
-    // heck if current user is author
-    if (article.userId === id) {
-      response(res).forbidden({ message: 'you cannot clap for your own article' });
-    } else {
-      // Add a clap
-      const clap = await ArticleClap.findOrCreate({
-        where: { userId: id, articleId: article.id },
-        defaults: { clap: true }
-      });
-
-      if (clap[1] === true) {
-        // Increament total claps on article
-        await ArticleClapToggle.incrementTotalClaps(article.totalClaps, article.id);
-
-        response(res).created({ message: 'you just clapped for this article' });
+    try {
+    // Check if current user is author
+      if (article.userId === id) {
+        response(res).forbidden({ message: 'you cannot clap for your own article' });
       } else {
-        await ArticleClap.destroy({
-          where: { userId: id, articleId: article.id }
+      // Add a clap
+        const clap = await ArticleClap.findOrCreate({
+          where: { userId: id, articleId: article.id },
+          defaults: { clap: true }
         });
-        // Decrease total claps on article
-        await ArticleClapToggle.decreaseTotalClaps(article.totalClaps, article.id);
 
-        response(res).success({ message: 'you just retrieved your clap' });
+        if (clap[1] === true) {
+        // Increament total claps on article
+          await ArticleClapToggle.incrementTotalClaps(article.totalClaps, article.id);
+
+          response(res).created({ message: 'you just clapped for this article' });
+        } else {
+          await ArticleClap.destroy({
+            where: { userId: id, articleId: article.id }
+          });
+          // Decrease total claps on article
+          await ArticleClapToggle.decreaseTotalClaps(article.totalClaps, article.id);
+
+          response(res).success({ message: 'you just retrieved your clap' });
+        }
       }
+    } catch (err) {
+      return response(res).serverError({ errors: { server: ['database error'] } });
     }
   }
 }
