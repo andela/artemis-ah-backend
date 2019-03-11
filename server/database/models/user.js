@@ -45,7 +45,12 @@ export default (sequelize, DataTypes) => {
       defaultValue: false,
       allowNull: false
     },
-    notification: {
+    emailNotification: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+      allowNull: false
+    },
+    inAppNotification: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
       allowNull: false

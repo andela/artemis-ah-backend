@@ -48,13 +48,14 @@ class Comment {
           attributes: ['email', 'username', 'notification'],
           where: { id: usersId }
         });
-        if (userData.notification === true) {
+        if (userData.emailNotification) {
           await HelperUtils.sendMail(userData.email,
             'Authors Haven <notification@authorshaven.com>',
             'Bookmarked Article Notification',
             'Comment Notification',
             favouriteArticleNotification(userData.username, slug));
-
+        }
+        if (userData.inAppNotification) {
           await HelperUtils.pusher('my-channel', 'my-event', {
             data: 'Comment Update Alert',
             link: `${host}api/articles/${slug}`

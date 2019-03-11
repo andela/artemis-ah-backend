@@ -11,7 +11,7 @@ const {
   User,
   Rating,
   History,
-  ArticleComment
+  ArticleClap
 } = db;
 
 /**
@@ -84,6 +84,27 @@ class ArticleController {
   }
 
   /**
+   * @description Deletes an article
+   * @param {*} req Request object
+   * @param {*} res Response object
+   * @returns {object} delete article confirmation
+   */
+  async delete(req, res) {
+    try {
+      const { article, user } = req;
+      const { id } = article;
+
+      if (article.userId !== user.id) response(res).forbidden({ message: 'forbidden' });
+      else {
+        await Article.destroy({ where: { id } });
+        return response(res).success({ message: 'article successfully deleted' });
+      }
+    } catch (err) {
+      return response(res).serverError({ errors: { server: ['database error'] } });
+    }
+  }
+
+  /**
    * Returns all tags
    * @method getTags
    * @param {object} req The request object
@@ -110,66 +131,66 @@ class ArticleController {
    * @returns {object} - Article details
    */
   getAll(req, res) {
-    try {
-      let offset = 0; // Default offset.
-      const { query } = req;
-      // If limit is specified.
-      const limit = query.limit ? query.limit : this.defaultLimit;
-      // If page is specified.
-      if (query.page) {
-        offset = (query.page - 1) * limit;
-      }
+    let offset = 0; // Default offset.
 
-      const sequelizeOptions = {
-        where: {},
-        offset, // Default is page 1
-        limit,
-        include: [
-          {
-            model: ArticleComment,
-            attributes: ['comment', 'totalLikes', 'updatedAt', 'createdAt']
-          },
-          {
-            model: User,
-            attributes: ['username', 'bio', 'image'],
-          },
-          {
-            model: Tag,
-            attributes: ['name']
-          }],
-        order: [
-          ['id', 'ASC'],
-        ]
-      };
-
-      // If query author=? is in url, filter by author.
-      if (query.author) {
-        sequelizeOptions.where['$User.username$'] = query.author;
-      }
-
-      Article.findAll(sequelizeOptions).then((articles) => {
-        response(res).success({
-          articles: articles.map((article) => {
-            const readTime = HelperUtils.estimateReadingTime(article.body);
-            article.dataValues.readTime = readTime;
-            return article;
-          })
-        });
-      });
-    } catch (err) {
-      response(res).serverError({
-        message: 'Server Error'
-      });
+    const { query } = req;
+    // If limit is specified.
+    const limit = query.limit ? query.limit : this.defaultLimit;
+    // If page is specified.
+    if (query.page) {
+      offset = (query.page - 1) * limit;
     }
+
+    const sequelizeOptions = {
+      where: {},
+      offset, // Default is page 1
+      limit,
+      include: [{
+        model: User,
+        attributes: ['username', 'bio', 'image'],
+      }, {
+        model: Tag,
+        attributes: ['name']
+      }],
+      attributes: [
+        'id',
+        'slug',
+        'title',
+        'description',
+        'body',
+        'rating',
+        'totalClaps',
+        'createdAt',
+        'updatedAt'
+      ],
+      order: [
+        ['id', 'ASC'],
+      ]
+    };
+
+    // If query author=? is in url, filter by author.
+    if (query.author) {
+      sequelizeOptions.where['$User.username$'] = query.author;
+    }
+
+    Article.findAll(sequelizeOptions).then((articles) => {
+      response(res).success({
+        articles: articles.map((article) => {
+          const readTime = HelperUtils.estimateReadingTime(article.body);
+          article.dataValues.readTime = readTime;
+          return article;
+        })
+      });
+    });
   }
 
   /**
-   * rates an article
-   * @method rateArticle
-   * @param {object} req The request object from the route
-   * @param {object} res The response object from the route
-   * @returns {object} - Success message
-   */
+* rates an article
+* @method rateArticle
+* @param {object} req The request object from the route
+* @param {object} res The response object from the route
+* @returns {object} - Success message
+*/
   async rateArticle(req, res) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -244,6 +265,8 @@ class ArticleController {
    */
   async getSingleArticle(req, res) {
     const { slug } = req.params;
+    const { id } = req.user;
+
     try {
       const article = await this.getArticle(slug);
       const readTime = await HelperUtils.estimateReadingTime(article.body);
@@ -251,20 +274,9 @@ class ArticleController {
         data.dataValues.readTime = readTime;
         return data;
       });
-      const comments = await ArticleComment.findAll({
-        where: {
-          articleId: article.id
-        },
-        attributes: {
-          exclude: ['id', 'articleId', 'userId'],
-        },
-        include: [
-          {
-            model: User,
-            attributes: ['firstname', 'lastname', 'username', 'email', 'image']
-          }
-        ]
-      });
+
+      const clap = await this.getClap(id, article.id);
+
       if (req.user.id && req.user.id !== req.article.userId) {
         await History.create({
           userId: req.user.id,
@@ -272,13 +284,9 @@ class ArticleController {
           readingTime: readTime.text.split(' read')[0]
         });
       }
-      response(res).success({ article: singleArticle.map((oneArticle) => {
-        oneArticle.dataValues.comments = comments;
-        return oneArticle;
-      })[0]
-      });
+      response(res).success({ article: singleArticle[0], clap });
     } catch (error) {
-      return response(res).serverError({ errors: { server: ['database error'] } });
+      return response(res).serverError({ errors: { server: error } });
     }
   }
 
@@ -292,6 +300,11 @@ class ArticleController {
       where: {
         slug
       },
+      attributes: {
+        exclude: [
+          'userId'
+        ]
+      },
       include: [
         {
           model: User,
@@ -300,8 +313,24 @@ class ArticleController {
         {
           model: Tag,
           attributes: ['name']
-        }
+        },
       ]
+    });
+  }
+
+  /**
+   * @describe get user clap
+   * @param {*} userId
+   * @param {*} articleId
+   * @returns {boolean} true or false
+   */
+  getClap(userId, articleId) {
+    return ArticleClap.findOne({
+      where: {
+        userId,
+        articleId
+      },
+      attributes: ['clap']
     });
   }
 }

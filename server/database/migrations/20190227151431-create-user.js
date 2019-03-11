@@ -48,7 +48,12 @@ export default {
       defaultValue: false,
       allowNull: false
     },
-    notification: {
+    emailNotification: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
+      allowNull: false
+    },
+    inAppNotification: {
       type: Sequelize.BOOLEAN,
       defaultValue: true,
       allowNull: false
