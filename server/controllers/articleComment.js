@@ -17,27 +17,16 @@ class Comment {
    * @returns {object} - The comment object
    */
   static async getComments(req, res) {
-    const { slug } = req.params;
-    try {
-      const article = await Article.findOne({
-        attributes: ['id'],
-        where: {
-          slug
-        }
-      });
-
-      const articleId = article.id;
-      const comments = await ArticleComment.findAll({
-        where: {
-          articleId
-        }
-      });
-      return response(res).success({
-        comments
-      });
-    } catch (error) {
-      return response(res).serverError({ errors: { server: ['database error'] } });
-    }
+    const articleId = req.article.id;
+    const comments = await ArticleComment.findAll({
+      where: {
+        articleId
+      }
+    });
+    return response(res).success({
+      message: 'Comments successfully retrieved',
+      comments
+    });
   }
 
   /**

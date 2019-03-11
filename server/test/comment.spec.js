@@ -171,6 +171,7 @@ describe('GET comments of a single article', () => {
       .get('/api/articles/this-is-an-article-1/comments')
       .end((err, res) => {
         expect(res.status).to.be.equal(200);
+        expect(res.body.message).to.be.equal('Comments successfully retrieved');
         done(err);
       });
   });

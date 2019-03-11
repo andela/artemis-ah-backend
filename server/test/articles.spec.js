@@ -564,7 +564,7 @@ describe('DELETE article /api/articles/:slug', () => {
       })
       .end((err, res) => {
         secondArticleSlug = res.body.article.slug;
-        done();
+        done(err);
       });
   });
 
