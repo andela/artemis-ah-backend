@@ -26,6 +26,10 @@ router.post('/articles/:slug/comment',
   ValidateComment.validateComment,
   Comment.postComment);
 
+router.get('/articles/:slug/comments',
+  AuthenticateArticle.verifyArticle,
+  Comment.getComments);
+
 router.get('/articles/tags',
   controller.getTags.bind(controller));
 router.get('/articles', controller.getAll.bind(controller));
