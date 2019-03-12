@@ -20,6 +20,7 @@ let createdArticle;
 let secondUserToken;
 let thirdUserToken;
 let articleSlug;
+let secondArticleSlug;
 const testData = [];
 export default testData;
 
@@ -527,6 +528,66 @@ describe('Stats Functionality', () => {
             expect(history.length).to.equal(0);
             done();
           });
+      });
+  });
+
+  it('should update user article', (done) => {
+    chai
+      .request(app)
+      .patch('/api/articles/this-is-an-article-1')
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        title: 'Title has changed',
+        body: 'Body has been modified',
+        description: 'Description has been transformed'
+      })
+      .end((err, res) => {
+        const { article } = res.body;
+        expect(article.title).to.equal('Title has changed');
+        expect(res.status).to.be.equal(200);
+        done(err);
+      });
+  });
+});
+
+describe('DELETE article /api/articles/:slug', () => {
+  before((done) => {
+    chai
+      .request(app)
+      .post('/api/articles')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({
+        title: 'some title',
+        description: 'some weird talky',
+        body: 'article body'
+      })
+      .end((err, res) => {
+        secondArticleSlug = res.body.article.slug;
+        done(err);
+      });
+  });
+
+  it('should return 403 if user is forbidden', (done) => {
+    chai
+      .request(app)
+      .delete(`/api/articles/${secondArticleSlug}`)
+      .set('Authorization', `Bearer ${secondUserToken}`)
+      .end((err, res) => {
+        expect(res.status).to.be.equal(403);
+        expect(res.body.message).to.be.an('string').to.equal('forbidden');
+        done(err);
+      });
+  });
+
+  it('should return 200 if article is deleted', (done) => {
+    chai
+      .request(app)
+      .delete(`/api/articles/${secondArticleSlug}`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        expect(res.status).to.be.equal(200);
+        expect(res.body.message).to.be.an('string').to.equal('article successfully deleted');
+        done(err);
       });
   });
 });

@@ -128,6 +128,27 @@ class ArticleController {
   }
 
   /**
+   * @description Deletes an article
+   * @param {*} req Request object
+   * @param {*} res Response object
+   * @returns {object} delete article confirmation
+   */
+  async delete(req, res) {
+    try {
+      const { article, user } = req;
+      const { id } = article;
+
+      if (article.userId !== user.id) response(res).forbidden({ message: 'forbidden' });
+      else {
+        await Article.destroy({ where: { id } });
+        return response(res).success({ message: 'article successfully deleted' });
+      }
+    } catch (err) {
+      return response(res).serverError({ errors: { server: ['database error'] } });
+    }
+  }
+
+  /**
    * Returns all tags
    * @method getTags
    * @param {object} req The request object
@@ -314,6 +335,38 @@ class ArticleController {
       response(res).success({ article: singleArticle[0], clap });
     } catch (error) {
       return response(res).serverError({ errors: { server: error } });
+    }
+  }
+
+  /** @method updateArticle
+   * @description Get a single article
+   * @param {object} req - The request object
+   * @param {object} res - The response object
+   * @returns {object} The updated article object
+   */
+  async updateArticle(req, res) {
+    const { slug } = req.params;
+    const { title, body, description, primaryImageUrl } = req.body;
+
+    try {
+      const updatedArticle = await Article.update({
+        title,
+        body,
+        description,
+        primaryImageUrl
+      }, {
+        where: {
+          slug
+        },
+        returning: true
+      });
+
+      return response(res).success({
+        message: 'Article updated successfully',
+        article: updatedArticle[1][0]
+      });
+    } catch (error) {
+      return response(res).serverError({ errors: { server: ['database error'] } });
     }
   }
 

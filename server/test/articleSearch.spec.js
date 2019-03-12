@@ -12,8 +12,31 @@ describe('test search', () => {
       .get('/api/search?title= This')
       .end((err, res) => {
         expect(res).to.have.status(200);
-        expect(res.body.articles).to.be.an('array');
+        expect(res.body.allResults).to.be.an('array');
         done();
+      });
+  });
+
+  it('should return a 200 if author is found in filter result', (done) => {
+    chai
+      .request(app)
+      .get('/api/filter/authors?title=Great')
+      .end((err, res) => {
+        expect(res.status).to.be.equal(200);
+        const { users } = res.body;
+        expect(users[0].firstname).to.be.equal('Great');
+        done(err);
+      });
+  });
+
+  it('should return a 404 if author is not found in filter result', (done) => {
+    chai
+      .request(app)
+      .get('/api/filter/authors?title=Rhaegal')
+      .end((err, res) => {
+        expect(res.status).to.be.equal(404);
+        expect(res.body.message).to.be.equal('No such author exists.');
+        done(err);
       });
   });
 
@@ -43,7 +66,7 @@ describe('test filter', () => {
       });
   });
 
-  it('should return 404 error wen title is not found', (done) => {
+  it('should return 404 error when title is not found', (done) => {
     chai
       .request(app)
       .get('/api/filter?title=bland morning')

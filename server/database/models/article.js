@@ -28,6 +28,10 @@ export default (sequelize, DataTypes) => {
     Article.hasMany(models.ArticleComment, {
       foreignKey: 'id'
     });
+    Article.hasMany(models.Report, {
+      foreignKey: 'articleId',
+      as: 'reports'
+    });
     Article.belongsToMany(models.User, {
       through: 'Bookmark',
       foreignKey: 'articleId',
