@@ -5,7 +5,6 @@ import host from '../utils/markups';
 
 const {
   ArticleComment,
-  Article,
   Bookmark,
   User,
   Notification,
@@ -50,15 +49,9 @@ class Comment {
     const { username } = req.user;
     const { comment } = req.body;
     const { slug } = req.params;
+    const { article } = req;
 
     try {
-      const article = await Article.findOne({
-        attributes: ['id', 'title'],
-        where: {
-          slug
-        }
-      });
-
       const articleId = article.id;
       const userComment = await ArticleComment.create({ articleId, comment, userId });
 

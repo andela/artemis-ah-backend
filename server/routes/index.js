@@ -10,11 +10,11 @@ import notificationRoutes from './notifications';
 
 const router = express.Router();
 
+router.use(bookmarkRoutes);
 router.use(articleRoutes);
 router.use(authRoute);
 router.use(profileRoutes);
 router.use(reportRoutes);
-router.use(bookmarkRoutes);
 router.use(articleClapRoute);
 router.use(articleSearchRoute);
 router.use(notificationRoutes);

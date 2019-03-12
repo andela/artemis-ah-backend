@@ -18,7 +18,7 @@ describe('Test for the bookmark route', () => {
   it('It should return 201 if the bookmark is created', (done) => {
     chai
       .request(app)
-      .post(`/api/bookmark/${testData[0]}`)
+      .post(`/api/articles/${testData[0]}/bookmark`)
       .set('authorization', `Bearer ${testData[1]}`)
       .end((err, res) => {
         expect(res.status).to.equal(201);
@@ -31,7 +31,7 @@ describe('Test for the bookmark route', () => {
   it('It should return 400 if you have already bookmarked an article', (done) => {
     chai
       .request(app)
-      .post(`/api/bookmark/${testData[0]}`)
+      .post(`/api/articles/${testData[0]}/bookmark`)
       .set('authorization', `Bearer ${testData[1]}`)
       .end((err, res) => {
         expect(res.status).to.equal(400);
@@ -44,7 +44,7 @@ describe('Test for the bookmark route', () => {
   it('It should return 401 if token is invalid', (done) => {
     chai
       .request(app)
-      .post(`/api/bookmark/${testData[0]}`)
+      .post(`/api/articles/${testData[0]}/bookmark`)
       .set('authorization', `Bearer ${invalidUser}`)
       .end((err, res) => {
         expect(res.status).to.equal(401);
@@ -56,7 +56,7 @@ describe('Test for the bookmark route', () => {
   it('It should return 404 if the article doesn\'t exist', (done) => {
     chai
       .request(app)
-      .post(`/api/bookmark/${'this-is-not-in-existence-10000'}`)
+      .post(`/api/articles/${'this-is-not-in-existence-10000'}/bookmark`)
       .set('authorization', `Bearer ${testData[1]}`)
       .end((err, res) => {
         expect(res.status).to.equal(404);
@@ -95,7 +95,7 @@ describe('Test for the bookmark route', () => {
   it('It should return 401 if token is invalid', (done) => {
     chai
       .request(app)
-      .get('/api/bookmark')
+      .get('/api/articles/bookmarks')
       .set('authorization', `Bearer ${invalidUser}`)
       .end((err, res) => {
         expect(res.status).to.equal(401);
@@ -107,7 +107,7 @@ describe('Test for the bookmark route', () => {
   it('It should return 200 if a has no bookmark', (done) => {
     chai
       .request(app)
-      .get('/api/bookmark')
+      .get('/api/articles/bookmarks')
       .set('authorization', `Bearer ${testData[2]}`)
       .end((err, res) => {
         expect(res.status).to.equal(200);
@@ -120,7 +120,7 @@ describe('Test for the bookmark route', () => {
   it('It should return 200 if the bookmarks are fetched successfully', (done) => {
     chai
       .request(app)
-      .get('/api/bookmark')
+      .get('/api/articles/bookmarks')
       .set('authorization', `Bearer ${testData[1]}`)
       .end((err, res) => {
         expect(res.status).to.equal(200);

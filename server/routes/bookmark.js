@@ -4,7 +4,7 @@ import { AuthenticateUser, AuthenticateArticle } from '../middlewares';
 
 const bookmarkRoutes = express.Router();
 
-bookmarkRoutes.post('/bookmark/:slug',
+bookmarkRoutes.post('/articles/:slug/bookmark',
   AuthenticateUser.verifyUser,
   AuthenticateArticle.verifyArticle,
   BookmarkController.createBookmark);
@@ -14,7 +14,7 @@ bookmarkRoutes.delete('/articles/:slug/bookmark',
   AuthenticateArticle.verifyArticle,
   BookmarkController.removeBookmark);
 
-bookmarkRoutes.get('/bookmark',
+bookmarkRoutes.get('/articles/bookmarks',
   AuthenticateUser.verifyUser,
   BookmarkController.getBookmarks);
 

@@ -12,7 +12,7 @@ const secretKey = process.env.SECRET_KEY;
 /**
  * @class HelperUtils
  * @description Specifies reusable helper methods
- * @exports HelperUtils4
+ * @exports HelperUtils
  */
 class HelperUtils {
   /**
