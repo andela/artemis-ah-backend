@@ -1,13 +1,13 @@
 import db from '../database/models';
 import { response } from '../utils';
 
-const { Notification } = db;
+const { UserNotification, Notification } = db;
 
 /**
  * @description Controller to authenticate users
  * @return {undefined}
  */
-export default class OfflineNotifications {
+export default class Notifications {
   /**
    * @description controller method that handles get a specific users comment notification
    *
@@ -18,11 +18,15 @@ export default class OfflineNotifications {
   static async commentNotifications(req, res) {
     const { id } = req.user;
     try {
-      const notifications = await Notification.findAll({
+      const notifications = await UserNotification.findAll({
         where: {
-          metaId: id,
-          type: 'comment'
-        }
+          userId: id,
+          isRead: false,
+          '$Notification.type$': 'comment'
+        },
+        include: [{
+          model: Notification
+        }]
       });
       response(res).created({
         message: 'All comment notifications recieved',

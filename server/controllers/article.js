@@ -12,7 +12,8 @@ const {
   Rating,
   History,
   ArticleClap,
-  Notification
+  Notification,
+  UserNotification
 } = db;
 
 /**
@@ -276,20 +277,22 @@ class ArticleController {
         return data;
       });
 
-      const notification = Notification.findAll({
+      const notify = await UserNotification.findOne({
         where: {
-          metaId: id,
-          title: article.title,
-          type: 'comment'
-        }
+          userId: id,
+          isRead: false,
+          '$Notification.type$': 'comment'
+        },
+        include: [{
+          model: Notification
+        }]
       });
 
-      if (notification.length > 0) {
-        await Notification.update({ isRead: true }, {
+      if (notify) {
+        await UserNotification.update({ isRead: true }, {
           where: {
-            metaId: id,
-            type: 'comment',
-            title: article.title,
+            userId: id,
+            notificationId: notify.id,
           }
         });
       }

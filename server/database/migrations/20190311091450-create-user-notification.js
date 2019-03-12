@@ -1,26 +1,21 @@
 export default {
   up(queryInterface, Sequelize) {
-    return queryInterface.createTable('Notifications', {
+    return queryInterface.createTable('UserNotifications', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      message: {
-        type: Sequelize.STRING
-      },
-      metaId: {
+      userId: {
         type: Sequelize.INTEGER
       },
-      type: {
-        type: Sequelize.STRING
+      notificationId: {
+        type: Sequelize.INTEGER
       },
-      title: {
-        type: Sequelize.STRING
-      },
-      url: {
-        type: Sequelize.STRING
+      isRead: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       createdAt: {
         allowNull: false,
@@ -32,5 +27,5 @@ export default {
       }
     });
   },
-  down: queryInterface => queryInterface.dropTable('Notifications')
+  down: queryInterface => queryInterface.dropTable('UserNotifications')
 };

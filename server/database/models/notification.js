@@ -13,15 +13,15 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING
     },
     url: {
-      type: DataTypes.TEXT
-    },
-    isRead: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
+      type: DataTypes.STRING
     },
   }, {});
-  Notification.associate = () => {
-    // associations can be defined here
+  Notification.associate = (models) => {
+    const { UserNotification } = models;
+
+    Notification.hasMany(UserNotification, {
+      foreignKey: 'id'
+    });
   };
   return Notification;
 };

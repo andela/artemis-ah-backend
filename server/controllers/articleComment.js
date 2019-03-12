@@ -3,7 +3,14 @@ import response from '../utils/response';
 import { favouriteArticleNotification, HelperUtils } from '../utils';
 import host from '../utils/markups';
 
-const { ArticleComment, Article, Bookmark, User, Notification } = models;
+const {
+  ArticleComment,
+  Article,
+  Bookmark,
+  User,
+  Notification,
+  UserNotification
+} = models;
 
 /**
  * @class ArticleComment
@@ -21,6 +28,7 @@ class Comment {
   static async postComment(req, res) {
     const { slug } = req.params;
     const userId = req.user.id;
+    const { username } = req.user;
     const { comment } = req.body;
 
     try {
@@ -57,18 +65,24 @@ class Comment {
         }
 
         if (userData.inAppNotification) {
-          await HelperUtils.pusher('notifications', `event-${userData.id}`, {
-            alert: 'New Comment Alert',
+          await HelperUtils.pusher(`channel-${userData.id}`, 'notification', {
+            message: `${username} commented on a post you bookmarked`,
             title: article.title,
+            type: 'comment',
             url: `${host}api/articles/${slug}`
           });
 
-          await Notification.create({
-            message: 'New Comment Alert',
+          const notification = await Notification.create({
+            message: `${username} commented on the post "${article.title}"`,
             metaId: userData.id,
             type: 'comment',
             title: article.title,
             url: `${host}api/articles/${slug}`,
+          });
+
+          await UserNotification.create({
+            userId: userData.id,
+            notificationId: notification.dataValues.id,
           });
         }
       });

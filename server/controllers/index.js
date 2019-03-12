@@ -6,7 +6,7 @@ import ArticleClap from './articleClap';
 import Report from './report';
 import BookmarkController from './bookmark';
 import ArticleSearch from './articleSearch';
-import OfflineNotifications from './offlinenotification';
+import Notifications from './notification';
 
 export {
   Users,
@@ -17,5 +17,5 @@ export {
   ArticleClap,
   ArticleSearch,
   Report,
-  OfflineNotifications
+  Notifications
 };

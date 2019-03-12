@@ -121,10 +121,10 @@ class HelperUtils {
    * @description Method that Initializes Pusher and starts trigger
    * @param {string} channel
    * @param {string} event
-   * @param {string} message
+   * @param {string} data
    * @return {undefined}
    */
-  static pusher(channel, event, message) {
+  static pusher(channel, event, data) {
     const pusher = new Pusher({
       appId: process.env.PUSHER_APP_ID,
       key: process.env.PUSHER_APP_KEY,
@@ -134,7 +134,7 @@ class HelperUtils {
     });
 
     pusher.trigger(channel, event, {
-      message
+      data
     });
   }
 }
