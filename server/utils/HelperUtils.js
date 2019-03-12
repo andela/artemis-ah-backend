@@ -91,6 +91,10 @@ class HelperUtils {
    */
   static estimateReadingTime(articleBody) {
     const estimatedTime = readingTime(articleBody);
+    if (estimatedTime.minutes < 1) {
+      estimatedTime.text = '< 1 min read';
+      return estimatedTime;
+    }
     return estimatedTime;
   }
 

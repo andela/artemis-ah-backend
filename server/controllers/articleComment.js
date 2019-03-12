@@ -3,7 +3,7 @@ import response from '../utils/response';
 import { favouriteArticleNotification, HelperUtils } from '../utils';
 import host from '../utils/markups';
 
-const { ArticleComment, Article, Bookmark, User } = models;
+const { ArticleComment, Article, Bookmark, User, Notification } = models;
 
 /**
  * @class ArticleComment
@@ -25,7 +25,7 @@ class Comment {
 
     try {
       const article = await Article.findOne({
-        attributes: ['id'],
+        attributes: ['id', 'title'],
         where: {
           slug
         }
@@ -45,7 +45,7 @@ class Comment {
 
       bookmarks.forEach(async (usersId) => {
         const userData = await User.findOne({
-          attributes: ['email', 'username', 'notification'],
+          attributes: ['id', 'email', 'username', 'emailNotification', 'inAppNotification'],
           where: { id: usersId }
         });
         if (userData.emailNotification) {
@@ -55,10 +55,20 @@ class Comment {
             'Comment Notification',
             favouriteArticleNotification(userData.username, slug));
         }
+
         if (userData.inAppNotification) {
-          await HelperUtils.pusher('my-channel', 'my-event', {
-            data: 'Comment Update Alert',
-            link: `${host}api/articles/${slug}`
+          await HelperUtils.pusher('notifications', `event-${userData.id}`, {
+            alert: 'New Comment Alert',
+            title: article.title,
+            url: `${host}api/articles/${slug}`
+          });
+
+          await Notification.create({
+            message: 'New Comment Alert',
+            metaId: userData.id,
+            type: 'comment',
+            title: article.title,
+            url: `${host}api/articles/${slug}`,
           });
         }
       });

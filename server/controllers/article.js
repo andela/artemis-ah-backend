@@ -1,4 +1,4 @@
-/* eslint-disable class-methods-use-this */
+/* eslint class-methods-use-this: "off" */
 import slugify from 'slug';
 import { validationResult } from 'express-validator/check';
 import { HelperUtils } from '../utils';
@@ -11,7 +11,8 @@ const {
   User,
   Rating,
   History,
-  ArticleClap
+  ArticleClap,
+  Notification
 } = db;
 
 /**
@@ -274,6 +275,24 @@ class ArticleController {
         data.dataValues.readTime = readTime;
         return data;
       });
+
+      const notification = Notification.findAll({
+        where: {
+          metaId: id,
+          title: article.title,
+          type: 'comment'
+        }
+      });
+
+      if (notification.length > 0) {
+        await Notification.update({ isRead: true }, {
+          where: {
+            metaId: id,
+            type: 'comment',
+            title: article.title,
+          }
+        });
+      }
 
       const clap = await this.getClap(id, article.id);
 
