@@ -30,7 +30,7 @@ export default class Notifications {
       });
       response(res).created({
         message: 'All comment notifications recieved',
-        notifications
+        notifications: notifications.map(notify => notify.Notification)
       });
     } catch (err) {
       return response(res).sendData(500, err);

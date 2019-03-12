@@ -130,6 +130,19 @@ describe('Test for the bookmark route', () => {
       });
   });
 
+  it('should create a new comment', (done) => {
+    chai.request(app)
+      .post(`/api/articles/${testData[0]}/comment`)
+      .set('authorization', `Bearer ${testData[1]}`)
+      .send({
+        comment: 'This is a random comment'
+      })
+      .end((err, res) => {
+        expect(res.status).to.be.equal(201);
+        done(err);
+      });
+  });
+
   it('It should return 200 if the bookmark is deleted or removed', (done) => {
     chai
       .request(app)

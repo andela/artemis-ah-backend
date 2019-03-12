@@ -76,7 +76,7 @@ class Comment {
             'Comment Notification',
             favouriteArticleNotification(userData.username, slug));
         }
-
+        console.log(userData.inAppNotification, '**************************************');
         if (userData.inAppNotification) {
           await HelperUtils.pusher(`channel-${userData.id}`, 'notification', {
             message: `${username} commented on a post you bookmarked`,
@@ -84,7 +84,7 @@ class Comment {
             type: 'comment',
             url: `${host}api/articles/${slug}`
           });
-
+          console.log(userData.inAppNotification, '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
           const notification = await Notification.create({
             message: `${username} commented on the post "${article.title}"`,
             metaId: userData.id,
