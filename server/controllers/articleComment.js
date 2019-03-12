@@ -19,17 +19,37 @@ const {
  */
 class Comment {
   /**
+   * @method getComments
+   * @description - Gets all comments for a single article
+   * @param {object} req - The request object
+   * @param {object} res - The response object
+   * @returns {object} - The comment object
+   */
+  static async getComments(req, res) {
+    const articleId = req.article.id;
+    const comments = await ArticleComment.findAll({
+      where: {
+        articleId
+      }
+    });
+    return response(res).success({
+      message: 'Comments successfully retrieved',
+      comments
+    });
+  }
+
+  /**
    * @method postComment
    * @description - Posts comment to the database
    * @param {object} req - The request object
    * @param {object} res - The response object
-   * @returns {object} - The article object
+   * @returns {object} - The comment object
    */
   static async postComment(req, res) {
-    const { slug } = req.params;
     const userId = req.user.id;
     const { username } = req.user;
     const { comment } = req.body;
+    const { slug } = req.params;
 
     try {
       const article = await Article.findOne({
@@ -96,7 +116,7 @@ class Comment {
    * @description - Updates comment
    * @param {object} req - The request object
    * @param {object} res - The response object
-   * @returns {object} - The updated article object
+   * @returns {object} - The updated comment object
    */
   static async updateComment(req, res) {
     const { commentRow } = req;
@@ -125,7 +145,7 @@ class Comment {
    * @description - Deletes comment
    * @param {object} req - The request object
    * @param {object} res - The response object
-   * @returns {object} - The updated article object
+   * @returns {object} - response message
    */
   static async deleteComment(req, res) {
     const { commentRow } = req;

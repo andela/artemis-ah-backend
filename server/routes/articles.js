@@ -26,6 +26,10 @@ router.post('/articles/:slug/comment',
   ValidateComment.validateComment,
   Comment.postComment);
 
+router.get('/articles/:slug/comments',
+  AuthenticateArticle.verifyArticle,
+  Comment.getComments);
+
 router.get('/articles/tags',
   controller.getTags.bind(controller));
 router.get('/articles', controller.getAll.bind(controller));
@@ -49,6 +53,10 @@ router.get('/articles/:slug/rating',
   AuthenticateArticle.verifyArticle,
   controller.getRatings.bind(controller));
 
+router.patch('/articles/:slug',
+  AuthenticateUser.verifyUser,
+  AuthenticateArticle.verifyArticle,
+  controller.updateArticle.bind(controller));
 router.patch('/articles/:slug/comment/:commentId',
   AuthenticateUser.verifyUser,
   AuthenticateArticle.verifyArticle,

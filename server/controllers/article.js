@@ -312,6 +312,38 @@ class ArticleController {
     }
   }
 
+  /** @method updateArticle
+   * @description Get a single article
+   * @param {object} req - The request object
+   * @param {object} res - The response object
+   * @returns {object} The updated article object
+   */
+  async updateArticle(req, res) {
+    const { slug } = req.params;
+    const { title, body, description, primaryImageUrl } = req.body;
+
+    try {
+      const updatedArticle = await Article.update({
+        title,
+        body,
+        description,
+        primaryImageUrl
+      }, {
+        where: {
+          slug
+        },
+        returning: true
+      });
+
+      return response(res).success({
+        message: 'Article updated successfully',
+        article: updatedArticle[1][0]
+      });
+    } catch (error) {
+      return response(res).serverError({ errors: { server: ['database error'] } });
+    }
+  }
+
   /** @method getArticle
    * @description Get an article with all it's details
    * @param {object} slug - Article slug
