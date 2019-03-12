@@ -195,6 +195,18 @@ describe('Test user follow and unfollow on user profile endpoint', () => {
       });
   });
 
+  it('It should return 404 if user is not been followed while trying to unfollow', (done) => {
+    chai
+      .request(app)
+      .delete(`${followUserUrl}/iSeeiReport/follow`)
+      .set('authorization', `Bearer ${token1}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(404);
+        expect(res.body.message).to.equal('you are not following iSeeiReport');
+        done();
+      });
+  });
+
   it("It should return 404 if user isn't found", (done) => {
     chai
       .request(app)

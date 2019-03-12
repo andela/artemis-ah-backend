@@ -99,6 +99,28 @@ paths:
           description: Success
       security:
         - authorization: []
+
+    delete:
+      tags:
+        - article
+      summary: Deletes an article
+      description: Deletes article with slug conntained in parameter
+      produces:
+          - application/json
+      parameters: 
+        - name: "slug"
+          in: "path"
+          description: "slug of the article the comment belongs to"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "article deleted successfully"
+        403:
+          description: "forbidden"
+        404:
+          description: "article not found"
+              
   /articles/{slug}/comments/{id}/like:
     post:
       tags:

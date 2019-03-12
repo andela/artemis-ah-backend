@@ -41,7 +41,7 @@ export default class Follow {
         });
       }
     } catch (err) {
-      response(res).serverError({ message: 'Could not get followers' });
+      return response(res).serverError({ message: 'Could not get followers' });
     }
   }
 
@@ -77,7 +77,7 @@ export default class Follow {
         });
       }
     } catch (err) {
-      response(res).serverError({ message: 'Could not get following' });
+      return response(res).serverError({ message: 'Could not get following' });
     }
   }
 
@@ -92,48 +92,42 @@ export default class Follow {
     const { id } = req.user;
     const { username } = req.params;
     try {
-      if (username === req.user.username) {
-        response(res).forbidden({
-          message: 'you cannot follow yourself'
+      // Get the user the current user wants to follow.
+      const followee = await User.findOne({
+        where: { username }
+      });
+      if (!followee) {
+        return response(res).notFound(`User ${username} does not exists.`);
+      }
+      if (followee.id === id) {
+        return response(res).forbidden('you cannot follow yourself');
+      }
+
+      // Get follow record
+      const followRecord = await Follower.findOne({
+        where: {
+          userId: followee.id,
+          followerId: id
+        }
+      });
+      // Is user currently following the person?
+      if (!followRecord) {
+        await Follower.create({
+          userId: followee.id, // ID of the user to be followed
+          followerId: id, // ID of the person following the user.
+          followee: username // Obsolete
+        });
+
+        response(res).created({
+          message: `you just followed ${username}`
         });
       } else {
-        // Get user the current user wants to follow.
-        const followee = await User.findOne({
-          where: { username }
+        response(res).forbidden({
+          message: `you are already following ${username}`
         });
-        if (!followee) {
-          return response(res).notFound(`User ${username} does not exists.`);
-        }
-        if (followee.id === id) {
-          return response(res).forbidden('You can\'t follow yourself');
-        }
-
-        // Get follow record
-        const followRecord = await Follower.findOne({
-          where: {
-            userId: followee.id,
-            followerId: id
-          }
-        });
-        // Is user currently following the person?
-        if (!followRecord) {
-          await Follower.create({
-            userId: followee.id, // ID of the user to be followed
-            followerId: id, // ID of the person following the user.
-            followee: username // Obsolete
-          });
-
-          response(res).created({
-            message: `you just followed ${username}`
-          });
-        } else {
-          response(res).forbidden({
-            message: `you are already following ${username}`
-          });
-        }
       }
     } catch (err) {
-      response(res).serverError({ message: 'Could not follow user' });
+      return response(res).serverError({ message: 'Could not follow user' });
     }
   }
 
@@ -187,7 +181,7 @@ export default class Follow {
         }
       }
     } catch (err) {
-      response(res).serverError({ message: 'Could not unfollow user' });
+      return response(res).serverError({ message: 'Could not unfollow user' });
     }
   }
 
@@ -236,7 +230,7 @@ export default class Follow {
         profiles
       });
     } catch (err) {
-      response(res).serverError({ message: 'Could not get user profiles' });
+      return response(res).serverError({ message: 'Could not get user profiles' });
     }
   }
 }

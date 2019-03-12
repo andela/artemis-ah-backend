@@ -13,6 +13,12 @@ router.post('/articles',
   AuthenticateUser.verifyUser, // User must be logged in first
   createArticleValidation, // Validate user input
   controller.create.bind(controller));
+
+router.delete('/articles/:slug',
+  AuthenticateUser.verifyUser,
+  AuthenticateArticle.verifyArticle,
+  controller.delete.bind(controller));
+
 router.post('/articles/:slug/comment',
   AuthenticateUser.verifyUser,
   AuthenticateArticle.verifyArticle,
@@ -20,7 +26,13 @@ router.post('/articles/:slug/comment',
   ValidateComment.validateComment,
   Comment.postComment);
 
-router.get('/articles/tags', controller.getTags.bind(controller));
+router.get('/articles/:slug/comments',
+  AuthenticateArticle.verifyArticle,
+  Comment.getComments);
+
+router.get('/articles/tags',
+  controller.getTags.bind(controller));
+
 router.get('/articles', controller.getAll.bind(controller));
 router.get('/articles/:slug',
   AuthenticateArticle.verifyArticle,
@@ -42,6 +54,10 @@ router.get('/articles/:slug/rating',
   AuthenticateArticle.verifyArticle,
   controller.getRatings.bind(controller));
 
+router.patch('/articles/:slug',
+  AuthenticateUser.verifyUser,
+  AuthenticateArticle.verifyArticle,
+  controller.updateArticle.bind(controller));
 router.patch('/articles/:slug/comment/:commentId',
   AuthenticateUser.verifyUser,
   AuthenticateArticle.verifyArticle,
