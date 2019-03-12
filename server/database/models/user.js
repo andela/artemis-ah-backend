@@ -50,7 +50,7 @@ export default (sequelize, DataTypes) => {
     },
     {});
   User.associate = (models) => {
-    const { Follower, Bookmark, Article, ArticleClap } = models;
+    const { Follower, Bookmark, Article, ArticleClap, UserNotification } = models;
     User.belongsToMany(User, {
       through: Follower,
       foreignKey: 'userId',
@@ -101,6 +101,9 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId',
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE'
+    });
+    User.hasMany(UserNotification, {
+      foreignKey: 'id'
     });
   };
   return User;

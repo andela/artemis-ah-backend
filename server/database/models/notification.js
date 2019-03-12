@@ -5,8 +5,12 @@ export default (sequelize, DataTypes) => {
     type: DataTypes.STRING,
     url: DataTypes.STRING
   }, {});
-  Notification.associate = () => {
+  Notification.associate = (models) => {
     // associations can be defined here
+    const { UserNotification } = models;
+    Notification.hasMany(UserNotification, {
+      foreignKey: 'id',
+    });
   };
   return Notification;
 };

@@ -17,10 +17,10 @@ export default class Follow {
    * @return {undefined}
    */
   static async fetchFollowers(req, res) {
-    const { username } = req.user;
+    const { id } = req.user;
     try {
       const users = await Follower.findAll({
-        where: { followee: username },
+        where: { userId: id },
         include: [
           {
             model: User,
@@ -56,7 +56,7 @@ export default class Follow {
     const { id } = req.user;
     try {
       const following = await Follower.findAll({
-        where: { userId: id },
+        where: { followerId: id },
         include: [
           {
             model: User,
@@ -97,21 +97,32 @@ export default class Follow {
           message: 'you cannot follow yourself'
         });
       } else {
+        // Get user the current user wants to follow.
         const followee = await User.findOne({
           where: { username }
         });
-        const user = await Follower.findOne({
+        if (!followee) {
+          return response(res).notFound(`User ${username} does not exists.`);
+        }
+        if (followee.id === id) {
+          return response(res).forbidden('You can\'t follow yourself');
+        }
+
+        // Get follow record
+        const followRecord = await Follower.findOne({
           where: {
-            userId: id,
-            followee: username
+            userId: followee.id,
+            followerId: id
           }
         });
-        if (!user && followee) {
+        // Is user currently following the person?
+        if (!followRecord) {
           await Follower.create({
-            userId: id,
-            followerId: followee.id,
-            followee: username
+            userId: followee.id, // ID of the user to be followed
+            followerId: id, // ID of the person following the user.
+            followee: username // Obsolete
           });
+
           response(res).created({
             message: `you just followed ${username}`
           });
@@ -137,24 +148,39 @@ export default class Follow {
     const { id } = req.user;
     const { username } = req.params;
     try {
-      if (username === req.user.username) {
+      const followee = await User.findOne({
+        where: {
+          username
+        }
+      });
+      // Does user exists?
+      if (!followee) {
+        return response(res).notFound(`User ${username} does not exists`);
+      }
+
+      // Is user to be unfollowed same as logged in user
+      if (followee.id === id) {
         response(res).forbidden({
           message: 'you cannot unfollow yourself'
         });
       } else {
-        const follow = await Follower.find({
+        // Get follow record.
+        const followRecord = await Follower.find({
           where: {
-            userId: id,
-            followee: username
+            userId: followee.id,
+            followerId: id
           }
         });
 
-        if (!follow) {
+        // Is user following this person?
+        if (!followRecord) {
           response(res).notFound({
-            message: 'user not found'
+            message: `you are not following ${username}`,
           });
         } else {
-          await follow.destroy();
+          // Delete follow record.
+          await followRecord.destroy();
+
           response(res).success({
             message: `${username} has been unfollowed`
           });
@@ -174,7 +200,7 @@ export default class Follow {
    */
   static async profileList(req, res) {
     const { Op } = Sequelize;
-    const { username } = req.user;
+    const { id, username } = req.user;
 
     try {
       const allUsers = await User.findAll({
@@ -187,7 +213,7 @@ export default class Follow {
       });
 
       const userFollow = await Follower.findAll({
-        where: { followee: username },
+        where: { followerId: id },
         include: [
           {
             model: User,

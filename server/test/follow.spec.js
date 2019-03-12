@@ -198,12 +198,12 @@ describe('Test user follow and unfollow on user profile endpoint', () => {
   it("It should return 404 if user isn't found", (done) => {
     chai
       .request(app)
-      .delete(`${unfollowUserURL}/iSeeiReport/follow`)
+      .delete(`${unfollowUserURL}/dollarboy/follow`)
       .set('authorization', `Bearer ${token1}`)
       .end((err, res) => {
         expect(res.status).to.equal(404);
         expect(res.body.message).to.be.a('string');
-        expect(res.body.message).to.equal('user not found');
+        expect(res.body.message).to.equal('User dollarboy does not exists');
         done();
       });
   });

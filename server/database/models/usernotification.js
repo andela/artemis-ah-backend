@@ -3,8 +3,15 @@ export default (sequelize, DataTypes) => {
     userId: DataTypes.INTEGER,
     notificationId: DataTypes.INTEGER
   }, {});
-  UserNotification.associate = () => {
+  UserNotification.associate = (models) => {
     // associations can be defined here
+    const { User, Notification } = models;
+    UserNotification.belongsTo(User, {
+      foreignKey: 'userId'
+    });
+    UserNotification.belongsTo(Notification, {
+      foreignKey: 'notificationId'
+    });
   };
   return UserNotification;
 };

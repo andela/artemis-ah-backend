@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import sendGrid from '@sendgrid/mail';
 import readingTime from 'reading-time';
+import Pusher from 'pusher';
 
 dotenv.config();
 
@@ -90,6 +91,10 @@ class HelperUtils {
    */
   static estimateReadingTime(articleBody) {
     const estimatedTime = readingTime(articleBody);
+    if (estimatedTime.minutes < 1) {
+      estimatedTime.text = '< 1 min read';
+      return estimatedTime;
+    }
     return estimatedTime;
   }
 
@@ -109,6 +114,28 @@ class HelperUtils {
     const newTotal = currTotal + newRating;
     const totalReviewNo = currentRatingNo + 1;
     return newTotal / totalReviewNo;
+  }
+
+  /**
+   * @method pusher
+   * @description Method that Initializes Pusher and starts trigger
+   * @param {string} channel
+   * @param {string} event
+   * @param {*} data
+   * @return {undefined}
+   */
+  static pusher(channel, event, data) {
+    const pusher = new Pusher({
+      appId: process.env.PUSHER_APP_ID,
+      key: process.env.PUSHER_APP_KEY,
+      secret: process.env.PUSHER_APP_SECRET,
+      cluster: 'eu',
+      useTLS: true
+    });
+
+    pusher.trigger(channel, event, {
+      data
+    });
   }
 }
 

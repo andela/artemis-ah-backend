@@ -57,10 +57,11 @@ class ArticleCommentLikeController {
       // Has user liked before?
       if (userLikeRecord) {
         result = await this.removeLike(user, comment);
+        response(res).success(result);
       } else {
         result = await this.addLike(user, comment);
+        response(res).created(result);
       }
-      response(res).success(result);
     } catch (e) {
       response(res).serverError('Something went wrong. Try again soon.');
     }

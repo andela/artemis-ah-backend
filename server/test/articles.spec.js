@@ -243,7 +243,7 @@ describe('Test endpoint to like article comment: POST /articles/:slug/comments/:
         .post(`/api/articles/${createdArticle.slug}/comments/${commentId}/like`)
         .set('authorization', `Bearer ${userToken}`)
         .end((err, res) => {
-          expect(res.status).to.equal(200);
+          expect(res.status).to.equal(201);
 
           const { body } = res;
           expect(body.totalLikes).to.equal(1);

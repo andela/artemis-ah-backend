@@ -6,7 +6,15 @@ import response, { validationErrors } from '../utils/response';
 import db from '../database/models';
 
 const {
-  Article, Tag, User, Rating, History, ArticleClap
+  Article,
+  Tag,
+  User,
+  Rating,
+  History,
+  ArticleClap,
+  Follower,
+  Notification,
+  UserNotification
 } = db;
 
 /**
@@ -73,8 +81,50 @@ class ArticleController {
           response(res).created({
             article
           });
+
+          this.notifyFollowers(req.user, article);
         });
     }
+  }
+
+  /**
+   * @description Sends notification message to all subscribers that a new article has published
+   * @param {object} author - The database record of the author
+   * @param {object} article - The object of the article created
+   * @returns {undefined}
+   */
+  async notifyFollowers(author, article) {
+    // Create notification
+    const notification = await Notification.create({
+      message: `${author.firstname} ${author.lastname} just published an article`,
+      metaId: article.id,
+      type: 'article.published',
+      url: `/${article.slug}`
+    });
+
+    // Get all followers
+    (await Follower.findAll({
+      where: {
+        userId: author.id
+      },
+      attributes: ['followerId']
+    })).forEach((follower) => {
+      follower = follower.dataValues;
+
+      // Insert notification
+      UserNotification.create({
+        userId: follower.followerId,
+        notificationId: notification.id
+      });
+
+      // Send push notification to each user's channel.
+      const { message, url, type } = notification;
+      HelperUtils.pusher(`channel-${follower.followerId}`, 'notification', {
+        message,
+        url,
+        type
+      });
+    });
   }
 
   /**
