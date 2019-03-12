@@ -120,7 +120,7 @@ class ArticleController {
         tags: this.tags
       });
     } catch (err) {
-      response(res).serverError({
+      return response(res).serverError({
         message: 'Could not get all tags'
       });
     }
@@ -253,7 +253,7 @@ class ArticleController {
         ratings: this.ratings
       });
     } catch (error) {
-      response(res).serverError({
+      return response(res).serverError({
         message: 'Could not get ratings'
       });
     }

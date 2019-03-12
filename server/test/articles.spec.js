@@ -76,6 +76,29 @@ describe('Testing articles endpoint', () => {
         done();
       });
   });
+
+  it('This test the read time functionality for word over 900', (done) => {
+    const body = ['word'];
+
+    for (let i = 0; i < 1000; i += 1) {
+      body.push('word');
+    }
+    const data = {
+      title: 'This is an article',
+      description: 'This is the description of the article',
+      body: body.join(' '),
+      tagId: 1
+    };
+    chai
+      .request(app)
+      .post('/api/articles')
+      .set('authorization', `Bearer ${userToken}`)
+      .send(data)
+      .end((err, res) => {
+        expect(res.status).to.equal(201);
+        done();
+      });
+  });
 });
 
 // Test endpoint to get all articles.
