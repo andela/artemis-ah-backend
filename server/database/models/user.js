@@ -44,10 +44,30 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
       allowNull: false
-    }
+    },
+    emailNotification: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+      allowNull: false
+    },
+    inAppNotification: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+      allowNull: false
+    },
   }, {});
   User.associate = (models) => {
-    const { Follower, Bookmark, Article, ArticleClap, Report } = models;
+    const {
+      Follower,
+      Bookmark,
+      Article,
+      ArticleClap,
+      ArticleComment,
+      ArticleCommentLike,
+      History,
+      Report
+    } = models;
+
     User.belongsToMany(User, {
       through: Follower,
       foreignKey: 'userId',
@@ -65,15 +85,15 @@ export default (sequelize, DataTypes) => {
     });
 
     // Relations for articles.
-    User.hasMany(models.Article, {
+    User.hasMany(Article, {
       foreignKey: 'id',
       onDelete: 'CASCADE'
     });
-    User.hasMany(models.ArticleComment, {
+    User.hasMany(ArticleComment, {
       foreignKey: 'id',
       onDelete: 'CASCADE'
     });
-    User.hasMany(models.ArticleCommentLike, {
+    User.hasMany(ArticleCommentLike, {
       foreignKey: 'id',
       onDelete: 'CASCADE'
     });
@@ -89,7 +109,7 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId'
     });
 
-    User.hasMany(models.History, {
+    User.hasMany(History, {
       foreignKey: 'id',
       onDelete: 'CASCADE'
     });

@@ -19,6 +19,9 @@ script:
   - export FACEBOOK_APP_SECRET="f63a934f47f2499286c251cc530b443c"
   - export FACEBOOK_RETURN_URL="/api/users/auth/facebook/redirect"
   - export SESSION_SECRET="asdfghjhkjlqwer"
+  - export PUSHER_APP_ID="732334"
+  - export PUSHER_APP_KEY="0a28edcb5e5905944330"
+  - export PUSHER_APP_SECRET="aaaa0dc7147d008354ba"
   - npm test
   - npm run coveralls
 
