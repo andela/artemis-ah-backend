@@ -1,18 +1,20 @@
 export default (sequelize, DataTypes) => {
-  const ArticleComment = sequelize.define('ArticleComment',
-    {
-      articleId: DataTypes.INTEGER,
-      userId: DataTypes.INTEGER,
-      comment: DataTypes.STRING,
-      totalLikes: DataTypes.INTEGER
-    },
-    {});
+  const ArticleComment = sequelize.define('ArticleComment', {
+    articleId: DataTypes.INTEGER,
+    userId: DataTypes.INTEGER,
+    comment: DataTypes.TEXT,
+    totalLikes: DataTypes.INTEGER
+  }, {});
   ArticleComment.associate = (models) => {
-    ArticleComment.belongsTo(models.User, {
-      foreignKey: 'userId'
+    const { CommentEditHistory, Article, User } = models;
+    ArticleComment.belongsTo(User, {
+      foreignKey: 'userId',
     });
-    ArticleComment.belongsTo(models.Article, {
-      foreignKey: 'articleId'
+    ArticleComment.belongsTo(Article, {
+      foreignKey: 'articleId',
+    });
+    ArticleComment.hasMany(CommentEditHistory, {
+      foreignKey: 'id',
     });
   };
   return ArticleComment;

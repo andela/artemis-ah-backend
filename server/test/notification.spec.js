@@ -87,3 +87,18 @@ describe('Test notification for articles from users you follow', () => {
       });
   });
 });
+
+describe('Notification for offline users', () => {
+  it('It should return 200 if all comment notifications are received', (done) => {
+    chai
+      .request(app)
+      .get('/api/notifications/comment')
+      .set('authorization', `Bearer ${author.token}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.message).to.equal('All comment notifications recieved');
+        expect(res.body.notifications).to.be.an('array');
+        done();
+      });
+  });
+});

@@ -4,7 +4,7 @@ import { response } from '../utils';
 const { UserNotification, Notification } = db;
 
 /**
- * @description Controller to authenticate users
+ * @description Controller to Notify users
  * @return {undefined}
  */
 export default class Notifications {
@@ -28,7 +28,7 @@ export default class Notifications {
           model: Notification
         }]
       });
-      response(res).created({
+      response(res).success({
         message: 'All comment notifications recieved',
         notifications: notifications.map(notify => notify.Notification)
       });
