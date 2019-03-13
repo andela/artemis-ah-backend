@@ -95,14 +95,14 @@ class ValidateUser {
       check('name')
         .exists({
           checkNull: true,
-          checkFalsy: true,
+          checkFalsy: true
         })
         .withMessage('Email or Username is required to login'),
 
       check('password')
         .exists({
           checkNull: true,
-          checkFalsy: true,
+          checkFalsy: true
         })
         .withMessage('Password is required to login')
     ];

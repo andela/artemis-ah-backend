@@ -1,66 +1,69 @@
 export default (sequelize, DataTypes) => {
-  const User = sequelize.define('User', {
-    firstname: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    lastname: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    username: {
-      type: DataTypes.STRING,
-      unique: true,
-      allowNull: false
-    },
-    email: {
-      type: DataTypes.STRING,
-      unique: {
-        args: true,
-        msg: 'Email already exists'
+  const User = sequelize.define('User',
+    {
+      firstname: {
+        type: DataTypes.STRING,
+        allowNull: false
       },
-      allowNull: false
+      lastname: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      username: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false
+      },
+      email: {
+        type: DataTypes.STRING,
+        unique: {
+          args: true,
+          msg: 'Email already exists'
+        },
+        allowNull: false
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      bio: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'n/a'
+      },
+      image: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue:
+          'https://res.cloudinary.com/shaolinmkz/image/upload/v1544370726/iReporter/avatar.png'
+      },
+      verifiedEmail: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: false
+      },
+      isAdmin: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: false
+      },
+      emailNotification: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: false
+      },
+      inAppNotification: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: false
+      },
+      role: {
+        type: DataTypes.STRING,
+        defaultValue: 'user',
+        allowNull: false
+      },
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    bio: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      defaultValue: 'n/a'
-    },
-    image: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: 'https://res.cloudinary.com/shaolinmkz/image/upload/v1544370726/iReporter/avatar.png'
-    },
-    verifiedEmail: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-      allowNull: false
-    },
-    isAdmin: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-      allowNull: false
-    },
-    role: {
-      type: DataTypes.STRING,
-      defaultValue: 'user',
-      allowNull: false
-    },
-    emailNotification: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-      allowNull: false
-    },
-    inAppNotification: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-      allowNull: false
-    },
-  }, {});
+    {});
   User.associate = (models) => {
     const {
       Follower,
@@ -70,7 +73,8 @@ export default (sequelize, DataTypes) => {
       ArticleComment,
       ArticleCommentLike,
       History,
-      Report
+      Report,
+      UserNotification
     } = models;
 
     User.belongsToMany(User, {
@@ -82,11 +86,11 @@ export default (sequelize, DataTypes) => {
     User.belongsToMany(User, {
       through: Follower,
       foreignKey: 'followerId',
-      as: 'followers'
+      as: 'follower'
     });
 
     User.hasMany(ArticleClap, {
-      foreignKey: 'userId',
+      foreignKey: 'id',
     });
 
     // Relations for articles.
@@ -129,6 +133,9 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId',
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE'
+    });
+    User.hasMany(UserNotification, {
+      foreignKey: 'id'
     });
   };
   return User;

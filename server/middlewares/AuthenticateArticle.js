@@ -1,9 +1,7 @@
 import { response } from '../utils';
 import db from '../database/models';
 
-const {
-  Article
-} = db;
+const { Article } = db;
 /**
  * @class AuthenticateArticle
  * @description Authenticates articles
@@ -11,13 +9,13 @@ const {
  */
 class AuthenticateArticle {
   /**
-     * @method verifyArticle
-     * @description Verifies that the article exists in the db
-     * @param {object} req - The Request Object
-     * @param {object} res - The Response Object
-     * @param {object} next - Function to pass to the next middleware
-     * @returns {object} - JSON response object
-     */
+   * @method verifyArticle
+   * @description Verifies that the article exists in the db
+   * @param {object} req - The Request Object
+   * @param {object} res - The Response Object
+   * @param {object} next - Function to pass to the next middleware
+   * @returns {object} - JSON response object
+   */
   static async verifyArticle(req, res, next) {
     const { slug } = req.params;
     try {

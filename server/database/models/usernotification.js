@@ -12,10 +12,14 @@ export default (sequelize, DataTypes) => {
     },
   }, {});
   UserNotification.associate = (models) => {
-    const { Notification } = models;
+    // associations can be defined here
+    const { User, Notification } = models;
 
+    UserNotification.belongsTo(User, {
+      foreignKey: 'userId'
+    });
     UserNotification.belongsTo(Notification, {
-      foreignKey: 'notificationId',
+      foreignKey: 'notificationId'
     });
   };
   return UserNotification;

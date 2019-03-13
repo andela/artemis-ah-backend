@@ -8,3 +8,4 @@ import './articleClap.spec';
 import './report.spec';
 import './articleSearch.spec';
 import './admin.spec';
+import './notification.spec';

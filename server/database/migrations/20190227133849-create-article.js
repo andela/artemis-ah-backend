@@ -5,33 +5,33 @@ export default {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       userId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: false
       },
       title: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: false
       },
       description: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: false
       },
       body: {
         type: Sequelize.TEXT,
-        allowNull: false,
+        allowNull: false
       },
       primaryImageUrl: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       totalClaps: {
         type: Sequelize.INTEGER,
-        defaultValue: 0,
+        defaultValue: 0
       },
       slug: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       tagId: {
         type: Sequelize.INTEGER,
@@ -39,18 +39,18 @@ export default {
           model: 'Tags',
           key: 'id',
           as: 'tagId'
-        },
+        }
       },
       rating: {
         type: Sequelize.DECIMAL
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DATE
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DATE
       }
     });
   },

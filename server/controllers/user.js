@@ -18,9 +18,7 @@ export default class Users {
    * @return {undefined}
    */
   static async signupUser(req, res) {
-    const {
-      firstname, lastname, username, email, password
-    } = req.body;
+    const { firstname, lastname, username, email, password } = req.body;
     const { body } = req;
 
     delete body.role; // Disabling the ability of the user to manually set their role
@@ -79,7 +77,7 @@ export default class Users {
       });
       if (!user) {
         response(res).notFound({
-          message: 'user doesn\'t exist',
+          message: "user doesn't exist"
         });
       } else {
         await user.update({
@@ -264,10 +262,13 @@ export default class Users {
       else {
         const values = {
           bio: req.body.bio || user.bio,
-          image: req.body.image || user.image,
+          image: req.body.image || user.image
         };
 
-        const updateUser = await User.update(values, { returning: true, where: { username } });
+        const updateUser = await User.update(values, {
+          returning: true,
+          where: { username }
+        });
         const { email, bio, image } = updateUser[1][0];
 
         response(res).success({
@@ -276,7 +277,7 @@ export default class Users {
             username,
             email,
             bio,
-            image,
+            image
           }
         });
       }

@@ -117,11 +117,11 @@ class HelperUtils {
   }
 
   /**
-   * @method Pusher
+   * @method pusher
    * @description Method that Initializes Pusher and starts trigger
    * @param {string} channel
    * @param {string} event
-   * @param {string} data
+   * @param {*} data
    * @return {undefined}
    */
   static pusher(channel, event, data) {

@@ -9,7 +9,10 @@ chai.use(chaiHttp);
 let superAdminToken;
 let userToken;
 
-
+const userData = {
+  name: 'ayo',
+  password: 'admin123456'
+};
 describe('Superadmin Endpoints', () => {
   before((done) => {
     const superAdminData = {
@@ -22,10 +25,6 @@ describe('Superadmin Endpoints', () => {
       .send(superAdminData)
       .end((err, res) => {
         superAdminToken = res.body.user.token;
-        const userData = {
-          name: 'ayo',
-          password: 'admin123456'
-        };
         chai
           .request(app)
           .post('/api/users/login')
@@ -39,14 +38,14 @@ describe('Superadmin Endpoints', () => {
   it('should allow a superadmin to give admin permissions', (done) => {
     chai
       .request(app)
-      .patch('/api/admin/ayo/upgrade')
+      .patch(`/api/admin/${userData.name}/upgrade`)
       .set('Authorization', `Bearer ${superAdminToken}`)
       .end((err, res) => {
         expect(res.status).to.equal(200);
-        expect(res.body.message).to.equal('ayo has been granted admin priviledges');
+        expect(res.body.message).to.equal(`${userData.name} has been granted admin priviledges`);
         chai
           .request(app)
-          .get('/api/profiles/ayo')
+          .get(`/api/profiles/${userData.name}`)
           .set('Authorization', `Bearer ${superAdminToken}`)
           .end((err, res) => {
             expect(res.status).to.equal(200);
@@ -58,25 +57,25 @@ describe('Superadmin Endpoints', () => {
   it('should inform a superadmin when the user already has admin permissions', (done) => {
     chai
       .request(app)
-      .patch('/api/admin/ayo/upgrade')
+      .patch(`/api/admin/${userData.name}/upgrade`)
       .set('Authorization', `Bearer ${superAdminToken}`)
       .end((err, res) => {
         expect(res.status).to.equal(400);
-        expect(res.body.message).to.equal('ayo is already an admin user');
+        expect(res.body.message).to.equal(`${userData.name} is already an admin user`);
         done();
       });
   });
   it('should allow a superadmin to remove admin permissions', (done) => {
     chai
       .request(app)
-      .patch('/api/admin/ayo/downgrade')
+      .patch(`/api/admin/${userData.name}/downgrade`)
       .set('Authorization', `Bearer ${superAdminToken}`)
       .end((err, res) => {
         expect(res.status).to.equal(200);
-        expect(res.body.message).to.equal('ayo has been revoked of admin priviledges');
+        expect(res.body.message).to.equal(`${userData.name} has been revoked of admin priviledges`);
         chai
           .request(app)
-          .get('/api/profiles/ayo')
+          .get(`/api/profiles/${userData.name}`)
           .set('Authorization', `Bearer ${superAdminToken}`)
           .end((err, res) => {
             expect(res.status).to.equal(200);
@@ -88,11 +87,11 @@ describe('Superadmin Endpoints', () => {
   it('should inform a superadmin when the user does not have admin permissions', (done) => {
     chai
       .request(app)
-      .patch('/api/admin/ayo/downgrade')
+      .patch(`/api/admin/${userData.name}/downgrade`)
       .set('Authorization', `Bearer ${superAdminToken}`)
       .end((err, res) => {
         expect(res.status).to.equal(400);
-        expect(res.body.message).to.equal('ayo is not an admin user');
+        expect(res.body.message).to.equal(`${userData.name} is not an admin user`);
         done();
       });
   });
@@ -110,7 +109,7 @@ describe('Superadmin Endpoints', () => {
   it('should return 403 if user is not a superadmin', (done) => {
     chai
       .request(app)
-      .patch('/api/admin/ayo/upgrade')
+      .patch(`/api/admin/${userData.name}/upgrade`)
       .set('Authorization', `Bearer ${userToken}`)
       .end((err, res) => {
         expect(res.status).to.equal(403);

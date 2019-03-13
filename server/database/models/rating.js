@@ -1,9 +1,11 @@
 export default (sequelize, DataTypes) => {
-  const Rating = sequelize.define('Rating', {
-    userId: DataTypes.INTEGER,
-    articleId: DataTypes.INTEGER,
-    rating: DataTypes.DECIMAL,
-  }, {});
+  const Rating = sequelize.define('Rating',
+    {
+      userId: DataTypes.INTEGER,
+      articleId: DataTypes.INTEGER,
+      rating: DataTypes.DECIMAL
+    },
+    {});
   Rating.associate = (models) => {
     // associations can be defined here
     Rating.belongsTo(models.User, {
