@@ -62,7 +62,7 @@ class ArticleCommentLikeController {
       }
       response(res).success(result);
     } catch (e) {
-      response(res).serverError('Something went wrong. Try again soon.');
+      return response(res).serverError('Something went wrong. Try again soon.');
     }
   }
 

@@ -22,11 +22,13 @@ profileRoutes.get('/profiles/following',
 // Follow a particular user
 profileRoutes.post('/profiles/:username/follow',
   AuthenticateUser.verifyUser,
+  AuthenticateUser.verifyUsername,
   Follow.followUser);
 
 // Unfollow a particular user
 profileRoutes.delete('/profiles/:username/follow',
   AuthenticateUser.verifyUser,
+  AuthenticateUser.verifyUsername,
   Follow.unfollowUser);
 
 // Get current profile
@@ -41,6 +43,7 @@ profileRoutes.put('/user',
 
 // Get user profile
 profileRoutes.get('/profiles/:username',
+  AuthenticateUser.verifyUsername,
   Users.getUser);
 
 export default profileRoutes;

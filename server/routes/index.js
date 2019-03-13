@@ -6,6 +6,7 @@ import reportRoutes from './report';
 import bookmarkRoutes from './bookmark';
 import articleClapRoute from './articleClap';
 import articleSearchRoute from './articleSearch';
+import adminRoute from './admin';
 
 const router = express.Router();
 
@@ -16,6 +17,7 @@ router.use(reportRoutes);
 router.use(bookmarkRoutes);
 router.use(articleClapRoute);
 router.use(articleSearchRoute);
+router.use(adminRoute);
 
 
 export default router;

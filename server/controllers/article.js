@@ -89,7 +89,7 @@ class ArticleController {
       const { article, user } = req;
       const { id } = article;
 
-      if (article.userId !== user.id) response(res).forbidden({ message: 'forbidden' });
+      if (article.userId !== user.id && !user.isAdmin) response(res).forbidden({ message: 'forbidden' });
       else {
         await Article.destroy({ where: { id } });
         return response(res).success({ message: 'article successfully deleted' });
@@ -113,7 +113,7 @@ class ArticleController {
         tags: this.tags
       });
     } catch (err) {
-      response(res).serverError({
+      return response(res).serverError({
         message: 'Could not get all tags'
       });
     }
@@ -246,7 +246,7 @@ class ArticleController {
         ratings: this.ratings
       });
     } catch (error) {
-      response(res).serverError({
+      return response(res).serverError({
         message: 'Could not get ratings'
       });
     }

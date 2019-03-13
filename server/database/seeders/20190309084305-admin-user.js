@@ -1,4 +1,7 @@
+import dotenv from 'dotenv';
 import { HelperUtils } from '../../utils';
+
+dotenv.config();
 
 const password = 'admin123456';
 
@@ -12,6 +15,7 @@ export default {
       password: HelperUtils.hashPassword(password),
       verifiedEmail: true,
       isAdmin: true,
+      role: 'user',
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -23,6 +27,7 @@ export default {
       password: HelperUtils.hashPassword(password),
       verifiedEmail: true,
       isAdmin: false,
+      role: 'user',
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -34,6 +39,19 @@ export default {
       password: HelperUtils.hashPassword(password),
       verifiedEmail: true,
       isAdmin: false,
+      role: 'user',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      firstname: 'Pre',
+      lastname: 'Sident',
+      username: process.env.SUPER_ADMIN_USERNAME,
+      email: process.env.SUPER_ADMIN_EMAIL,
+      password: HelperUtils.hashPassword(process.env.SUPER_ADMIN_PASSWORD),
+      verifiedEmail: true,
+      isAdmin: true,
+      role: 'superadmin',
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});

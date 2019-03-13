@@ -23,6 +23,9 @@ export default class Users {
     } = req.body;
     const { body } = req;
 
+    delete body.role; // Disabling the ability of the user to manually set their role
+    delete body.isAdmin; // Disabling the ability of the user to manually set their admin status
+
     const hash = await HelperUtils.hashPassword(password);
     const hashedEmail = await HelperUtils.hashPassword(email);
 
@@ -123,7 +126,7 @@ export default class Users {
         });
       }
     } catch (err) {
-      response(res).sendData(500, {
+      return response(res).sendData(500, {
         message: err
       });
     }
@@ -176,7 +179,7 @@ export default class Users {
         });
       }
     } catch (err) {
-      response(res).sendData(500, {
+      return response(res).sendData(500, {
         message: err
       });
     }
@@ -192,12 +195,12 @@ export default class Users {
   static async socialLogin(req, res) {
     const { data } = req.user;
 
-    try {
-      const userToken = await HelperUtils.generateToken(data);
+    const {
+      email, username, bio, image, id, isAdmin, role
+    } = data;
 
-      const {
-        email, username, bio, image
-      } = data;
+    try {
+      const userToken = await HelperUtils.generateToken({ id, isAdmin, role, email });
 
       response(res).success({
         message: 'user logged in successfully',
@@ -228,7 +231,7 @@ export default class Users {
     try {
       const user = await User.findOne({
         where: { username },
-        attributes: ['username', 'email', 'bio', 'image']
+        attributes: ['username', 'email', 'bio', 'image', 'isAdmin']
       });
 
       if (!user) response(res).notFound({ message: 'user not found' });
@@ -289,9 +292,9 @@ export default class Users {
    * @returns {object} user - Logged in user
    */
   static async loginUser(req, res) {
-    const { email, username, bio, image } = req.user.dataValues;
+    const { id, isAdmin, role, email, username, bio, image } = req.user.dataValues;
     try {
-      const userToken = await HelperUtils.generateToken(req.user.dataValues);
+      const userToken = await HelperUtils.generateToken({ id, isAdmin, role, username, email });
       response(res).success({
         message: 'user logged in successfully',
         user: {
@@ -299,6 +302,8 @@ export default class Users {
           username,
           bio,
           image,
+          isAdmin,
+          role,
           token: userToken
         }
       });
