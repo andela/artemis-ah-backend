@@ -7,6 +7,7 @@ import Report from './report';
 import BookmarkController from './bookmark';
 import ArticleSearch from './articleSearch';
 import Admin from './admin';
+import Notifications from './notification';
 
 export {
   Users,
@@ -17,5 +18,6 @@ export {
   ArticleClap,
   ArticleSearch,
   Report,
-  Admin
+  Admin,
+  Notifications
 };

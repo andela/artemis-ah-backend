@@ -53,6 +53,16 @@ export default {
       allowNull: true,
       defaultValue: 'user'
     },
+    emailNotification: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
+      allowNull: false
+    },
+    inAppNotification: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
+      allowNull: false
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

@@ -6,7 +6,14 @@ import response, { validationErrors } from '../utils/response';
 import db from '../database/models';
 
 const {
-  Article, Tag, User, Rating, History, ArticleClap
+  Article,
+  Tag,
+  User,
+  Rating,
+  History,
+  ArticleClap,
+  Notification,
+  UserNotification
 } = db;
 
 /**
@@ -269,6 +276,26 @@ class ArticleController {
         data.dataValues.readTime = readTime;
         return data;
       });
+
+      const notify = await UserNotification.findOne({
+        where: {
+          userId: id,
+          isRead: false,
+          '$Notification.type$': 'comment'
+        },
+        include: [{
+          model: Notification
+        }]
+      });
+
+      if (notify) {
+        await UserNotification.update({ isRead: true }, {
+          where: {
+            userId: id,
+            notificationId: notify.id,
+          }
+        });
+      }
 
       const clap = await this.getClap(id, article.id);
 

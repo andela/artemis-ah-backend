@@ -202,7 +202,7 @@ export default class Users {
     try {
       const userToken = await HelperUtils.generateToken({ id, isAdmin, role, email });
 
-      response(res).success({
+      return response(res).success({
         message: 'user logged in successfully',
         user: {
           email,

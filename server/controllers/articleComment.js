@@ -1,7 +1,15 @@
 import models from '../database/models';
 import response from '../utils/response';
+import { favouriteArticleNotification, HelperUtils } from '../utils';
+import host from '../utils/markups';
 
-const { ArticleComment } = models;
+const {
+  ArticleComment,
+  Bookmark,
+  User,
+  Notification,
+  UserNotification
+} = models;
 
 /**
  * @class ArticleComment
@@ -38,13 +46,60 @@ class Comment {
    */
   static async postComment(req, res) {
     const userId = req.user.id;
+    const { username } = req.user;
     const { comment } = req.body;
-    const articleId = req.article.id;
-    const userComment = await ArticleComment.create({ articleId, comment, userId });
-    return response(res).created({
-      message: 'Comment created successfully',
-      userComment
-    });
+    const { slug } = req.params;
+    const { article } = req;
+
+    try {
+      const articleId = article.id;
+      const userComment = await ArticleComment.create({ articleId, comment, userId });
+
+      response(res).created({
+        message: 'Comment created successfully',
+        userComment
+      });
+
+      const bookmarks = await Bookmark.findAll({
+        where: { articleId }
+      }).map(user => user.userId);
+
+      bookmarks.forEach(async (usersId) => {
+        const userData = await User.findOne({
+          attributes: ['id', 'email', 'username', 'emailNotification', 'inAppNotification'],
+          where: { id: usersId }
+        });
+        if (userData.emailNotification) {
+          await HelperUtils.sendMail(userData.email,
+            'Authors Haven <notification@authorshaven.com>',
+            'Bookmarked Article Notification',
+            'Comment Notification',
+            favouriteArticleNotification(userData.username, slug));
+        }
+        if (userData.inAppNotification) {
+          await HelperUtils.pusher(`channel-${userData.id}`, 'notification', {
+            message: `${username} commented on a post you bookmarked`,
+            title: article.title,
+            type: 'comment',
+            url: `${host}api/articles/${slug}`
+          });
+          const notification = await Notification.create({
+            message: `${username} commented on the post "${article.title}"`,
+            metaId: userData.id,
+            type: 'comment',
+            title: article.title,
+            url: `${host}api/articles/${slug}`,
+          });
+
+          await UserNotification.create({
+            userId: userData.id,
+            notificationId: notification.dataValues.id,
+          });
+        }
+      });
+    } catch (error) {
+      return response(res).serverError({ errors: { server: ['database error'] } });
+    }
   }
 
   /**

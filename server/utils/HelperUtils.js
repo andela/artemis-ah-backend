@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import sendGrid from '@sendgrid/mail';
 import readingTime from 'reading-time';
+import Pusher from 'pusher';
 
 dotenv.config();
 
@@ -90,17 +91,21 @@ class HelperUtils {
    */
   static estimateReadingTime(articleBody) {
     const estimatedTime = readingTime(articleBody);
+    if (estimatedTime.minutes < 1) {
+      estimatedTime.text = '< 1 min read';
+      return estimatedTime;
+    }
     return estimatedTime;
   }
 
   /**
-* @method calcArticleRating
-* @description Method that calculates new article rating
-* @param {number} currentRatingNo
-* @param {number} currentRating
-* @param {number} newRating
-* @return {unumber} The new rating for the article
-*/
+   * @method calcArticleRating
+   * @description Method that calculates new article rating
+   * @param {number} currentRatingNo
+   * @param {number} currentRating
+   * @param {number} newRating
+   * @return {number} The new rating for the article
+   */
   static calcArticleRating(currentRatingNo, currentRating, newRating) {
     if (currentRatingNo === 0) {
       return newRating;
@@ -109,6 +114,28 @@ class HelperUtils {
     const newTotal = currTotal + newRating;
     const totalReviewNo = currentRatingNo + 1;
     return newTotal / totalReviewNo;
+  }
+
+  /**
+   * @method Pusher
+   * @description Method that Initializes Pusher and starts trigger
+   * @param {string} channel
+   * @param {string} event
+   * @param {string} data
+   * @return {undefined}
+   */
+  static pusher(channel, event, data) {
+    const pusher = new Pusher({
+      appId: process.env.PUSHER_APP_ID,
+      key: process.env.PUSHER_APP_KEY,
+      secret: process.env.PUSHER_APP_SECRET,
+      cluster: 'eu',
+      useTLS: true
+    });
+
+    pusher.trigger(channel, event, {
+      data
+    });
   }
 }
 

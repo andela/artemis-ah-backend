@@ -1,13 +1,12 @@
 import host from './index';
 
 /**
- * @description Markup for email verfication
+ * @description Markup for favourite article notification
  * @param {string} username
- * @param {string} email
- * @param {string} hash - email hash
+ * @param {string} slug - hyphenated article title
  * @returns {string} markup template
  */
-const verifyEmailMarkup = (username, email, hash) => (
+const favouriteArticleNotification = (username, slug) => (
   `<head>
       <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
       <style>
@@ -24,11 +23,11 @@ const verifyEmailMarkup = (username, email, hash) => (
             width: 70px;
           }
         .username {
-          font-size: 1em;
+          font-size: 1.5em;
           color: white;
           }
         .message{
-          font-size: 1em;
+          font-size: 1.2em;
           color: white;
           padding: 0 20px;
           }
@@ -77,18 +76,18 @@ const verifyEmailMarkup = (username, email, hash) => (
       <div class="content">
         <h3 class="username">Hello ${username},</h3>
         <p class="message">
-          You're on your way!
-          Let's confirm your email address.<br>
+          Activites were spotted on a post you bookmarked.
+          A comment has been added to the post.<br>
         </p>
-        <p class="message">Please click the button below to proceed.</p>
+        <p class="message">Click the button below to see comment.</p>
       </div>
-        <a class="verifyLink" href="${host}api/users/verifyemail?email=${email}&hash=${hash}" target="_blank" style="color: rgb(255, 255, 255)">
-          Verify Email
+        <a class="verifyLink" href="${host}api/articles/${slug}" target="_blank" style="color: rgb(255, 255, 255)">
+          Read Article
         </a>
-      </div>  
+      </div>
     </body>
   </html>
 `
 );
 
-export default verifyEmailMarkup;
+export default favouriteArticleNotification;
