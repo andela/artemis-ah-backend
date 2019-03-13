@@ -93,7 +93,6 @@ const passwordResetMarkup = (username, email, hash) => (
       </div>      
     </body>
   </html>
-`
-);
+`);
 
 export default passwordResetMarkup;

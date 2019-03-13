@@ -88,7 +88,6 @@ const verifyEmailMarkup = (username, email, hash) => (
       </div>  
     </body>
   </html>
-`
-);
+`);
 
 export default verifyEmailMarkup;

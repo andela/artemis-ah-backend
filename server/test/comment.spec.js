@@ -28,7 +28,8 @@ describe('POST comment /api/articles/:slug/comment', () => {
   });
 
   it('should create a new comment', (done) => {
-    chai.request(app)
+    chai
+      .request(app)
       .post('/api/articles/this-is-an-article-1/comment')
       .set('authorization', `Bearer ${userToken}`)
       .send({
@@ -43,7 +44,8 @@ describe('POST comment /api/articles/:slug/comment', () => {
   });
 
   it('should return an error if comment is blank', (done) => {
-    chai.request(app)
+    chai
+      .request(app)
       .post('/api/articles/this-is-an-article-1/comment')
       .set('authorization', `Bearer ${userToken}`)
       .send({
@@ -58,7 +60,8 @@ describe('POST comment /api/articles/:slug/comment', () => {
   });
 
   it('should return an error if comment is not provided', (done) => {
-    chai.request(app)
+    chai
+      .request(app)
       .post('/api/articles/this-is-an-article-1/comment')
       .set('authorization', `Bearer ${userToken}`)
       .send({})

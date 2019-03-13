@@ -32,6 +32,7 @@ router.get('/articles/:slug/comments',
 
 router.get('/articles/tags',
   controller.getTags.bind(controller));
+
 router.get('/articles', controller.getAll.bind(controller));
 router.get('/articles/:slug',
   AuthenticateArticle.verifyArticle,

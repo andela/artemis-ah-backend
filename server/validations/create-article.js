@@ -5,7 +5,7 @@ export default [
   check('title')
     .exists({
       checkNull: true,
-      checkFalsy: true,
+      checkFalsy: true
     })
     .withMessage('Title is required'),
 
@@ -13,7 +13,7 @@ export default [
   check('description')
     .exists({
       checkNull: true,
-      checkFalsy: true,
+      checkFalsy: true
     })
     .withMessage('Description is required'),
 
@@ -21,7 +21,7 @@ export default [
   check('body')
     .exists({
       checkNull: true,
-      checkFalsy: true,
+      checkFalsy: true
     })
-    .withMessage('Body is required'),
+    .withMessage('Body is required')
 ];
