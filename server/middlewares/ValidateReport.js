@@ -1,4 +1,7 @@
 import { response } from '../utils';
+import models from '../database/models';
+
+const { Report } = models;
 
 /**
  * @class ValidateReport
@@ -14,16 +17,34 @@ class ValidateReport {
    * @param {callback} next - Callback method
    * @returns {object} - JSON response object
    */
-  static isInt(req, res, next) {
+  static async validateId(req, res, next) {
     const { id } = req.params;
     const reportId = Number.isInteger(Number(id));
 
     if (!reportId) {
-      return response(res).notFound({
-        message: 'You have entered an invalid parameter'
+      return response(res).badRequest({
+        message: 'Report ID must be an integer.'
       });
     }
 
+    try {
+      const report = await Report.findOne({
+        where: {
+          id
+        }
+      });
+
+      if (!report) {
+        return response(res).notFound({
+          message: 'Report not found'
+        });
+      }
+      req.report = report;
+    } catch (error) {
+      return response(res).serverError({
+        error: ['database error']
+      });
+    }
     return next();
   }
 
@@ -36,12 +57,13 @@ class ValidateReport {
    * @returns {object} - JSON response object
    */
   static reportCategory(req, res, next) {
-    const reportCategory = ['Plagiarism', 'Copyright', 'Pornographic'];
-    const { category } = req.body;
+    const reportCategory = ['plagiarism', 'inappropriate', 'abusive'];
+    const selectedCategory = req.body.category || req.params.category;
+    const category = selectedCategory.toLocaleLowerCase();
 
-    if (category === '' || reportCategory.indexOf(category) < 0) {
-      return response(res).notFound({
-        message: 'Category can either be Plagiarism, Copyright, or Pornographic'
+    if (!selectedCategory || !reportCategory.includes(category)) {
+      return response(res).badRequest({
+        message: 'Category can either be Plagiarism, Inappropriate, or Abusive'
       });
     }
 
@@ -58,12 +80,26 @@ class ValidateReport {
    */
   static report(req, res, next) {
     const { report } = req.body;
+    const userId = req.user.id;
+    const articleId = req.article.id;
+    const articleUserId = req.article.userId;
+    const { category } = req.body;
 
-    if (report === '') {
+    if (report.trim() === '') {
       return response(res).notFound({
         message: 'Please enter a report'
       });
     }
+
+    if (userId === articleUserId) {
+      return response(res).forbidden({
+        message: 'You can not report your own article',
+      });
+    }
+
+    req.report = {
+      userId, articleId, report, category
+    };
 
     return next();
   }
