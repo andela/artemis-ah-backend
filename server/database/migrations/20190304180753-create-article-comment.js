@@ -17,7 +17,7 @@ export default {
         allowNull: false,
       },
       comment: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       totalLikes: {

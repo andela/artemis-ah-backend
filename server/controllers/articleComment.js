@@ -8,7 +8,8 @@ const {
   Bookmark,
   User,
   Notification,
-  UserNotification
+  UserNotification,
+  CommentEditHistory
 } = models;
 
 /**
@@ -112,9 +113,20 @@ class Comment {
   static async updateComment(req, res) {
     const { commentRow } = req;
     const { comment } = req.body;
+    const { id } = commentRow; // commentId
 
     try {
-      const { id } = commentRow;
+      const previousComment = await ArticleComment.findOne({
+        where: { id }
+      });
+
+      if (previousComment) {
+        await CommentEditHistory.create({
+          commentId: id,
+          previousComment: previousComment.comment
+        });
+      }
+
       const articleUpdate = await ArticleComment.update({ comment }, {
         where: {
           id
