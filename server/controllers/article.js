@@ -74,16 +74,16 @@ class ArticleController {
             }
           }).then(() => article);
         })
-        .then((article) => {
+        .then(async (article) => {
           article.userId = undefined;
           const readTime = HelperUtils.estimateReadingTime(article.body);
           article.dataValues.readTime = readTime;
 
+          await this.notifyFollowers(req.user, article);
+
           response(res).created({
             article
           });
-
-          this.notifyFollowers(req.user, article);
         });
     }
   }
@@ -109,38 +109,42 @@ class ArticleController {
         userId: author.id
       },
       attributes: ['followerId'],
-      include: [{
-        model: User,
-        as: 'follower'
-      }]
-    })).forEach((follower) => {
-      follower = follower.dataValues; console.log(follower);
+      include: [
+        {
+          model: User,
+          as: 'follower',
+          attributes: ['id', 'email', 'inAppNotification', 'emailNotification']
+        }
+      ]
+    }))
+      .forEach((follower) => {
+        follower = follower.follower.dataValues;
 
-      if (follower.inAppNotification) {
-        // Insert notification
-        UserNotification.create({
-          userId: follower.followerId,
-          notificationId: notification.id
-        });
+        if (follower.inAppNotification) {
+          // Insert notification
+          UserNotification.create({
+            userId: follower.id,
+            notificationId: notification.id
+          });
 
-        // Send push notification to each user's channel.
-        const { message, url, type } = notification;
-        HelperUtils.pusher(`channel-${follower.followerId}`, 'notification', {
-          message,
-          url,
-          type
-        });
-      }
+          // Send push notification to each user's channel.
+          const { message, url, type } = notification;
+          HelperUtils.pusher(`channel-${follower.id}`, 'notification', {
+            message,
+            url,
+            type
+          });
+        }
 
-      if (follower.emailNotification) {
-        // Send email notification
-        HelperUtils.sendMail(follower.follower.email,
-          'Authors Haven <no-reply@authorshaven.com>',
-          notification.message,
-          notification.message,
-          articleNotificationMarkup(`${author.firstname} ${author.lastname}`, article.title, article.description, notification.url));
-      }
-    });
+        if (follower.emailNotification) {
+          // Send email notification
+          HelperUtils.sendMail(follower.email,
+            'Authors Haven <no-reply@authorshaven.com>',
+            notification.message,
+            notification.message,
+            articleNotificationMarkup(`${author.firstname} ${author.lastname}`, article.title, article.description, notification.url));
+        }
+      });
   }
 
   /**

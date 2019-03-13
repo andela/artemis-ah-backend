@@ -81,11 +81,11 @@ export default (sequelize, DataTypes) => {
     User.belongsToMany(User, {
       through: Follower,
       foreignKey: 'followerId',
-      as: 'followers'
+      as: 'follower'
     });
 
     User.hasMany(ArticleClap, {
-      foreignKey: 'userId',
+      foreignKey: 'id',
     });
 
     // Relations for articles.
