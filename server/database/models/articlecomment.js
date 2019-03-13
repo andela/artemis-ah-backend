@@ -7,7 +7,6 @@ export default (sequelize, DataTypes) => {
   }, {});
   ArticleComment.associate = (models) => {
     const { CommentEditHistory, Article, User } = models;
-
     ArticleComment.belongsTo(User, {
       foreignKey: 'userId',
     });
