@@ -19,9 +19,9 @@ script:
   - export FACEBOOK_APP_SECRET="f63a934f47f2499286c251cc530b443c"
   - export FACEBOOK_RETURN_URL="/api/users/auth/facebook/redirect"
   - export SESSION_SECRET="asdfghjhkjlqwer"
-  - export SUPER_ADMIN_USERNAME = "bossman"
-  - export SUPER_ADMIN_PASSWORD = "asdfghjkl"
-  - export SUPER_ADMIN_EMAIL = "ah-superadmin@yahoo.com"
+  - export SUPER_ADMIN_USERNAME="bossman"
+  - export SUPER_ADMIN_PASSWORD="asdfghjkl"
+  - export SUPER_ADMIN_EMAIL="ah-superadmin@yahoo.com"
   - npm test
   - npm run coveralls
 
