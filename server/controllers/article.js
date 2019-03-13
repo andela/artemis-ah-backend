@@ -114,7 +114,7 @@ class ArticleController {
         as: 'follower'
       }]
     })).forEach((follower) => {
-      follower = follower.dataValues; console.log(follower);
+      follower = follower.dataValues;
 
       if (follower.inAppNotification) {
         // Insert notification
