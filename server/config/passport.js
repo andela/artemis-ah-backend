@@ -86,7 +86,7 @@ passport.use(new TwitterStrategy({
   consumerSecret: twitterConsumerSecret,
   callbackURL: twitterReturnUrl,
   userProfileURL:
-    'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true',
+        'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true',
   includeEmail: true,
   proxy: trustProxy
 },

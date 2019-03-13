@@ -42,13 +42,13 @@ class ValidateComment {
   }
 
   /**
-     * @method validateUserDetails
-     * @description Validates registration details provided by user
-     * @param {object} req - The request object
-     * @param {object} res - The response object
-     * @param {callback} next - Callback method
-     * @returns {object} - JSON response object
-     */
+   * @method validateUserDetails
+   * @description Validates registration details provided by user
+   * @param {object} req - The request object
+   * @param {object} res - The response object
+   * @param {callback} next - Callback method
+   * @returns {object} - JSON response object
+   */
   static async validateComment(req, res, next) {
     const { commentId, slug } = req.params;
     const errorFormatter = ({ msg }) => [msg];
@@ -96,7 +96,9 @@ class ValidateComment {
       });
       return commentRow;
     } catch (error) {
-      return response(res).serverError({ errors: { server: ['database error'] } });
+      return response(res).serverError({
+        errors: { server: ['database error'] }
+      });
     }
   }
 }

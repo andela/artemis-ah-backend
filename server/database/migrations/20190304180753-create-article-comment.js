@@ -6,15 +6,15 @@ export default {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       articleId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: false
       },
       userId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: false
       },
       comment: {
         type: Sequelize.TEXT,
@@ -23,15 +23,15 @@ export default {
       totalLikes: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
-        allowNull: false,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DATE
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DATE
       }
     });
   },

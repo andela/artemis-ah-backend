@@ -162,7 +162,9 @@ class Comment {
       });
       return response(res).success({ message: 'Comment has been deleted successfully.' });
     } catch (error) {
-      return response(res).serverError({ errors: { server: ['database error'] } });
+      return response(res).serverError({
+        errors: { server: ['database error'] }
+      });
     }
   }
 }

@@ -11,7 +11,6 @@ export default (sequelize, DataTypes) => {
   }, {});
   CommentEditHistory.associate = (models) => {
     const { ArticleComment } = models;
-
     CommentEditHistory.belongsTo(ArticleComment, {
       foreignKey: 'commentId',
     });

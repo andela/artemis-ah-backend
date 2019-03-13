@@ -169,7 +169,7 @@ describe('Test user follow and unfollow on user profile endpoint', () => {
       });
   });
 
-  it('It should return a 200 if a user isn\'t following anyone', (done) => {
+  it("It should return a 200 if a user isn't following anyone", (done) => {
     chai
       .request(app)
       .get(getUsersFollowingURL)
@@ -195,15 +195,27 @@ describe('Test user follow and unfollow on user profile endpoint', () => {
       });
   });
 
-  it('It should return 404 if user isn\'t found', (done) => {
+  it('It should return 404 if user is not been followed while trying to unfollow', (done) => {
     chai
       .request(app)
-      .delete(`${unfollowUserURL}/iSeeiReport/follow`)
+      .delete(`${followUserUrl}/iSeeiReport/follow`)
+      .set('authorization', `Bearer ${token1}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(404);
+        expect(res.body.message).to.equal('you are not following iSeeiReport');
+        done();
+      });
+  });
+
+  it("It should return 404 if user isn't found", (done) => {
+    chai
+      .request(app)
+      .delete(`${unfollowUserURL}/dollarboy/follow`)
       .set('authorization', `Bearer ${token1}`)
       .end((err, res) => {
         expect(res.status).to.equal(404);
         expect(res.body.message).to.be.a('string');
-        expect(res.body.message).to.equal('user not found');
+        expect(res.body.message).to.equal('User dollarboy does not exists');
         done();
       });
   });

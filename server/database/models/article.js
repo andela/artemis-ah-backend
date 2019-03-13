@@ -1,19 +1,21 @@
 export default (sequelize, DataTypes) => {
-  const Article = sequelize.define('Article', {
-    userId: DataTypes.INTEGER,
-    title: DataTypes.STRING,
-    description: DataTypes.STRING,
-    body: DataTypes.TEXT,
-    primaryImageUrl: DataTypes.STRING,
-    totalClaps: DataTypes.INTEGER,
-    slug: DataTypes.STRING,
-    tagId: DataTypes.INTEGER,
-    rating: {
-      type: DataTypes.DECIMAL,
-      defaultValue: 0,
-      allowNull: false
+  const Article = sequelize.define('Article',
+    {
+      userId: DataTypes.INTEGER,
+      title: DataTypes.STRING,
+      description: DataTypes.STRING,
+      body: DataTypes.TEXT,
+      primaryImageUrl: DataTypes.STRING,
+      totalClaps: DataTypes.INTEGER,
+      slug: DataTypes.STRING,
+      tagId: DataTypes.INTEGER,
+      rating: {
+        type: DataTypes.DECIMAL,
+        defaultValue: 0,
+        allowNull: false
+      }
     },
-  }, {});
+    {});
   Article.associate = (models) => {
     // associations can be defined here
     Article.belongsTo(models.Tag, {
@@ -21,10 +23,10 @@ export default (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     });
     Article.belongsTo(models.User, {
-      foreignKey: 'userId',
+      foreignKey: 'userId'
     });
     Article.hasMany(models.ArticleComment, {
-      foreignKey: 'id',
+      foreignKey: 'id'
     });
     Article.hasMany(models.Report, {
       foreignKey: 'articleId',

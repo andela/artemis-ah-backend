@@ -5,7 +5,7 @@ export default [
   check('rating')
     .exists({
       checkNull: true,
-      checkFalsy: true,
+      checkFalsy: true
     })
     .withMessage('Rating is required')
     .isNumeric()

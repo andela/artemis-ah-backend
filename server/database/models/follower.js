@@ -7,10 +7,6 @@ export default (sequelize, DataTypes) => {
     followerId: {
       type: DataTypes.INTEGER,
       allowNull: false
-    },
-    followee: {
-      type: DataTypes.STRING,
-      allowNull: false
     }
   }, {});
   Follower.associate = (models) => {
@@ -18,13 +14,13 @@ export default (sequelize, DataTypes) => {
 
     Follower.belongsTo(User, {
       foreignKey: 'userId',
-      as: 'follower',
+      as: 'following',
       onDelete: 'CASCADE'
     });
 
     Follower.belongsTo(User, {
       foreignKey: 'followerId',
-      as: 'following',
+      as: 'follower',
       onDelete: 'CASCADE'
     });
   };

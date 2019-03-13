@@ -14,12 +14,12 @@ export default {
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: new Date().getTime(),
+        defaultValue: new Date().getTime()
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: new Date().getTime(),
+        defaultValue: new Date().getTime()
       }
     });
   },
