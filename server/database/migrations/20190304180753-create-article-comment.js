@@ -17,8 +17,8 @@ export default {
         allowNull: false
       },
       comment: {
-        type: Sequelize.STRING,
-        allowNull: false
+        type: Sequelize.TEXT,
+        allowNull: false,
       },
       highlighted: {
         type: Sequelize.STRING,

@@ -10,11 +10,15 @@ export default (sequelize, DataTypes) => {
     },
     {});
   ArticleComment.associate = (models) => {
-    ArticleComment.belongsTo(models.User, {
-      foreignKey: 'userId'
+    const { CommentEditHistory, Article, User } = models;
+    ArticleComment.belongsTo(User, {
+      foreignKey: 'userId',
     });
-    ArticleComment.belongsTo(models.Article, {
-      foreignKey: 'articleId'
+    ArticleComment.belongsTo(Article, {
+      foreignKey: 'articleId',
+    });
+    ArticleComment.hasMany(CommentEditHistory, {
+      foreignKey: 'id',
     });
   };
   return ArticleComment;

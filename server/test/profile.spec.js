@@ -160,7 +160,7 @@ describe('Get user data', () => {
           .end((err, res) => {
             expect(res.status).to.equal(404);
             expect(res.body.message).to.be.a('string');
-            expect(res.body.message).to.equal('user not found');
+            expect(res.body.message).to.equal('User with username john70 does not exist');
             done();
           });
       });

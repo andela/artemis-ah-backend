@@ -5,21 +5,32 @@ import { AuthenticateUser, AuthenticateArticle, ValidateReport } from '../middle
 const reportRoutes = express.Router();
 
 // Post a report
-reportRoutes.post('/reports/:slug',
-  AuthenticateUser.verifyUser, AuthenticateArticle.verifyArticle,
-  ValidateReport.report, ValidateReport.reportCategory, Report.postReport);
+reportRoutes.post('/articles/:slug/report',
+  AuthenticateUser.verifyUser,
+  AuthenticateArticle.verifyArticle,
+  ValidateReport.reportCategory,
+  ValidateReport.report,
+  Report.postReport);
 
 // List all reports
-reportRoutes.get('/reports',
-  AuthenticateUser.verifyUser, AuthenticateUser.isAdmin, Report.fetchReports);
+reportRoutes.get('/admin/reports',
+  AuthenticateUser.verifyUser,
+  AuthenticateUser.isAdmin,
+  Report.fetchReports);
 
 // Get a single report by its id
-reportRoutes.get('/reports/:id',
-  AuthenticateUser.verifyUser, AuthenticateUser.isAdmin, ValidateReport.isInt, Report.fetchReport);
+reportRoutes.get('/admin/reports/:id',
+  AuthenticateUser.verifyUser,
+  AuthenticateUser.isAdmin,
+  ValidateReport.validateId,
+  Report.fetchReport);
 
 // Update the status of a report
-reportRoutes.patch('/reports/:id/status',
-  AuthenticateUser.verifyUser, AuthenticateUser.isAdmin, ValidateReport.isInt,
-  ValidateReport.status, Report.updateReport);
+reportRoutes.patch('/admin/reports/:id/status',
+  AuthenticateUser.verifyUser,
+  AuthenticateUser.isAdmin,
+  ValidateReport.validateId,
+  ValidateReport.status,
+  Report.updateReport);
 
 export default reportRoutes;

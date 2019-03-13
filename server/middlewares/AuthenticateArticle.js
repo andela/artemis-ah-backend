@@ -28,7 +28,7 @@ class AuthenticateArticle {
         message: 'article not found'
       });
     } catch (error) {
-      response(res).serverError({
+      return response(res).serverError({
         message: 'Could not check for article'
       });
     }
