@@ -16,6 +16,9 @@ export default {
       type: {
         type: Sequelize.STRING
       },
+      title: {
+        type: Sequelize.STRING
+      },
       url: {
         type: Sequelize.STRING
       },

@@ -121,7 +121,7 @@ export default class Users {
         });
       }
     } catch (err) {
-      response(res).sendData(500, {
+      return response(res).sendData(500, {
         message: err
       });
     }
@@ -174,7 +174,7 @@ export default class Users {
         });
       }
     } catch (err) {
-      response(res).sendData(500, {
+      return response(res).sendData(500, {
         message: err
       });
     }

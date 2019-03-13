@@ -1,15 +1,26 @@
 export default (sequelize, DataTypes) => {
   const Notification = sequelize.define('Notification', {
-    message: DataTypes.STRING,
-    metaId: DataTypes.INTEGER,
-    type: DataTypes.STRING,
-    url: DataTypes.STRING
+    message: {
+      type: DataTypes.STRING
+    },
+    metaId: {
+      type: DataTypes.INTEGER
+    },
+    type: {
+      type: DataTypes.STRING
+    },
+    title: {
+      type: DataTypes.STRING
+    },
+    url: {
+      type: DataTypes.STRING
+    },
   }, {});
   Notification.associate = (models) => {
-    // associations can be defined here
     const { UserNotification } = models;
+
     Notification.hasMany(UserNotification, {
-      foreignKey: 'id',
+      foreignKey: 'id'
     });
   };
   return Notification;

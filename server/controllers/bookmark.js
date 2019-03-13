@@ -1,7 +1,7 @@
 import db from '../database/models';
 import { response } from '../utils';
 
-const { Bookmark, Article } = db;
+const { Bookmark, Article, User } = db;
 
 /**
  * @description Controller to bookmark articles
@@ -25,17 +25,25 @@ export default class BookmarkController {
           articleId: articleData.id
         }
       });
-      if (bookmarks) {
-        response(res).badRequest({ message: 'you have bookmarked this article already' });
-      } else {
-        await Bookmark.create({
-          userId: userData.id,
-          articleId: articleData.id
-        });
-        response(res).created({
-          message: 'article bookmarked successfully'
-        });
-      }
+
+      if (bookmarks) return response(res).badRequest({ message: 'you have bookmarked this article already' });
+
+      const article = await Article.findOne({
+        where: { id: articleData.id }
+      });
+
+      const articleAuthor = await User.findOne({
+        where: { id: article.userId }
+      });
+
+      await Bookmark.create({
+        userId: userData.id,
+        articleId: articleData.id,
+        articleAuthor: articleAuthor.username
+      });
+      response(res).created({
+        message: 'article bookmarked successfully'
+      });
     } catch (err) {
       return response(res).sendData(500, 'Server Error');
     }
@@ -91,6 +99,7 @@ export default class BookmarkController {
           model: Article,
           attributes: [
             'slug',
+            'userId',
             'title',
             'description',
             'body',
@@ -105,7 +114,31 @@ export default class BookmarkController {
       } else {
         response(res).success({
           message: 'all bookmarks delivered successfully',
-          userBookmarks: userBookmarks.map(data => data.Article)
+          userBookmarks: userBookmarks.map((data) => {
+            const {
+              slug,
+              userId,
+              title,
+              description,
+              body,
+              totalClaps,
+              createdAt,
+              updatedAt
+            } = data.Article;
+            const { articleAuthor } = data;
+
+            return {
+              articleAuthor,
+              slug,
+              userId,
+              title,
+              description,
+              body,
+              totalClaps,
+              createdAt,
+              updatedAt
+            };
+          })
         });
       }
     } catch (error) {

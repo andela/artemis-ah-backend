@@ -114,28 +114,32 @@ class ArticleController {
         as: 'follower'
       }]
     })).forEach((follower) => {
-      follower = follower.dataValues;
+      follower = follower.dataValues; console.log(follower);
 
-      // Insert notification
-      UserNotification.create({
-        userId: follower.followerId,
-        notificationId: notification.id
-      });
+      if (follower.inAppNotification) {
+        // Insert notification
+        UserNotification.create({
+          userId: follower.followerId,
+          notificationId: notification.id
+        });
 
-      // Send push notification to each user's channel.
-      const { message, url, type } = notification;
-      HelperUtils.pusher(`channel-${follower.followerId}`, 'notification', {
-        message,
-        url,
-        type
-      });
+        // Send push notification to each user's channel.
+        const { message, url, type } = notification;
+        HelperUtils.pusher(`channel-${follower.followerId}`, 'notification', {
+          message,
+          url,
+          type
+        });
+      }
 
-      // Send email notification
-      HelperUtils.sendMail(follower.follower.email,
-        'Authors Haven <no-reply@authorshaven.com>',
-        notification.message,
-        notification.message,
-        articleNotificationMarkup(`${author.firstname} ${author.lastname}`, article.title, article.description, notification.url));
+      if (follower.emailNotification) {
+        // Send email notification
+        HelperUtils.sendMail(follower.follower.email,
+          'Authors Haven <no-reply@authorshaven.com>',
+          notification.message,
+          notification.message,
+          articleNotificationMarkup(`${author.firstname} ${author.lastname}`, article.title, article.description, notification.url));
+      }
     });
   }
 
@@ -174,7 +178,7 @@ class ArticleController {
         tags: this.tags
       });
     } catch (err) {
-      response(res).serverError({
+      return response(res).serverError({
         message: 'Could not get all tags'
       });
     }
@@ -311,7 +315,7 @@ class ArticleController {
         ratings: this.ratings
       });
     } catch (error) {
-      response(res).serverError({
+      return response(res).serverError({
         message: 'Could not get ratings'
       });
     }
@@ -334,6 +338,26 @@ class ArticleController {
         data.dataValues.readTime = readTime;
         return data;
       });
+
+      const notify = await UserNotification.findOne({
+        where: {
+          userId: id,
+          isRead: false,
+          '$Notification.type$': 'comment'
+        },
+        include: [{
+          model: Notification
+        }]
+      });
+
+      if (notify) {
+        await UserNotification.update({ isRead: true }, {
+          where: {
+            userId: id,
+            notificationId: notify.id,
+          }
+        });
+      }
 
       const clap = await this.getClap(id, article.id);
 

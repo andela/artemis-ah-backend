@@ -13,6 +13,10 @@ export default {
       notificationId: {
         type: Sequelize.INTEGER
       },
+      isRead: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

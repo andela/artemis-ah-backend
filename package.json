@@ -68,7 +68,7 @@
     "sendgrid": "^5.2.3",
     "sequelize": "^4.42.0",
     "sequelize-cli": "^5.4.0",
-    "slug": "^0.9.1",
+    "slug": "^1.0.0",
     "underscore": "^1.9.1"
   },
   "devDependencies": {

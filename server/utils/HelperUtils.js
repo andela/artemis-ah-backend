@@ -104,7 +104,7 @@ class HelperUtils {
    * @param {number} currentRatingNo
    * @param {number} currentRating
    * @param {number} newRating
-   * @return {unumber} The new rating for the article
+   * @return {number} The new rating for the article
    */
   static calcArticleRating(currentRatingNo, currentRating, newRating) {
     if (currentRatingNo === 0) {
