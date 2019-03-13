@@ -1,3 +1,4 @@
+/* eslint-disable object-shorthand */
 import models from '../database/models';
 import response from '../utils/response';
 import { favouriteArticleNotification, HelperUtils } from '../utils';
@@ -153,6 +154,36 @@ class Comment {
       return response(res).serverError({
         errors: { server: ['database error'] }
       });
+    }
+  }
+
+  /**
+   * @description highlights and comments on an article
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} highlighted string and comment
+   */
+  static async highlight(req, res) {
+    const userId = req.user.id;
+    const { highlighted, index, comment } = req.body;
+    const { body } = req.article;
+    const articleId = req.article.id;
+    try {
+      const valid = index === body.indexOf(highlighted);
+      if (valid !== true) return response(res).badRequest({ message: 'invalid highlight' });
+
+      const userComment = await ArticleComment.create({
+        articleId,
+        comment,
+        highlighted,
+        index,
+        userId });
+      return response(res).created({
+        message: 'Comment created successfully',
+        userComment
+      });
+    } catch (error) {
+      return response(res).serverError({ errors: { server: ['database error'] } });
     }
   }
 }

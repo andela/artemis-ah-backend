@@ -4,6 +4,8 @@ export default (sequelize, DataTypes) => {
       articleId: DataTypes.INTEGER,
       userId: DataTypes.INTEGER,
       comment: DataTypes.STRING,
+      highlighted: DataTypes.STRING,
+      index: DataTypes.INTEGER,
       totalLikes: DataTypes.INTEGER
     },
     {});

@@ -227,3 +227,101 @@ describe('DELETE user comment', () => {
       });
   });
 });
+
+describe('POST highlighted comment /api/articles/:slug/highlight', () => {
+  const articleURL = '/api/articles';
+  let theArticleSlug = '';
+  it('should create an article', (done) => {
+    chai
+      .request(app)
+      .post(articleURL)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({
+        title: 'some title',
+        description: 'some weird talk',
+        body: 'article body'
+      })
+      .end((err, res) => {
+        theArticleSlug = res.body.article.slug;
+        done();
+      });
+  });
+
+  it('Should create a highlight', (done) => {
+    chai.request(app)
+      .post(`/api/articles/${theArticleSlug}/highlight`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        highlighted: 'article',
+        index: 0,
+        comment: 'Just testing the highlight here'
+      })
+      .end((err, res) => {
+        expect(res.status).to.be.equal(201);
+        expect(res.body.message).to.be.equal('Comment created successfully');
+        done(err);
+      });
+  });
+
+  it('Should not create a highlight without an index', (done) => {
+    chai.request(app)
+      .post(`/api/articles/${theArticleSlug}/highlight`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        highlighted: 'article',
+        comment: 'Just testing the highlight here'
+      })
+      .end((err, res) => {
+        expect(res.status).to.be.equal(400);
+        expect(res.body.message).to.be.equal('index required');
+        done(err);
+      });
+  });
+
+  it('Should not create a highlight if index is not a number', (done) => {
+    chai.request(app)
+      .post(`/api/articles/${theArticleSlug}/highlight`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        highlighted: 'article',
+        index: 'boo',
+        comment: 'Just testing the highlight here'
+      })
+      .end((err, res) => {
+        expect(res.status).to.be.equal(400);
+        expect(res.body.message).to.be.equal('index should be a number');
+        done(err);
+      });
+  });
+
+  it('Should not create a highlight without a highlighted sring', (done) => {
+    chai.request(app)
+      .post(`/api/articles/${theArticleSlug}/highlight`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        index: 0,
+        comment: 'Just testing the highlight here'
+      })
+      .end((err, res) => {
+        expect(res.status).to.be.equal(400);
+        expect(res.body.message).to.be.equal('highlighted required');
+        done(err);
+      });
+  });
+
+  it('Should not create a highlight when highlighted text is less than 1', (done) => {
+    chai.request(app)
+      .post(`/api/articles/${theArticleSlug}/highlight`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        highlighted: '',
+        index: 0,
+        comment: 'Just testing the highlight here'
+      })
+      .end((err, res) => {
+        expect(res.status).to.be.equal(400);
+        expect(res.body.message).to.be.equal('invalid highlighted text');
+        done(err);
+      });
+  });
+});
