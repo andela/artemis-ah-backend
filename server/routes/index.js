@@ -6,6 +6,7 @@ import reportRoutes from './report';
 import bookmarkRoutes from './bookmark';
 import articleClapRoute from './articleClap';
 import articleSearchRoute from './articleSearch';
+import adminRoute from './admin';
 import notificationRoutes from './notifications';
 
 const router = express.Router();
@@ -17,6 +18,7 @@ router.use(profileRoutes);
 router.use(reportRoutes);
 router.use(articleClapRoute);
 router.use(articleSearchRoute);
+router.use(adminRoute);
 router.use(notificationRoutes);
 
 export default router;
