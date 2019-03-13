@@ -1,4 +1,3 @@
-/* eslint-disable object-shorthand */
 import models from '../database/models';
 import response from '../utils/response';
 import { favouriteArticleNotification, HelperUtils } from '../utils';
