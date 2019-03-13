@@ -17,22 +17,8 @@ class Reports {
    * @returns {object} - The article object
    */
   static async postReport(req, res) {
-    const userId = req.user.id;
-    const articleId = req.article.id;
-    const articleUserId = req.article.userId;
-    const { report } = req.body;
-    const { category } = req.body;
-
     try {
-      if (userId === articleUserId) {
-        return response(res).notFound({
-          message: 'You can not report your own article',
-        });
-      }
-
-      const reportArticle = await Report.create({
-        userId, articleId, report, category
-      });
+      const reportArticle = await Report.create(req.report);
       response(res).created({
         message: 'Article reported successfully',
         reportArticle
@@ -52,11 +38,14 @@ class Reports {
    * @return {object} - All reports
    */
   static async fetchReports(req, res) {
+    const category = req.query.category || false;
+    const query = !category ? {} : { category };
     try {
       const reports = await Report.findAll({
-        attributes: ['userId', 'articleId', 'report', 'category', 'status']
+        attributes: ['userId', 'articleId', 'report', 'category', 'status'],
+        where: query
       });
-      response(res).success({
+      return response(res).success({
         reports
       });
     } catch (error) {
@@ -68,35 +57,15 @@ class Reports {
 
   /**
    * @description This controller method gets a specific report
-   *
    * @param {object} req - Express request object
    * @param {object} res - Express response object
    * @return {object} - Report
    */
   static async fetchReport(req, res) {
-    const { id } = req.params;
-
-    try {
-      const reports = await Report.findOne({
-        where: {
-          id
-        }
-      });
-
-      if (reports) {
-        response(res).success({
-          reports
-        });
-      } else {
-        response(res).notFound({
-          message: 'Report not found'
-        });
-      }
-    } catch (error) {
-      return response(res).serverError({
-        error
-      });
-    }
+    const { report } = req;
+    return response(res).success({
+      report
+    });
   }
 
   /**
@@ -107,29 +76,21 @@ class Reports {
    * @return {object} - Report
    */
   static async updateReport(req, res) {
-    const { id } = req.params;
-    const { status } = req.body;
+    const { id, status } = req.report;
 
     try {
-      const report = await Report.findOne({
+      const updateStatus = await Report.update({
+        status
+      },
+      {
         where: {
           id
         }
       });
-
-      if (report) {
-        const updateStatus = await report.update({
-          status
-        });
-        response(res).success({
-          message: 'Report status Updated',
-          updateStatus
-        });
-      } else {
-        response(res).notFound({
-          message: 'Report not found'
-        });
-      }
+      response(res).success({
+        message: 'Report status Updated',
+        updateStatus
+      });
     } catch (error) {
       return response(res).serverError({
         error

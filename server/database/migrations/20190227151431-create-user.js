@@ -49,6 +49,11 @@ export default {
       defaultValue: false,
       allowNull: false
     },
+    role: {
+      type: Sequelize.STRING,
+      allowNull: true,
+      defaultValue: 'user'
+    },
     emailNotification: {
       type: Sequelize.BOOLEAN,
       defaultValue: true,

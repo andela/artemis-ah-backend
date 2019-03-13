@@ -215,7 +215,7 @@ describe('Test user follow and unfollow on user profile endpoint', () => {
       .end((err, res) => {
         expect(res.status).to.equal(404);
         expect(res.body.message).to.be.a('string');
-        expect(res.body.message).to.equal('User dollarboy does not exists');
+        expect(res.body.message).to.equal('User with username dollarboy does not exist');
         done();
       });
   });

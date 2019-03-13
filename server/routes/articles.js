@@ -44,13 +44,13 @@ router.post('/articles/:slug/comments/:id/like',
   AuthenticateUser.verifyUser, // User has to logged in first
   articleCommentLike.likeToggle.bind(articleCommentLike));
 
-router.post('/articles/:slug/rating/',
+router.post('/articles/:slug/ratings',
   AuthenticateUser.verifyUser,
   rateArticleValidation, // Validate user input
   AuthenticateArticle.verifyArticle,
   controller.rateArticle.bind(controller));
 
-router.get('/articles/:slug/rating',
+router.get('/articles/:slug/ratings',
   AuthenticateArticle.verifyArticle,
   controller.getRatings.bind(controller));
 

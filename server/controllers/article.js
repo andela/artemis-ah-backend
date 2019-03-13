@@ -158,7 +158,7 @@ class ArticleController {
       const { article, user } = req;
       const { id } = article;
 
-      if (article.userId !== user.id) response(res).forbidden({ message: 'forbidden' });
+      if (article.userId !== user.id && !user.isAdmin) response(res).forbidden({ message: 'forbidden' });
       else {
         await Article.destroy({ where: { id } });
         return response(res).success({ message: 'article successfully deleted' });
