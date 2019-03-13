@@ -74,16 +74,16 @@ class ArticleController {
             }
           }).then(() => article);
         })
-        .then(async (article) => {
+        .then((article) => {
           article.userId = undefined;
           const readTime = HelperUtils.estimateReadingTime(article.body);
           article.dataValues.readTime = readTime;
 
-          await this.notifyFollowers(req.user, article);
-
           response(res).created({
             article
           });
+
+          this.notifyFollowers(req.user, article);
         });
     }
   }
