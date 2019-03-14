@@ -2,7 +2,7 @@ import express from 'express';
 import { ArticleController, Comment } from '../controllers';
 import createArticleValidation from '../validations/create-article';
 import ArticleCommentLikeController from '../controllers/article-comment-like';
-import { AuthenticateUser, ValidateComment, AuthenticateArticle } from '../middlewares';
+import { AuthenticateUser, ValidateComment, AuthenticateArticle, Validate } from '../middlewares';
 import rateArticleValidation from '../validations/rate-article';
 
 const router = express.Router();
@@ -25,6 +25,13 @@ router.post('/articles/:slug/comment',
   ValidateComment.validateMethods('create', false),
   ValidateComment.validateComment,
   Comment.postComment);
+
+router.post('/articles/:slug/highlight',
+  AuthenticateUser.verifyUser,
+  AuthenticateArticle.verifyArticle,
+  Validate.highltght,
+  Validate.validationHandler,
+  Comment.highlight);
 
 router.get('/articles/:slug/comments',
   AuthenticateArticle.verifyArticle,

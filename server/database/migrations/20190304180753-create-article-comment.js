@@ -20,6 +20,14 @@ export default {
         type: Sequelize.TEXT,
         allowNull: false,
       },
+      highlighted: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      index: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
       totalLikes: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
