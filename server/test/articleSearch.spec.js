@@ -55,6 +55,21 @@ describe('test search', () => {
 
 // Test filter
 describe('test filter', () => {
+  it('should return 200 success and an article', (done) => {
+    chai
+      .request(app)
+      .get('/api/filter?title=This is an article&tag=Food&author=greatauthor')
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.articles).to.be.an('array');
+        const { tagId } = res.body.articles[0];
+        const { userId } = res.body.articles[0];
+        expect(tagId).to.be.a('number');
+        expect(userId).to.be.a('number');
+        done();
+      });
+  });
+
   it('should return 200 error and an article', (done) => {
     chai
       .request(app)
