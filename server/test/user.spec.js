@@ -22,6 +22,7 @@ const secondQueryURL = `?email=${secondTestEmail}&hash=${HelperUtils.hashPasswor
 const secondVerifyURL = `/api/users/verifyemail${secondQueryURL}`;
 const thirdTestEmail = 'thatthirdemail@yahoo.com';
 const loginURL = '/api/users/login';
+let userToken;
 
 describe('Test signup endpoint and email verification endpoint', () => {
   it("It should return a 404 if user don't exist during email verification", (done) => {
@@ -343,6 +344,7 @@ describe('Test login endpoint', () => {
         expect(message).to.equal('user logged in successfully');
         expect(user.email).to.equal(secondTestEmail);
         expect(user.username).to.equal('numerotwo222');
+        userToken = user.token;
         done();
       });
   });
@@ -434,6 +436,95 @@ describe('Test login endpoint', () => {
       .end((err, res) => {
         expect(res.status).to.equal(400);
         expect(res.body.errors.name[0]).to.equal('Email or Username is required to login');
+        done();
+      });
+  });
+});
+
+describe('Toggle notification', () => {
+  it('should update my notifications settings', (done) => {
+    const newSettings = {
+      emailNotification: false,
+      inAppNotification: false,
+    };
+    chai
+      .request(app)
+      .patch('/api/users/notification')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send(newSettings)
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.message).to.equal('Notification settings updated');
+        chai
+          .request(app)
+          .get('/api/user')
+          .set('Authorization', `Bearer ${userToken}`)
+          .end((error, response) => {
+            expect(response.body.user.emailNotification).to.equal(false);
+            expect(response.body.user.inAppNotification).to.equal(false);
+            done();
+          });
+      });
+  });
+  it('should fail if emailNotification is not true or false', (done) => {
+    const newSettings = {
+      emailNotification: 'djfhfhf',
+      inAppNotification: false,
+    };
+    chai
+      .request(app)
+      .patch('/api/users/notification')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send(newSettings)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.errors.emailNotification[0]).to.equal('emailNotification should be either true or false');
+        done();
+      });
+  });
+  it('should fail if inAppNotification is not true or false', (done) => {
+    const newSettings = {
+      emailNotification: true,
+      inAppNotification: 'nhfhjfj',
+    };
+    chai
+      .request(app)
+      .patch('/api/users/notification')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send(newSettings)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.errors.inAppNotification[0]).to.equal('InAppNotification should be either true or false');
+        done();
+      });
+  });
+  it('should fail if emailNotification is missing', (done) => {
+    const newSettings = {
+      inAppNotification: true,
+    };
+    chai
+      .request(app)
+      .patch('/api/users/notification')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send(newSettings)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.errors.emailNotification[0]).to.equal('Please specify if you want to recieve email notifications');
+        done();
+      });
+  });
+  it('should fail if inAppNotification is missing', (done) => {
+    const newSettings = {
+      emailNotification: true,
+    };
+    chai
+      .request(app)
+      .patch('/api/users/notification')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send(newSettings)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.errors.inAppNotification[0]).to.equal('Please specify if you want to recieve in app notifications');
         done();
       });
   });

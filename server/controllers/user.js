@@ -230,7 +230,7 @@ export default class Users {
     try {
       const user = await User.findOne({
         where: { username },
-        attributes: ['username', 'email', 'bio', 'image', 'isAdmin']
+        attributes: ['username', 'email', 'bio', 'image', 'isAdmin', 'emailNotification', 'inAppNotification']
       });
 
       if (!user) response(res).notFound({ message: 'user not found' });
