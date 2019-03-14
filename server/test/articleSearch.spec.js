@@ -58,7 +58,7 @@ describe('test filter', () => {
   it('should return 200 error and an article', (done) => {
     chai
       .request(app)
-      .get('/api/filter?title=This is an article')
+      .get('/api/filter?title=This is an article&tag=&author=')
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body.articles).to.be.an('array');
@@ -66,14 +66,26 @@ describe('test filter', () => {
       });
   });
 
-  it('should return 404 error when title is not found', (done) => {
+  it('should return 404 error when article is not found', (done) => {
     chai
       .request(app)
-      .get('/api/filter?title=bland morning')
+      .get('/api/filter?title=bland morning&tag=tech&author=nameless')
       .end((err, res) => {
         expect(res).to.have.status(404);
         expect(res.body.message).to.be.a('string');
-        expect(res.body.message).to.equal('no article found with title \'bland morning\'');
+        expect(res.body.message).to.equal('No article found with that match');
+        done();
+      });
+  });
+
+  it('should return 404 error when there is no parameter for tag', (done) => {
+    chai
+      .request(app)
+      .get('/api/filter?title=bland morning&tag=&author=nameless')
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        expect(res.body.message).to.be.a('string');
+        expect(res.body.message).to.equal('No article found with that match');
         done();
       });
   });

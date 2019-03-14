@@ -4,7 +4,7 @@ import db from '../database/models';
 import { response } from '../utils';
 
 const { Op } = Sequelize;
-const { Article, User } = db;
+const { Article, User, Tag } = db;
 dotenv.config();
 
 /**
@@ -30,9 +30,11 @@ export default class ArticleSearch {
   static async search(req, res) {
     const titleResults = ArticleSearch.searchByTitle(req, res);
     const authorResults = ArticleSearch.filterByAuthors(req, res);
+    const tagResults = ArticleSearch.searchByTag(req, res);
 
-    const allResults = await Promise.all([titleResults, authorResults]);
+    const allResults = await Promise.all([titleResults, authorResults, tagResults]);
     const searchResults = allResults.some(result => result.length > 0);
+
     if (searchResults) {
       return response(res).success({ allResults });
     }
@@ -61,6 +63,38 @@ export default class ArticleSearch {
   }
 
   /**
+   * @description searchByTag method
+   * @param {*} req
+   * @param {*} res
+   * @returns {Array} articles
+   */
+  static async searchByTag(req, res) {
+    try {
+      const keyword = ArticleSearch.modifyString(req.query.title);
+      const tag = await Tag.findAll({
+        where: { name: { [Op.iLike]: `%${keyword}%` } },
+        raw: true
+      });
+
+      if (tag.length === 0) {
+        return [];
+      }
+
+      const tagId = (tag[0].id);
+
+      const articles = await Article.findAll({
+        raw: true,
+        where: { tagId },
+        include: [{ model: User, attributes: ['username', 'bio', 'image'] }]
+      });
+
+      return articles;
+    } catch (err) {
+      return response(res).serverError({ errors: { server: ['database error'] } });
+    }
+  }
+
+  /**
    * @description filter method
    * @param {*} req
    * @param {*} res
@@ -69,15 +103,39 @@ export default class ArticleSearch {
   static async filter(req, res) {
     try {
       const title = ArticleSearch.modifyString(req.query.title);
+      const author = ArticleSearch.modifyString(req.query.author);
+      const tag = ArticleSearch.modifyString(req.query.tag);
 
-      const articles = await Article.findAll({
-        where: { title: { [Op.iLike]: `%${title}` } },
-        raw: true,
-        attributes: { exclude: ['createdAt', 'updatedAt'] }
+      const user = await User.findAll({
+        where: { username: author },
+        raw: true
       });
 
-      if (!articles[0]) response(res).notFound({ message: `no article found with title '${title}'` });
-      else response(res).success({ articles });
+      const userId = user.length === 0 ? 0 : user[0].id;
+
+      const tagResult = await Tag.findAll({
+        where: { name: tag },
+        raw: true
+      });
+
+      const tagId = tagResult.length === 0 ? 0 : tagResult[0].id;
+
+      const articles = await Article.findAll({
+        where: {
+          [Op.or]: [
+            { title },
+            { tagId },
+            { userId }
+          ]
+        },
+        raw: true
+      });
+
+      if (articles.length === 0) {
+        return response(res).notFound({ message: 'No article found with that match' });
+      }
+
+      response(res).success({ articles });
     } catch (err) {
       return response(res).serverError();
     }
