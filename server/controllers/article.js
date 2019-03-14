@@ -4,6 +4,7 @@ import { validationResult } from 'express-validator/check';
 import { HelperUtils } from '../utils';
 import response, { validationErrors } from '../utils/response';
 import db from '../database/models';
+import articleNotificationMarkup from '../utils/markups/articleNotificationMarkup';
 
 const {
   Article,
@@ -12,6 +13,7 @@ const {
   Rating,
   History,
   ArticleClap,
+  Follower,
   Notification,
   UserNotification
 } = db;
@@ -45,9 +47,7 @@ class ArticleController {
         errors: validationErrors(errors)
       });
     } else {
-      const {
-        title, description, body, tagId
-      } = req.body;
+      const { title, description, body, tagId } = req.body;
       let slug = slugify(title, {
         lower: true
       });
@@ -59,30 +59,92 @@ class ArticleController {
         description,
         body,
         tagId
-      })).then((article) => {
-        slug = slug.concat(`-${article.id}`);
-        article.slug = slug;
-
-        // Append id to slug and update.
-        return Article.update({
-          slug
-        },
-        {
-          where: {
-            id: article.id
-          }
-        }).then(() => article);
-      })
+      }))
         .then((article) => {
+          slug = slug.concat(`-${article.id}`);
+          article.slug = slug;
+
+          // Append id to slug and update.
+          return Article.update({
+            slug
+          },
+          {
+            where: {
+              id: article.id
+            }
+          }).then(() => article);
+        })
+        .then(async (article) => {
           article.userId = undefined;
           const readTime = HelperUtils.estimateReadingTime(article.body);
           article.dataValues.readTime = readTime;
+
+          await this.notifyFollowers(req.user, article);
 
           response(res).created({
             article
           });
         });
     }
+  }
+
+  /**
+   * @description Sends notification message to all subscribers that a new article has published
+   * @param {object} author - The database record of the author
+   * @param {object} article - The object of the article created
+   * @returns {undefined}
+   */
+  async notifyFollowers(author, article) {
+    // Create notification
+    const notification = await Notification.create({
+      message: `${author.firstname} ${author.lastname} just published an article`,
+      metaId: article.id,
+      type: 'article.published',
+      url: `/${article.slug}`
+    });
+
+    // Get all followers
+    (await Follower.findAll({
+      where: {
+        userId: author.id
+      },
+      attributes: ['followerId'],
+      include: [
+        {
+          model: User,
+          as: 'follower',
+          attributes: ['id', 'email', 'inAppNotification', 'emailNotification']
+        }
+      ]
+    }))
+      .forEach((follower) => {
+        follower = follower.follower.dataValues;
+
+        if (follower.inAppNotification) {
+          // Insert notification
+          UserNotification.create({
+            userId: follower.id,
+            notificationId: notification.id
+          });
+
+          // Send push notification to each user's channel.
+          const { message, url, type } = notification;
+          HelperUtils.pusher(`channel-${follower.id}`, 'notification', {
+            message,
+            url,
+            type
+          });
+        }
+
+        if (follower.emailNotification) {
+          // Send email notification
+          HelperUtils.sendMail(follower.email,
+            'Authors Haven <no-reply@authorshaven.com>',
+            notification.message,
+            notification.message,
+            articleNotificationMarkup(`${author.firstname} ${author.lastname}`, article.title, article.description, notification.url));
+        }
+      });
   }
 
   /**
@@ -96,7 +158,7 @@ class ArticleController {
       const { article, user } = req;
       const { id } = article;
 
-      if (article.userId !== user.id) response(res).forbidden({ message: 'forbidden' });
+      if (article.userId !== user.id && !user.isAdmin) response(res).forbidden({ message: 'forbidden' });
       else {
         await Article.destroy({ where: { id } });
         return response(res).success({ message: 'article successfully deleted' });
@@ -147,13 +209,16 @@ class ArticleController {
       where: {},
       offset, // Default is page 1
       limit,
-      include: [{
-        model: User,
-        attributes: ['username', 'bio', 'image'],
-      }, {
-        model: Tag,
-        attributes: ['name']
-      }],
+      include: [
+        {
+          model: User,
+          attributes: ['username', 'bio', 'image']
+        },
+        {
+          model: Tag,
+          attributes: ['name']
+        }
+      ],
       attributes: [
         'id',
         'slug',
@@ -187,12 +252,12 @@ class ArticleController {
   }
 
   /**
-* rates an article
-* @method rateArticle
-* @param {object} req The request object from the route
-* @param {object} res The response object from the route
-* @returns {object} - Success message
-*/
+   * rates an article
+   * @method rateArticle
+   * @param {object} req The request object from the route
+   * @param {object} res The response object from the route
+   * @returns {object} - Success message
+   */
   async rateArticle(req, res) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -223,10 +288,9 @@ class ArticleController {
       });
 
       await req.article.update({
-        rating: HelperUtils
-          .calcArticleRating(existingRatings.length,
-            req.article.rating,
-            this.rating)
+        rating: HelperUtils.calcArticleRating(existingRatings.length,
+          req.article.rating,
+          this.rating)
       });
 
       return response(res).success({
@@ -240,15 +304,17 @@ class ArticleController {
   }
 
   /**
-  * rates an article
-  * @method getRatings
-  * @param {object} req The request object from the route
-  * @param {object} res The response object from the route
-  * @returns {object} - Ratings for the article
-  */
+   * rates an article
+   * @method getRatings
+   * @param {object} req The request object from the route
+   * @param {object} res The response object from the route
+   * @returns {object} - Ratings for the article
+   */
   async getRatings(req, res) {
     try {
-      this.ratings = await Rating.findAll({ where: { articleId: req.article.id } });
+      this.ratings = await Rating.findAll({
+        where: { articleId: req.article.id }
+      });
       response(res).success({
         ratings: this.ratings
       });

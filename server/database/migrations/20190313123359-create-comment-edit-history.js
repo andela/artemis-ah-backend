@@ -1,23 +1,18 @@
 export default {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('Followers', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('CommentEditHistories', {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    userId: {
+    commentId: {
       type: Sequelize.INTEGER,
       allowNull: false
     },
-    followerId: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Users',
-        key: 'id',
-        as: 'follow'
-      }
+    previousComment: {
+      type: Sequelize.TEXT,
+      allowNull: false
     },
     createdAt: {
       allowNull: false,
@@ -28,5 +23,5 @@ export default {
       type: Sequelize.DATE
     }
   }),
-  down: queryInterface => queryInterface.dropTable('Followers')
+  down: queryInterface => queryInterface.dropTable('CommentEditHistories')
 };

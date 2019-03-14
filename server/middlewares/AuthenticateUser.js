@@ -92,6 +92,41 @@ class AuthenticateUser {
     req.user = payload.error ? {} : payload;
     return next();
   }
+
+  /**
+   * @method verifyUsername
+   * @description verifies a username passed in the route
+   * @param {object} req - The Request Object
+   * @param {object} res - The Response Object
+   * @param {callback} next - Callback method
+   * @returns {object} - JSON response object
+   */
+  static async verifyUsername(req, res, next) {
+    const { username } = req.params;
+    try {
+      const user = await User.findOne({ where: { username } });
+      if (!user) {
+        return response(res).notFound({ message: `User with username ${username} does not exist` });
+      }
+      req.otherUser = user;
+      return next();
+    } catch (err) {
+      return response(res).serverError({ message: 'Could not validate username' });
+    }
+  }
+
+  /**
+   * @method verifySuperAdmin
+   * @description verifies a user is a superadmin
+   * @param {object} req - The Request Object
+   * @param {object} res - The Response Object
+   * @param {callback} next - Callback method
+   * @returns {object} - JSON response object
+   */
+  static async verifySuperAdmin(req, res, next) {
+    const { role } = req.user;
+    return role === 'superadmin' ? next() : response(res).forbidden({ message: 'Only a super admin can access this route' });
+  }
 }
 
 export default AuthenticateUser;

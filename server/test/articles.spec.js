@@ -224,8 +224,8 @@ describe('Testing Tags Endpoint', () => {
 });
 
 /*
-  * Test endpoint to like article.
-  */
+ * Test endpoint to like article.
+ */
 describe('Test endpoint to like article comment: POST /articles/:slug/comments/:id/like', () => {
   it('should return 404 for incorrect slug', (done) => {
     chai
@@ -254,29 +254,28 @@ describe('Test endpoint to like article comment: POST /articles/:slug/comments/:
 
   let commentId;
   it('should add a like when called first time by a user', (done) => {
-    ArticleComment
-      .create({
-        userId: 1,
-        articleId: createdArticle.id,
-        comment: 'This is a comment to test endpoint to toggle like an article comment',
-      })
-      .then((comment) => {
-        commentId = comment.id;
+    ArticleComment.create({
+      userId: 1,
+      articleId: createdArticle.id,
+      comment:
+        'This is a comment to test endpoint to toggle like an article comment'
+    }).then((comment) => {
+      commentId = comment.id;
 
-        chai
-          .request(app)
-          .post(`/api/articles/${createdArticle.slug}/comments/${commentId}/like`)
-          .set('authorization', `Bearer ${userToken}`)
-          .end((err, res) => {
-            expect(res.status).to.equal(200);
+      chai
+        .request(app)
+        .post(`/api/articles/${createdArticle.slug}/comments/${commentId}/like`)
+        .set('authorization', `Bearer ${userToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(201);
 
-            const { body } = res;
-            expect(body.totalLikes).to.equal(1);
-            expect(body.liked).to.equal(true);
+          const { body } = res;
+          expect(body.totalLikes).to.equal(1);
+          expect(body.liked).to.equal(true);
 
-            done();
-          });
-      });
+          done();
+        });
+    });
   });
 
   it('should remove a like when called second time by the same user', (done) => {
@@ -356,7 +355,7 @@ describe('Testing ratings functionality', () => {
   it('should not allow user rate less than 1', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/${articleSlug}/rating`)
+      .post(`/api/articles/${articleSlug}/ratings`)
       .set('authorization', `Bearer ${userToken}`)
       .send({ rating: 0.1 })
       .end((err, res) => {
@@ -368,7 +367,7 @@ describe('Testing ratings functionality', () => {
   it('should not allow user rate greater than 5', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/${articleSlug}/rating`)
+      .post(`/api/articles/${articleSlug}/ratings`)
       .set('authorization', `Bearer ${userToken}`)
       .send({ rating: 6 })
       .end((err, res) => {
@@ -380,7 +379,7 @@ describe('Testing ratings functionality', () => {
   it('should not work if rating is not a number', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/${articleSlug}/rating`)
+      .post(`/api/articles/${articleSlug}/ratings`)
       .set('authorization', `Bearer ${userToken}`)
       .send({ rating: 'yyy' })
       .end((err, res) => {
@@ -392,7 +391,7 @@ describe('Testing ratings functionality', () => {
   it('should not work if rating is not present', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/${articleSlug}/rating`)
+      .post(`/api/articles/${articleSlug}/ratings`)
       .set('authorization', `Bearer ${userToken}`)
       .send({})
       .end((err, res) => {
@@ -404,7 +403,7 @@ describe('Testing ratings functionality', () => {
   it('should not work if article does not exist', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/${articleSlug}673536/rating`)
+      .post(`/api/articles/${articleSlug}673536/ratings`)
       .set('authorization', `Bearer ${userToken}`)
       .send({})
       .end((err, res) => {
@@ -417,7 +416,7 @@ describe('Testing ratings functionality', () => {
   it('should update the rating of an article if fields are valid', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/${articleSlug}/rating`)
+      .post(`/api/articles/${articleSlug}/ratings`)
       .set('authorization', `Bearer ${userToken}`)
       .send({ rating: 3 })
       .end((err, res) => {
@@ -440,7 +439,7 @@ describe('Testing ratings functionality', () => {
   it('should calculate and give the average rating of an article if fields are valid', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/${articleSlug}/rating`)
+      .post(`/api/articles/${articleSlug}/ratings`)
       .set('authorization', `Bearer ${thirdUserToken}`)
       .send({ rating: 5 })
       .end((err, res) => {
@@ -463,7 +462,7 @@ describe('Testing ratings functionality', () => {
   it('should not work if user has already rated article', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/${articleSlug}/rating`)
+      .post(`/api/articles/${articleSlug}/ratings`)
       .set('authorization', `Bearer ${userToken}`)
       .send({ rating: 4 })
       .end((err, res) => {
@@ -476,7 +475,7 @@ describe('Testing ratings functionality', () => {
   it('should not allow user rate his own article', (done) => {
     chai
       .request(app)
-      .post(`/api/articles/${articleSlug}/rating`)
+      .post(`/api/articles/${articleSlug}/ratings`)
       .set('authorization', `Bearer ${secondUserToken}`)
       .send({ rating: 3 })
       .end((err, res) => {
@@ -489,7 +488,7 @@ describe('Testing ratings functionality', () => {
   it('should return all the ratings for the article', (done) => {
     chai
       .request(app)
-      .get(`/api/articles/${articleSlug}/rating`)
+      .get(`/api/articles/${articleSlug}/ratings`)
       .end((err, res) => {
         expect(res.status).to.equal(200);
         const { ratings } = res.body;

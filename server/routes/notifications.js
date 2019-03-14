@@ -1,6 +1,7 @@
 import express from 'express';
 import { Notifications } from '../controllers';
 import { AuthenticateUser } from '../middlewares';
+import validateToggleNotification from '../validations/toggle-notification';
 
 const notificationRoutes = express.Router();
 
@@ -8,5 +9,13 @@ const notificationRoutes = express.Router();
 notificationRoutes.get('/notifications/comment',
   AuthenticateUser.verifyUser,
   Notifications.commentNotifications);
+
+
+// Subscribe and unsubscribe notification for a user
+notificationRoutes.patch('/users/notification',
+  AuthenticateUser.verifyUser,
+  validateToggleNotification,
+  Notifications.toggleNotification);
+
 
 export default notificationRoutes;

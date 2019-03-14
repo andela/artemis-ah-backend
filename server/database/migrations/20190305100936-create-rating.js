@@ -8,10 +8,10 @@ export default {
         type: Sequelize.INTEGER
       },
       userId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       articleId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       rating: {
         type: Sequelize.DECIMAL,

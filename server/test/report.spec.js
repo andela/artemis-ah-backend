@@ -29,7 +29,7 @@ const data = {
   }
 };
 
-describe('POST report /api/reports/:slug', () => {
+describe('POST report /api/articles/:slug/report', () => {
   before((done) => {
     chai
       .request(app)
@@ -77,11 +77,11 @@ describe('POST report /api/reports/:slug', () => {
 
   it('should report an article', (done) => {
     chai.request(app)
-      .post(`/api/reports/${articleSlug}`)
+      .post(`/api/articles/${articleSlug}/report`)
       .set('authorization', `Bearer ${userToken2}`)
       .send({
         report: 'This is a random report',
-        category: 'Copyright'
+        category: 'abusive'
       })
       .end((err, res) => {
         reportId = res.body.reportArticle.id;
@@ -93,43 +93,54 @@ describe('POST report /api/reports/:slug', () => {
 
   it('should not allow user report its own article', (done) => {
     chai.request(app)
-      .post(`/api/reports/${articleSlug}`)
+      .post(`/api/articles/${articleSlug}/report`)
       .set('authorization', `Bearer ${userToken1}`)
       .send({
         report: 'This is a random report',
-        category: 'Copyright'
+        category: 'abusive'
       })
       .end((err, res) => {
-        expect(res.status).to.be.equal(404);
+        expect(res.status).to.be.equal(403);
         expect(res.body.message).to.be.a('string');
         expect(res.body.message).to.equal('You can not report your own article');
         done(err);
       });
   });
 
+  it('should check if admin user is authorized', (done) => {
+    chai.request(app)
+      .get('/api/admin/reports')
+      .set('authorization', `Bearer ${userToken1}`)
+      .end((err, res) => {
+        expect(res.status).to.be.equal(401);
+        expect(res.body.message).to.equal('You are Unauthorized to access this page');
+        done(err);
+      });
+  });
+
   it('should check if report category is invalid', (done) => {
     chai.request(app)
-      .post(`/api/reports/${articleSlug}`)
+      .post(`/api/articles/${articleSlug}/report`)
       .set('authorization', `Bearer ${userToken1}`)
       .send({
         report: 'This is a random report',
-        category: 'Copyrigh'
+        category: 'Abus'
       })
       .end((err, res) => {
-        expect(res.status).to.be.equal(404);
+        expect(res.status).to.be.equal(400);
         expect(res.body.message).to.be.a('string');
-        expect(res.body.message).to.equal('Category can either be Plagiarism, Copyright, or Pornographic');
+        expect(res.body.message).to.equal('Category can either be Plagiarism, Inappropriate, or Abusive');
         done(err);
       });
   });
 
   it('should check if report body is empty', (done) => {
     chai.request(app)
-      .post(`/api/reports/${articleSlug}`)
+      .post(`/api/articles/${articleSlug}/report`)
       .set('authorization', `Bearer ${userToken1}`)
       .send({
         report: '',
-        category: 'Copyright'
+        category: 'abusive'
       })
       .end((err, res) => {
         expect(res.status).to.be.equal(404);
@@ -141,11 +152,11 @@ describe('POST report /api/reports/:slug', () => {
 
   it('should check if article does not exist', (done) => {
     chai.request(app)
-      .post(`/api/reports/${articleSlug}a`)
+      .post(`/api/articles/${articleSlug}a/report`)
       .set('authorization', `Bearer ${userToken1}`)
       .send({
         report: 'this is some report',
-        category: 'Copyright'
+        category: 'abusive'
       })
       .end((err, res) => {
         expect(res.status).to.be.equal(404);
@@ -157,10 +168,10 @@ describe('POST report /api/reports/:slug', () => {
 });
 
 // Fetch all user reports
-describe('GET report /api/reports', () => {
+describe('GET report /api/admin/reports', () => {
   it('should fetch all reports', (done) => {
     chai.request(app)
-      .get('/api/reports')
+      .get('/api/admin/reports')
       .set('authorization', `Bearer ${adminToken}`)
       .end((err, res) => {
         expect(res.status).to.be.equal(200);
@@ -169,34 +180,36 @@ describe('GET report /api/reports', () => {
       });
   });
 
-  it('should check if admin user is authorized', (done) => {
+  it('should fetch reports for a given category', (done) => {
     chai.request(app)
-      .get('/api/reports')
-      .set('authorization', `Bearer ${userToken1}`)
+      .get('/api/admin/reports?category=abusive')
+      .set('authorization', `Bearer ${adminToken}`)
       .end((err, res) => {
-        expect(res.status).to.be.equal(401);
-        expect(res.body.message).to.equal('You are Unauthorized to access this page');
+        const { reports } = res.body;
+        expect(res.status).to.be.equal(200);
+        expect(reports[0].category).to.be.equal('abusive');
+        expect(reports[0].status).to.be.equal('Unresolved');
         done(err);
       });
   });
 });
 
 // Fetch a single user report
-describe('GET report /api/reports/:id', () => {
+describe('GET a specific report', () => {
   it('should fetch a single report', (done) => {
     chai.request(app)
-      .get(`/api/reports/${reportId}`)
+      .get(`/api/admin/reports/${reportId}`)
       .set('authorization', `Bearer ${adminToken}`)
       .end((err, res) => {
         expect(res.status).to.be.equal(200);
-        expect(res.body.reports).to.be.an('object');
+        expect(res.body.report).to.be.an('object');
         done(err);
       });
   });
 
   it('should check if a report id does not exist', (done) => {
     chai.request(app)
-      .get(`/api/reports/${reportId}0`)
+      .get(`/api/admin/reports/${reportId}0`)
       .set('authorization', `Bearer ${adminToken}`)
       .end((err, res) => {
         expect(res.status).to.be.equal(404);
@@ -207,18 +220,18 @@ describe('GET report /api/reports/:id', () => {
 
   it('should check if a report id is invalid', (done) => {
     chai.request(app)
-      .get(`/api/reports/${reportId}0aa`)
+      .get(`/api/admin/reports/${reportId}0aa`)
       .set('authorization', `Bearer ${adminToken}`)
       .end((err, res) => {
-        expect(res.status).to.be.equal(404);
-        expect(res.body.message).to.equal('You have entered an invalid parameter');
+        expect(res.status).to.be.equal(400);
+        expect(res.body.message).to.equal('Report ID must be an integer.');
         done(err);
       });
   });
 
-  it('should check is admin user is authorized', (done) => {
+  it('should check if admin user is authorized', (done) => {
     chai.request(app)
-      .get('/api/reports')
+      .get('/api/admin/reports')
       .set('authorization', `Bearer ${userToken1}`)
       .end((err, res) => {
         expect(res.status).to.be.equal(401);
@@ -229,10 +242,10 @@ describe('GET report /api/reports/:id', () => {
 });
 
 // Update the status of a user report
-describe('PATCH report /api/reports/:id/status', () => {
+describe('PATCH report /api/admin/reports/:id/status', () => {
   it('should update the status of a report', (done) => {
     chai.request(app)
-      .patch(`/api/reports/${reportId}/status`)
+      .patch(`/api/admin/reports/${reportId}/status`)
       .set('authorization', `Bearer ${adminToken}`)
       .send({
         status: 'Resolved'
@@ -246,7 +259,7 @@ describe('PATCH report /api/reports/:id/status', () => {
 
   it('should check if status input is correct', (done) => {
     chai.request(app)
-      .patch(`/api/reports/${reportId}/status`)
+      .patch(`/api/admin/reports/${reportId}/status`)
       .set('authorization', `Bearer ${adminToken}`)
       .send({
         status: 'approved'
@@ -260,7 +273,7 @@ describe('PATCH report /api/reports/:id/status', () => {
 
   it('should check if report exist', (done) => {
     chai.request(app)
-      .patch(`/api/reports/${reportId}1/status`)
+      .patch(`/api/admin/reports/${reportId}1/status`)
       .set('authorization', `Bearer ${adminToken}`)
       .send({
         status: 'Unresolved'

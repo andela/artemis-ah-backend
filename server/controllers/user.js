@@ -18,10 +18,11 @@ export default class Users {
    * @return {undefined}
    */
   static async signupUser(req, res) {
-    const {
-      firstname, lastname, username, email, password
-    } = req.body;
+    const { firstname, lastname, username, email, password } = req.body;
     const { body } = req;
+
+    delete body.role; // Disabling the ability of the user to manually set their role
+    delete body.isAdmin; // Disabling the ability of the user to manually set their admin status
 
     const hash = await HelperUtils.hashPassword(password);
     const hashedEmail = await HelperUtils.hashPassword(email);
@@ -76,7 +77,7 @@ export default class Users {
       });
       if (!user) {
         response(res).notFound({
-          message: 'user doesn\'t exist',
+          message: "user doesn't exist"
         });
       } else {
         await user.update({
@@ -192,14 +193,15 @@ export default class Users {
   static async socialLogin(req, res) {
     const { data } = req.user;
 
+    const {
+      email, username, bio, image, id, isAdmin, role
+    } = data;
+
     try {
-      const userToken = await HelperUtils.generateToken(data);
+      const userToken = await HelperUtils.generateToken({ id, isAdmin, role, email });
 
-      const {
-        email, username, bio, image
-      } = data;
 
-      response(res).success({
+      return response(res).success({
         message: 'user logged in successfully',
         user: {
           email,
@@ -228,7 +230,7 @@ export default class Users {
     try {
       const user = await User.findOne({
         where: { username },
-        attributes: ['username', 'email', 'bio', 'image']
+        attributes: ['username', 'email', 'bio', 'image', 'isAdmin', 'emailNotification', 'inAppNotification']
       });
 
       if (!user) response(res).notFound({ message: 'user not found' });
@@ -261,10 +263,13 @@ export default class Users {
       else {
         const values = {
           bio: req.body.bio || user.bio,
-          image: req.body.image || user.image,
+          image: req.body.image || user.image
         };
 
-        const updateUser = await User.update(values, { returning: true, where: { username } });
+        const updateUser = await User.update(values, {
+          returning: true,
+          where: { username }
+        });
         const { email, bio, image } = updateUser[1][0];
 
         response(res).success({
@@ -273,7 +278,7 @@ export default class Users {
             username,
             email,
             bio,
-            image,
+            image
           }
         });
       }
@@ -289,9 +294,9 @@ export default class Users {
    * @returns {object} user - Logged in user
    */
   static async loginUser(req, res) {
-    const { email, username, bio, image } = req.user.dataValues;
+    const { id, isAdmin, role, email, username, bio, image } = req.user.dataValues;
     try {
-      const userToken = await HelperUtils.generateToken(req.user.dataValues);
+      const userToken = await HelperUtils.generateToken({ id, isAdmin, role, username, email });
       response(res).success({
         message: 'user logged in successfully',
         user: {
@@ -299,6 +304,8 @@ export default class Users {
           username,
           bio,
           image,
+          isAdmin,
+          role,
           token: userToken
         }
       });

@@ -8,11 +8,11 @@ export default {
     },
     firstname: {
       type: Sequelize.STRING,
-      allowNull: true,
+      allowNull: true
     },
     lastname: {
       type: Sequelize.STRING,
-      allowNull: true,
+      allowNull: true
     },
     username: {
       type: Sequelize.STRING,
@@ -26,7 +26,7 @@ export default {
     },
     password: {
       type: Sequelize.STRING,
-      allowNull: true,
+      allowNull: true
     },
     bio: {
       type: Sequelize.STRING,
@@ -36,17 +36,23 @@ export default {
     image: {
       type: Sequelize.STRING,
       allowNull: true,
-      defaultValue: 'https://res.cloudinary.com/shaolinmkz/image/upload/v1544370726/iReporter/avatar.png'
+      defaultValue:
+          'https://res.cloudinary.com/shaolinmkz/image/upload/v1544370726/iReporter/avatar.png'
     },
     verifiedEmail: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
-      allowNull: false,
+      allowNull: false
     },
     isAdmin: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
       allowNull: false
+    },
+    role: {
+      type: Sequelize.STRING,
+      allowNull: true,
+      defaultValue: 'user'
     },
     emailNotification: {
       type: Sequelize.BOOLEAN,
