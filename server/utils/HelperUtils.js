@@ -81,7 +81,7 @@ class HelperUtils {
       text,
       html: htmlMarkup
     };
-    sendGrid.send(message);
+    return sendGrid.send(message);
   }
 
   /**
@@ -133,8 +133,12 @@ class HelperUtils {
       useTLS: true
     });
 
-    pusher.trigger(channel, event, {
-      data
+    return new Promise((resolve) => {
+      pusher.trigger(channel, event, {
+        data
+      }, null, () => {
+        resolve();
+      });
     });
   }
 }
