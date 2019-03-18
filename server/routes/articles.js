@@ -2,7 +2,10 @@ import express from 'express';
 import { ArticleController, Comment } from '../controllers';
 import createArticleValidation from '../validations/create-article';
 import ArticleCommentLikeController from '../controllers/article-comment-like';
-import { AuthenticateUser, ValidateComment, AuthenticateArticle, Validate } from '../middlewares';
+import { AuthenticateUser,
+  ValidateComment,
+  AuthenticateArticle,
+  Validate } from '../middlewares';
 import rateArticleValidation from '../validations/rate-article';
 
 const router = express.Router();
@@ -65,6 +68,7 @@ router.patch('/articles/:slug',
   AuthenticateUser.verifyUser,
   AuthenticateArticle.verifyArticle,
   controller.updateArticle.bind(controller));
+
 router.patch('/articles/:slug/comment/:commentId',
   AuthenticateUser.verifyUser,
   AuthenticateArticle.verifyArticle,
