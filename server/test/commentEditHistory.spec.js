@@ -61,20 +61,6 @@ describe('Test endpoint to return edit history', () => {
       });
   });
 
-  it('should edit the above comment', (done) => {
-    chai
-      .request(app)
-      .patch(`/api/articles/${articleSlug}/comment/${commentId}`)
-      .set('authorization', `Bearer ${userToken}`)
-      .send({
-        comment: 'This is the edited version of the comment'
-      })
-      .end((err, res) => {
-        expect(res.status).to.equal(200);
-        done();
-      });
-  });
-
   it('should return a 401 if user trying to get edit history is not an admin', (done) => {
     chai
       .request(app)
@@ -86,7 +72,7 @@ describe('Test endpoint to return edit history', () => {
       });
   });
 
-  it('should return a 404 admin is trying to get history for a comment that does not exists', (done) => {
+  it('should return a 404 if user is trying to get history for a comment that does not exists', (done) => {
     chai
       .request(app)
       .get(`/api/articles/${articleSlug}/comment/9876545/history`)
@@ -97,7 +83,7 @@ describe('Test endpoint to return edit history', () => {
       });
   });
 
-  it('should get edit history of the comment of the article', (done) => {
+  it('should get edit history of the comment (if comment has not been editted)', (done) => {
     chai
       .request(app)
       .get(`/api/articles/${articleSlug}/comment/${commentId}/history`)
@@ -108,9 +94,22 @@ describe('Test endpoint to return edit history', () => {
         const { original, history } = res.body;
         expect(original.comment).to.be.a('string');
         expect(history).to.be.an('array');
-        expect(history.length).to.equal(1);
+        expect(history.length).to.equal(0);
         expect(original.comment).to.equal('This is original comment');
-        expect(history[0].comment).to.equal('This is the edited version of the comment');
+        done();
+      });
+  });
+
+  it('should edit the above comment', (done) => {
+    chai
+      .request(app)
+      .patch(`/api/articles/${articleSlug}/comment/${commentId}`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        comment: 'This is the edited version of the comment'
+      })
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
         done();
       });
   });
@@ -129,7 +128,7 @@ describe('Test endpoint to return edit history', () => {
       });
   });
 
-  it('should get a edit history of the comment of the article after editting the comment the second time', (done) => {
+  it('should get edit history of the comment of the article.', (done) => {
     chai
       .request(app)
       .get(`/api/articles/${articleSlug}/comment/${commentId}/history`)
