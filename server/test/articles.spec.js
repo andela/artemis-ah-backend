@@ -77,6 +77,24 @@ describe('Testing articles endpoint', () => {
       });
   });
 
+  it('should return a 400 if fields are empty', (done) => {
+    const data = {
+      title: '',
+      description: '',
+      body: '',
+      tagId: 1
+    };
+    chai
+      .request(app)
+      .post('/api/articles')
+      .set('authorization', `Bearer ${userToken}`)
+      .send(data)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        done();
+      });
+  });
+
   it('This test the read time functionality for word over 900', (done) => {
     const body = ['word'];
 

@@ -95,7 +95,7 @@ describe('Test for the bookmark route', () => {
   it('It should return 401 if token is invalid', (done) => {
     chai
       .request(app)
-      .get('/api/articles/bookmarks')
+      .get('/api/bookmarks')
       .set('authorization', `Bearer ${invalidUser}`)
       .end((err, res) => {
         expect(res.status).to.equal(401);
@@ -107,7 +107,7 @@ describe('Test for the bookmark route', () => {
   it('It should return 200 if a has no bookmark', (done) => {
     chai
       .request(app)
-      .get('/api/articles/bookmarks')
+      .get('/api/bookmarks')
       .set('authorization', `Bearer ${testData[2]}`)
       .end((err, res) => {
         expect(res.status).to.equal(200);
@@ -120,7 +120,7 @@ describe('Test for the bookmark route', () => {
   it('It should return 200 if the bookmarks are fetched successfully', (done) => {
     chai
       .request(app)
-      .get('/api/articles/bookmarks')
+      .get('/api/bookmarks')
       .set('authorization', `Bearer ${testData[1]}`)
       .end((err, res) => {
         expect(res.status).to.equal(200);

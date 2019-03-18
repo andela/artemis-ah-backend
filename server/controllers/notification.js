@@ -16,14 +16,13 @@ export default class Notifications {
    * @param {object} res - Express response object
    * @return {undefined}
    */
-  static async commentNotifications(req, res) {
+  static async fetchAllNotifications(req, res) {
     const { id } = req.user;
     try {
       const notifications = await UserNotification.findAll({
         where: {
           userId: id,
           isRead: false,
-          '$Notification.type$': 'comment'
         },
         include: [{
           model: Notification

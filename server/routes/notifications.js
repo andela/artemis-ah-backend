@@ -8,7 +8,7 @@ const notificationRoutes = express.Router();
 // Get all offline comment notification for a user
 notificationRoutes.get('/notifications/comment',
   AuthenticateUser.verifyUser,
-  Notifications.commentNotifications);
+  Notifications.fetchAllNotifications);
 
 
 // Subscribe and unsubscribe notification for a user

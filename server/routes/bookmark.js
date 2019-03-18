@@ -14,7 +14,7 @@ bookmarkRoutes.delete('/articles/:slug/bookmark',
   AuthenticateArticle.verifyArticle,
   BookmarkController.removeBookmark);
 
-bookmarkRoutes.get('/articles/bookmarks',
+bookmarkRoutes.get('/bookmarks',
   AuthenticateUser.verifyUser,
   BookmarkController.getBookmarks);
 
