@@ -25,31 +25,32 @@ export default body => (`<html>
     .link-btn {
       display: inline-block;
       background: #5863f8;
-      padding: 10px; 
-      color: rgb(255, 255, 255);
+      padding: 10px;
       text-decoration: none;
       font-size: 1em;
       border-radius: 5px;
+      color: #ffffff;
     }
     .link-btn:hover{
       background: #7c85fa;
       cursor: pointer;
     }
-        body {
-        text-align: center;
-        padding: 100px;
-        }
-        .borderWrapper {
-        border: #5863f8 1px solid;
-        padding-bottom: 30px;
-        background: #363636;
-        border-radius:  0 0 20px 20px;
-        text-align: center;
-        }
-        .content{
-        padding: 50px 0;
-        text-align: left;
-        }
+    body {
+      text-align: center;
+      padding: 100px;
+      background: #f0f0f0;
+    }
+    .borderWrapper {
+      border: #5863f8 1px solid;
+      padding-bottom: 30px;
+      background: #ffffff;
+      border-radius:  0 0 20px 20px;
+      text-align: center;
+    }
+    .content{
+      padding: 20px;
+      text-align: left;
+    }
     </style>
 </head>
 <body>

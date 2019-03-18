@@ -95,16 +95,7 @@ class ArticleController {
    * @returns {undefined}
    */
   async notifyFollowers(author, article) {
-    // Create notification
-    const notification = await Notification.create({
-      message: `${author.firstname} ${author.lastname} just published an article`,
-      metaId: article.id,
-      type: 'article.published',
-      url: `/${article.slug}`
-    });
-
-    // Get all followers
-    (await Follower.findAll({
+    const followers = await Follower.findAll({
       where: {
         userId: author.id
       },
@@ -116,35 +107,60 @@ class ArticleController {
           attributes: ['id', 'email', 'inAppNotification', 'emailNotification']
         }
       ]
-    }))
-      .forEach((follower) => {
-        follower = follower.follower.dataValues;
+    });
+    // No need to create notification if user has no followers.
+    if (followers.length <= 0) {
+      return;
+    }
 
-        if (follower.inAppNotification) {
-          // Insert notification
-          UserNotification.create({
-            userId: follower.id,
-            notificationId: notification.id
-          });
+    // Create notification
+    const notification = await Notification.create({
+      message: `${author.firstname} ${author.lastname} just published an article`,
+      metaId: article.id,
+      type: 'article.published',
+      url: `/${article.slug}`
+    });
 
-          // Send push notification to each user's channel.
-          const { message, url, type } = notification;
-          HelperUtils.pusher(`channel-${follower.id}`, 'notification', {
-            message,
-            url,
-            type
-          });
-        }
+    const dbRows = []; // Database rows for users that opted for in-app notifications.
+    const emails = []; // Email addresses of users that want email notifications.
+    const channels = []; // Channels of users that enabled in-app notifications.
 
-        if (follower.emailNotification) {
-          // Send email notification
-          HelperUtils.sendMail(follower.email,
-            'Authors Haven <no-reply@authorshaven.com>',
-            notification.message,
-            notification.message,
-            articleNotificationMarkup(`${author.firstname} ${author.lastname}`, article.title, article.description, notification.url));
-        }
-      });
+    // Get all followers
+    followers.forEach((follower) => {
+      follower = follower.follower.dataValues;
+
+      if (follower.inAppNotification) {
+        // Insert notification
+        dbRows.push({
+          userId: follower.id,
+          notificationId: notification.id
+        });
+
+        channels.push(`channel-${follower.id}`);
+      }
+
+      if (follower.emailNotification) {
+        emails.push(follower.email);
+      }
+    });
+
+    // Insert notifications into user's table.
+    await UserNotification.bulkCreate(dbRows);
+
+    // Send push notification to each user's channel.
+    const { message, url, type } = notification;
+    await HelperUtils.pusher(channels, 'notification', {
+      message,
+      url,
+      type
+    });
+
+    // Send email notification
+    await HelperUtils.sendMail(emails,
+      'Authors Haven <no-reply@authorshaven.com>',
+      notification.message,
+      notification.message,
+      articleNotificationMarkup(`${author.firstname} ${author.lastname}`, article.title, article.description, notification.url));
   }
 
   /**
