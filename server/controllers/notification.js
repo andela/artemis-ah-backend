@@ -29,7 +29,7 @@ export default class Notifications {
         }]
       });
       return response(res).success({
-        message: 'All comment notifications recieved',
+        message: 'All notifications recieved',
         notifications: notifications.map(notify => notify.Notification)
       });
     } catch (err) {
