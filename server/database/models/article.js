@@ -5,7 +5,7 @@ export default (sequelize, DataTypes) => {
       title: DataTypes.STRING,
       description: DataTypes.STRING,
       body: DataTypes.TEXT,
-      primaryImageUrl: DataTypes.STRING,
+      coverUrl: DataTypes.STRING,
       totalClaps: DataTypes.INTEGER,
       slug: DataTypes.STRING,
       tagId: DataTypes.INTEGER,

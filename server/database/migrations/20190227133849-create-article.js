@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 export default {
   up(queryInterface, Sequelize) {
     return queryInterface.createTable('Articles', {
@@ -23,8 +27,9 @@ export default {
         type: Sequelize.TEXT,
         allowNull: false
       },
-      primaryImageUrl: {
-        type: Sequelize.STRING
+      coverUrl: {
+        type: Sequelize.STRING,
+        defaultValue: process.env.DEFAULT_ARTICLE_COVER
       },
       totalClaps: {
         type: Sequelize.INTEGER,

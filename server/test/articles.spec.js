@@ -1,9 +1,11 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import slugify from 'slug';
+import dotenv from 'dotenv';
 import models from '../database/models';
 import app from '../app';
 
+dotenv.config();
 chai.use(chaiHttp);
 
 const { ArticleComment } = models;
@@ -16,6 +18,8 @@ const { ArticleComment } = models;
 chai.Assertion.addMethod('number', value => typeof value === 'number');
 
 let userToken = null;
+let firstArticle;
+let articleWithCover;
 let createdArticle;
 let secondUserToken;
 let thirdUserToken;
@@ -73,8 +77,16 @@ describe('Testing articles endpoint', () => {
         expect(article.tagId).to.equal(1);
         testData.push(`${slugify(data.title, { lower: true })}-${article.id}`);
         testData.push(userToken);
+
+        firstArticle = article;
+
         done();
       });
+  });
+
+  it('first article return default image url if no cover is uploaded', (done) => {
+    expect(firstArticle.coverUrl).to.equal(process.env.DEFAULT_ARTICLE_COVER);
+    done();
   });
 
   it('This test the read time functionality for word over 900', (done) => {
@@ -611,6 +623,84 @@ describe('DELETE article /api/articles/:slug', () => {
         expect(res.status).to.be.equal(200);
         expect(res.body.message).to.be.an('string').to.equal('article successfully deleted');
         done(err);
+      });
+  });
+});
+
+const coverImageUrl = `${process.env.ARTICLE_COVER_URL_PATH}/cover-filename`;
+const newCoverImageUrl = `${process.env.ARTICLE_COVER_URL_PATH}/new-cover-filename`;
+
+describe('Test uploading cover for articles', () => {
+  it('should return a 400 if cover URL is not valid', (done) => {
+    chai.request(app)
+      .post('/api/articles')
+      .send({
+        title: 'Article with a cover',
+        description: 'Check out the cover included',
+        body: 'This is the body of the article with a cover',
+        cover: 'fake-image-url'
+      })
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        done();
+      });
+  });
+
+  it('should upload cover when creating an article', (done) => {
+    chai.request(app)
+      .post('/api/articles')
+      .send({
+        title: 'Article with a cover',
+        description: 'Check out the cover included',
+        body: 'This is the body of the article with a cover',
+        cover: coverImageUrl
+      })
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(201);
+        const { article } = res.body;
+        articleWithCover = article;
+        done();
+      });
+  });
+
+  it('should return correct cover url when article with uploaded cover is fetched', (done) => {
+    chai.request(app)
+      .get(`/api/articles/${articleWithCover.slug}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.article.coverUrl).to.equal(coverImageUrl);
+
+        done();
+      });
+  });
+
+  it('should update an article with new cover uploaded', (done) => {
+    chai.request(app)
+      .patch(`/api/articles/${articleWithCover.slug}`)
+      .send({
+        title: 'Article with a cover',
+        description: 'Check out the cover included',
+        body: 'This is the body of the article with a cover',
+        cover: newCoverImageUrl
+      })
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+
+        done();
+      });
+  });
+
+  it('should return correct cover url for article with cover updated', (done) => {
+    chai.request(app)
+      .get(`/api/articles/${articleWithCover.slug}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.article.coverUrl).to.equal(newCoverImageUrl);
+
+        done();
       });
   });
 });

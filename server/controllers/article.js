@@ -47,19 +47,23 @@ class ArticleController {
         errors: validationErrors(errors)
       });
     } else {
-      const { title, description, body, tagId } = req.body;
+      const { title, description, body, tagId, cover } = req.body;
       let slug = slugify(title, {
         lower: true
       });
 
       // Insert into database
-      Article.create(Object.assign(this.article, {
+      const dbRow = {
         userId: req.user.id,
         title,
         description,
         body,
         tagId
-      }))
+      };
+      if (cover) {
+        dbRow.coverUrl = cover;
+      }
+      Article.create(Object.assign(this.article, dbRow))
         .then((article) => {
           slug = slug.concat(`-${article.id}`);
           article.slug = slug;
@@ -402,15 +406,18 @@ class ArticleController {
    */
   async updateArticle(req, res) {
     const { slug } = req.params;
-    const { title, body, description, primaryImageUrl } = req.body;
+    const { title, body, description, cover } = req.body;
 
     try {
-      const updatedArticle = await Article.update({
+      const dbRow = {
         title,
         body,
-        description,
-        primaryImageUrl
-      }, {
+        description
+      };
+      if (cover) {
+        dbRow.coverUrl = cover;
+      }
+      const updatedArticle = await Article.update(dbRow, {
         where: {
           slug
         },
