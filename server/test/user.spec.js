@@ -529,3 +529,16 @@ describe('Toggle notification', () => {
       });
   });
 });
+
+describe('Test wild card route', () => {
+  it('Should return an 404 error for unfound routes', (done) => {
+    chai
+      .request(app)
+      .get('/api/reportadmin')
+      .end((req, res) => {
+        expect(res.status).to.equal(404);
+        expect(res.body.message).to.be.a('string').to.equal('Route not found');
+        done();
+      });
+  });
+});

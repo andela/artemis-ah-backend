@@ -36,13 +36,18 @@ app.use(expressSession({
   saveUninitialized: true
 }));
 
-// Setup a default catch-all route that sends back a welcome message in JSON format.
+// Setup an index route
 app.get('/', (req, res) => res.status(200).send({
   message: 'Authors Haven.'
 }));
 
 // Routes
 app.use('/api', routes);
+
+// Return 404 for nonexistent routes
+app.use((req, res) => {
+  res.status(404).send({ message: 'Route not found' });
+});
 
 // Set Port
 const port = process.env.PORT || 3000;

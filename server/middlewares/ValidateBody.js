@@ -2,7 +2,7 @@
 
 import { body, validationResult } from 'express-validator/check';
 
-const highltght = [
+const highlight = [
   body('highlighted')
     .exists()
     .withMessage('highlighted required')
@@ -33,4 +33,4 @@ const validationHandler = (req, res, next) => {
   return next();
 };
 
-export { highltght, validationHandler };
+export { highlight, validationHandler };
