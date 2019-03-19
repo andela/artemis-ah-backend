@@ -101,7 +101,7 @@ export default class Users {
    */
   static async resetPasswordEmail(req, res) {
     const { email } = req.body;
-
+    if (!email) return response(res).notFound({ message: 'email is required' });
     const hashedEmail = HelperUtils.hashPassword(email);
 
     try {
@@ -109,7 +109,7 @@ export default class Users {
         where: { email }
       });
 
-      if (user === null) {
+      if (!user) {
         response(res).notFound({
           message: 'user not found in our records'
         });

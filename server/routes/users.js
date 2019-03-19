@@ -1,21 +1,34 @@
 import express from 'express';
 import { Users } from '../controllers';
-import { ValidateUser, AuthenticateUser } from '../middlewares';
+import { ValidateUser, AuthenticateUser, ValidatePasswordReset } from '../middlewares';
 import passport from '../config/passport';
 
 const authRoute = express.Router();
 
+// signup a new user
 authRoute.post('/users',
   ValidateUser.validateMethods(),
   ValidateUser.validateUserDetails,
   Users.signupUser);
+
+// login an existing user
 authRoute.post('/users/login',
   ValidateUser.validateLoginFields(),
   ValidateUser.validateLogin,
   Users.loginUser);
+
+// verifies new users email
 authRoute.get('/users/verifyemail', Users.verifyUserEmail);
+
+// Sends Password reset link to a verified users email address
 authRoute.post('/users/reset-password', Users.resetPasswordEmail);
-authRoute.patch('/users/reset-password', Users.resetPassword);
+
+// Resets password
+authRoute.patch('/users/reset-password',
+  ValidatePasswordReset.checkResetPassword(),
+  ValidatePasswordReset.checkForErrors,
+  Users.resetPassword);
+
 authRoute.get('/users/auth/google',
   passport.authenticate('google', {
     scope: [

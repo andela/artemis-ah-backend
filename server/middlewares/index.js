@@ -3,6 +3,7 @@ import ValidateUser from './ValidateUser';
 import ValidateComment from './ValidateComment';
 import AuthenticateArticle from './AuthenticateArticle';
 import ValidateReport from './ValidateReport';
+import ValidatePasswordReset from './validatePasswordReset';
 import * as Validate from './ValidateBody';
 
 export {
@@ -11,5 +12,6 @@ export {
   ValidateComment,
   AuthenticateArticle,
   ValidateReport,
-  Validate
+  Validate,
+  ValidatePasswordReset
 };

@@ -340,7 +340,7 @@ describe('Test reset password mail endpoint and password link endpoint', () => {
   });
 
   it('It should return a 400 if user passwords do not match', (done) => {
-    const data = { newPassword: 'hello', confirmPassword: 'hell' };
+    const data = { newPassword: 'hello2qwerr', confirmPassword: 'hello2qwer' };
     chai
       .request(app)
       .patch(resetPasswordURL)
@@ -354,7 +354,7 @@ describe('Test reset password mail endpoint and password link endpoint', () => {
   });
 
   it('It should return a 200 if user passwords match', (done) => {
-    const data = { newPassword: 'hello', confirmPassword: 'hello' };
+    const data = { newPassword: 'hello2qwerr', confirmPassword: 'hello2qwerr' };
     chai
       .request(app)
       .patch(resetPasswordURL)
@@ -368,7 +368,7 @@ describe('Test reset password mail endpoint and password link endpoint', () => {
   });
 
   it('It should return a 400 if reset link is invalid', (done) => {
-    const data = { newPassword: 'hello', confirmPassword: 'hello' };
+    const data = { newPassword: 'hello2qwerr', confirmPassword: 'hello2qwerr' };
     chai
       .request(app)
       .patch(invalidResetPasswordURL)
@@ -382,7 +382,7 @@ describe('Test reset password mail endpoint and password link endpoint', () => {
   });
 
   it('It should return a 404 if user doesn\'t exist', (done) => {
-    const data = { newPassword: 'hellowwww', confirmPassword: 'hellowwww' };
+    const data = { newPassword: 'hello2qwerr', confirmPassword: 'hello2qwerr' };
     chai
       .request(app)
       .patch(invalidResetPasswordURL2)
@@ -391,6 +391,18 @@ describe('Test reset password mail endpoint and password link endpoint', () => {
         expect(res.status).to.equal(404);
         expect(res.body.message).to.be.a('string');
         expect(res.body.message).to.equal('User not found');
+        done();
+      });
+  });
+
+  it('It should return a 400 if password length is lessthan 8', (done) => {
+    const data = { newPassword: 'hello', confirmPassword: 'hello' };
+    chai
+      .request(app)
+      .patch(invalidResetPasswordURL)
+      .send(data)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
         done();
       });
   });
