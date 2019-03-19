@@ -88,35 +88,10 @@ describe('Testing articles endpoint', () => {
     expect(firstArticle.coverUrl).to.equal(process.env.DEFAULT_ARTICLE_COVER);
     done();
   });
-
-  it('This test the read time functionality for word over 900', (done) => {
-    const body = ['word'];
-
-    for (let i = 0; i < 1000; i += 1) {
-      body.push('word');
-    }
-    const data = {
-      title: 'This is an article',
-      description: 'This is the description of the article',
-      body: body.join(' '),
-      tagId: 1
-    };
-    chai
-      .request(app)
-      .post('/api/articles')
-      .set('authorization', `Bearer ${userToken}`)
-      .send(data)
-      .end((err, res) => {
-        expect(res.status).to.equal(201);
-        done();
-      });
-  });
 });
 
 // Test endpoint to get all articles.
 describe('Test endpoint to get all articles.', () => {
-  let pageOneFirstArticle = null;
-
   it('should get an array containing the article created above', (done) => {
     chai
       .request(app)
@@ -128,7 +103,6 @@ describe('Test endpoint to get all articles.', () => {
         expect(articles).to.be.an('array');
         expect(articles.length).to.be.at.least(1);
         const [article] = articles;
-        pageOneFirstArticle = article;
 
         createdArticle = article;
 
@@ -152,8 +126,12 @@ describe('Test endpoint to get all articles.', () => {
       });
   });
 
+  let pageOneFirstArticle;
+
   // The second article article will be used to test pagination
   it('should create another article', (done) => {
+    // NOTE: Get all articles sorts article from most recent. So this article will Be first article
+    //       when fetching all articles
     chai
       .request(app)
       .post('/api/articles')
@@ -161,10 +139,13 @@ describe('Test endpoint to get all articles.', () => {
       .send({
         title: 'The second article',
         description: 'This is the description of the second article',
-        body: 'Welcome to the second article'
+        body: 'Welcome to the second article',
+        tagId: 1
       })
       .end((err, res) => {
         expect(res.status).to.equal(201);
+
+        pageOneFirstArticle = res.body.article;
 
         done();
       });
@@ -186,12 +167,39 @@ describe('Test endpoint to get all articles.', () => {
             // Assuming there is nothing on page 2
             return true;
           }
-          // Given that page=2 and limit=1, the id of first item on page 2 should 1 greater than
+          // Given that page=2 and limit=1, the id of first item on page 2 should 1 lesser than
           // the id of the first element on page 1 since the table contains only the 2
-          // articles created in this test file.
-          return arr[0].id === pageOneFirstArticle.id + 1;
+          // articles created above in this test file.
+          // NB: Result set is now sorted from most recent to least recent by default.
+          return arr[0].id === pageOneFirstArticle.id - 1;
         });
 
+        done();
+      });
+  });
+});
+
+// Test functionality to test reading time.
+describe('Testing functionality to compute reading time', () => {
+  it('This test the read time functionality for word over 900', (done) => {
+    const body = ['word'];
+
+    for (let i = 0; i < 1000; i += 1) {
+      body.push('word');
+    }
+    const data = {
+      title: 'This is an article',
+      description: 'This is the description of the article',
+      body: body.join(' '),
+      tagId: 1
+    };
+    chai
+      .request(app)
+      .post('/api/articles')
+      .set('authorization', `Bearer ${userToken}`)
+      .send(data)
+      .end((err, res) => {
+        expect(res.status).to.equal(201);
         done();
       });
   });
@@ -654,7 +662,8 @@ describe('Test uploading cover for articles', () => {
         title: 'Article with a cover',
         description: 'Check out the cover included',
         body: 'This is the body of the article with a cover',
-        cover: coverImageUrl
+        cover: coverImageUrl,
+        tagId: 1
       })
       .set('authorization', `Bearer ${userToken}`)
       .end((err, res) => {
