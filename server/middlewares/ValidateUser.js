@@ -27,11 +27,34 @@ class ValidateUser {
         .withMessage('Email is invalid.'),
 
       check('password')
-        .optional()
+        .exists()
+        .withMessage('Password field cannot be blank.')
         .isAlphanumeric('en-GB')
         .withMessage('Password must be Alphanumeric.')
         .isLength({ min: 8 })
-        .withMessage('Password cannot be less than 8 characters.')
+        .withMessage('Password cannot be less than 8 characters.'),
+
+      check('firstname')
+        .exists()
+        .withMessage('First name field must be specified.')
+        .isLength({ min: 1 })
+        .withMessage('First name must contain at least 1 character.')
+        .isAlpha()
+        .withMessage('First name can only contain alphabetic characters.'),
+
+      check('lastname')
+        .exists()
+        .withMessage('Last name field must be specified.')
+        .isLength({ min: 1 })
+        .withMessage('Last name must contain at least 1 character.')
+        .isAlpha()
+        .withMessage('Last name can only contain alphabetic characters.'),
+
+      check('username')
+        .exists()
+        .withMessage('Username field must be specified.')
+        .isLength({ min: 3 })
+        .withMessage('Username must not be less than 3 characters.')
     ];
   }
 
