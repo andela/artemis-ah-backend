@@ -6,9 +6,9 @@ import validateToggleNotification from '../validations/toggle-notification';
 const notificationRoutes = express.Router();
 
 // Get all offline comment notification for a user
-notificationRoutes.get('/notifications/comment',
+notificationRoutes.get('/users/notifications',
   AuthenticateUser.verifyUser,
-  Notifications.commentNotifications);
+  Notifications.fetchAllNotifications);
 
 
 // Subscribe and unsubscribe notification for a user

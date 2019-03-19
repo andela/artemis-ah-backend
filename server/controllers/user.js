@@ -101,7 +101,7 @@ export default class Users {
    */
   static async resetPasswordEmail(req, res) {
     const { email } = req.body;
-
+    if (!email) return response(res).notFound({ message: 'email is required' });
     const hashedEmail = HelperUtils.hashPassword(email);
 
     try {
@@ -109,7 +109,7 @@ export default class Users {
         where: { email }
       });
 
-      if (user === null) {
+      if (!user) {
         response(res).notFound({
           message: 'user not found in our records'
         });
@@ -259,29 +259,26 @@ export default class Users {
         attributes: ['username', 'email', 'bio', 'image']
       });
 
-      if (!user) response(res).notFound({ message: 'user not found' });
-      else {
-        const values = {
-          bio: req.body.bio || user.bio,
-          image: req.body.image || user.image
-        };
+      const values = {
+        bio: req.body.bio || user.bio,
+        image: req.body.image || user.image
+      };
 
-        const updateUser = await User.update(values, {
-          returning: true,
-          where: { username }
-        });
-        const { email, bio, image } = updateUser[1][0];
+      const updateUser = await User.update(values, {
+        returning: true,
+        where: { username }
+      });
+      const { email, bio, image } = updateUser[1][0];
 
-        response(res).success({
-          message: 'user updated',
-          user: {
-            username,
-            email,
-            bio,
-            image
-          }
-        });
-      }
+      response(res).success({
+        message: 'user updated',
+        user: {
+          username,
+          email,
+          bio,
+          image
+        }
+      });
     } catch (err) {
       return response(res).serverError({ message: err });
     }
