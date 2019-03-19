@@ -32,7 +32,7 @@ router.post('/articles/:slug/comment',
 router.post('/articles/:slug/highlight',
   AuthenticateUser.verifyUser,
   AuthenticateArticle.verifyArticle,
-  Validate.highltght,
+  Validate.highlight,
   Validate.validationHandler,
   Comment.highlight);
 
@@ -82,5 +82,10 @@ router.delete('/articles/:slug/comment/:commentId',
   ValidateComment.validateMethods('delete', true),
   ValidateComment.validateComment,
   Comment.deleteComment);
+
+router.get('/articles/:slug/comment/:commentId/history',
+  AuthenticateUser.verifyUser,
+  AuthenticateArticle.verifyArticle,
+  Comment.getEditHistory);
 
 export default router;

@@ -141,6 +141,117 @@ describe('Test signup endpoint and email verification endpoint', () => {
       });
   });
 
+  it('should return 400 if firstname is empty', (done) => {
+    chai
+      .request(app)
+      .post(signupURL)
+      .send({
+        email: 'johndoe@gmail.com',
+        lastname: 'Doe',
+        username: 'john45',
+        password: '12345678'
+      })
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        const { firstname } = res.body.errors;
+        expect(firstname[0]).to.be.equal('First name field must be specified.');
+        done(err);
+      });
+  });
+
+  it('should return 400 if firstname contains non-alphabetic characters', (done) => {
+    chai
+      .request(app)
+      .post(signupURL)
+      .send({
+        email: 'johndoe@gmail.com',
+        firstname: 'John124',
+        lastname: 'Doe',
+        username: 'john45',
+        password: '12345678'
+      })
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        const { firstname } = res.body.errors;
+        expect(firstname[0]).to.be.equal('First name can only contain alphabetic characters.');
+        done(err);
+      });
+  });
+
+  it('should return 400 if lastname is empty', (done) => {
+    chai
+      .request(app)
+      .post(signupURL)
+      .send({
+        email: 'johndoe@gmail.com',
+        firstname: 'John',
+        username: 'john45',
+        password: '12345678'
+      })
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        const { lastname } = res.body.errors;
+        expect(lastname[0]).to.be.equal('Last name field must be specified.');
+        done(err);
+      });
+  });
+
+  it('should return 400 if lastname contains non-alphabetic characters', (done) => {
+    chai
+      .request(app)
+      .post(signupURL)
+      .send({
+        email: 'johndoe@gmail.com',
+        firstname: 'John',
+        lastname: 'John123',
+        username: 'john45',
+        password: '12345678'
+      })
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        const { lastname } = res.body.errors;
+        expect(lastname[0]).to.be.equal('Last name can only contain alphabetic characters.');
+        done(err);
+      });
+  });
+
+  it('should return 400 if username is empty', (done) => {
+    chai
+      .request(app)
+      .post(signupURL)
+      .send({
+        email: 'johndoe@gmail.com',
+        firstname: 'John',
+        lastname: 'Doe',
+        password: '12345678'
+      })
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        const { username } = res.body.errors;
+        expect(username[0]).to.be.equal('Username field must be specified.');
+        done(err);
+      });
+  });
+
+  it('should return 400 if username is less than 2 characters', (done) => {
+    chai
+      .request(app)
+      .post(signupURL)
+      .send({
+        email: 'johndoe@gmail.com',
+        firstname: 'John',
+        lastname: 'Doe',
+        username: 'J',
+        password: '12345678'
+      })
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        const { username } = res.body.errors;
+        expect(username[0]).to.be.equal('Username must not be less than 2 characters.');
+        done(err);
+      });
+  });
+
   it('should return 400 if email is invalid', (done) => {
     chai
       .request(app)
@@ -541,6 +652,19 @@ describe('Toggle notification', () => {
       .end((err, res) => {
         expect(res.status).to.equal(400);
         expect(res.body.errors.inAppNotification[0]).to.equal('Please specify if you want to recieve in app notifications');
+        done();
+      });
+  });
+});
+
+describe('Test wild card route', () => {
+  it('Should return an 404 error for unfound routes', (done) => {
+    chai
+      .request(app)
+      .get('/api/reportadmin')
+      .end((req, res) => {
+        expect(res.status).to.equal(404);
+        expect(res.body.message).to.be.a('string').to.equal('Route not found');
         done();
       });
   });
