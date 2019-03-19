@@ -6,7 +6,7 @@ import app from '../app';
 dotenv.config();
 chai.use(chaiHttp);
 
-let userToken, adminToken, commentId;
+let userToken, adminToken, unauthorizedToken, commentId;
 const articleSlug = 'this-is-an-article-1';
 
 describe('Test endpoint to return edit history', () => {
@@ -45,6 +45,24 @@ describe('Test endpoint to return edit history', () => {
       });
   });
 
+  before('it should create an unauthorized user', (done) => {
+    chai.request(app)
+      .post('/api/users')
+      .send({
+        firstname: 'Unauthorized',
+        lastname: 'User',
+        email: 'unauthorizeduser@gmail.com',
+        username: 'unauthorizeduser',
+        password: '1234567890'
+      })
+      .end((err, res) => {
+        expect(res.status).to.equal(201);
+        const { token } = res.body.user;
+        unauthorizedToken = token;
+        done();
+      });
+  });
+
   it('should create a new comment', (done) => {
     chai
       .request(app)
@@ -61,11 +79,11 @@ describe('Test endpoint to return edit history', () => {
       });
   });
 
-  it('should return a 401 if user trying to get edit history is not an admin', (done) => {
+  it('should return a 401 if user trying to get edit history is not an admin and also not the user that edited the comment', (done) => {
     chai
       .request(app)
       .get(`/api/articles/${articleSlug}/comment/${commentId}/history`)
-      .set('authorization', `bearer ${userToken}`)
+      .set('authorization', `bearer ${unauthorizedToken}`)
       .end((err, res) => {
         expect(res.status).to.equal(401);
         done();
@@ -83,7 +101,7 @@ describe('Test endpoint to return edit history', () => {
       });
   });
 
-  it('should get edit history of the comment (if comment has not been editted)', (done) => {
+  it('should get edit history of the comment (if comment has not been edited)', (done) => {
     chai
       .request(app)
       .get(`/api/articles/${articleSlug}/comment/${commentId}/history`)
@@ -120,7 +138,7 @@ describe('Test endpoint to return edit history', () => {
       .patch(`/api/articles/${articleSlug}/comment/${commentId}`)
       .set('authorization', `Bearer ${userToken}`)
       .send({
-        comment: 'This is the second time the comment is editted'
+        comment: 'This is the second time the comment is edited'
       })
       .end((err, res) => {
         expect(res.status).to.equal(200);
@@ -128,7 +146,7 @@ describe('Test endpoint to return edit history', () => {
       });
   });
 
-  it('should get edit history of the comment of the article.', (done) => {
+  it('should get edit history of the comment (if user is admin)', (done) => {
     chai
       .request(app)
       .get(`/api/articles/${articleSlug}/comment/${commentId}/history`)
@@ -142,7 +160,27 @@ describe('Test endpoint to return edit history', () => {
         expect(history.length).to.equal(2);
         expect(original.comment).to.equal('This is original comment');
         // History is sorted starting from most recent editted.
-        expect(history[0].comment).to.equal('This is the second time the comment is editted');
+        expect(history[0].comment).to.equal('This is the second time the comment is edited');
+        expect(history[1].comment).to.equal('This is the edited version of the comment');
+        done();
+      });
+  });
+
+  it('should get edit history of the comment (if user is creator of the comment)', (done) => {
+    chai
+      .request(app)
+      .get(`/api/articles/${articleSlug}/comment/${commentId}/history`)
+      .set('authorization', `bearer ${userToken}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+
+        const { original, history } = res.body;
+        expect(original.comment).to.be.a('string');
+        expect(history).to.be.an('array');
+        expect(history.length).to.equal(2);
+        expect(original.comment).to.equal('This is original comment');
+        // History is sorted starting from most recent editted.
+        expect(history[0].comment).to.equal('This is the second time the comment is edited');
         expect(history[1].comment).to.equal('This is the edited version of the comment');
         done();
       });
