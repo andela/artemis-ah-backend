@@ -53,10 +53,10 @@ class ValidateUser {
       check('username')
         .exists()
         .withMessage('Username field must be specified.')
-        .isAlpha()
+        .isAlphanumeric()
         .withMessage('Username can only contain alphabetic characters')
         .isLength({ min: 2 })
-        .withMessage('Username must not be less than 3 characters.')
+        .withMessage('Username must not be less than 2 characters.')
     ];
   }
 

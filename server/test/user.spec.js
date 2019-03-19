@@ -231,7 +231,7 @@ describe('Test signup endpoint and email verification endpoint', () => {
       });
   });
 
-  it('should return 400 if username is less than 3 characters', (done) => {
+  it('should return 400 if username is less than 2 characters', (done) => {
     chai
       .request(app)
       .post(signupURL)
@@ -239,13 +239,13 @@ describe('Test signup endpoint and email verification endpoint', () => {
         email: 'johndoe@gmail.com',
         firstname: 'John',
         lastname: 'Doe',
-        username: 'Je',
+        username: 'J',
         password: '12345678'
       })
       .end((err, res) => {
         expect(res.status).to.equal(400);
         const { username } = res.body.errors;
-        expect(username[0]).to.be.equal('Username must not be less than 3 characters.');
+        expect(username[0]).to.be.equal('Username must not be less than 2 characters.');
         done(err);
       });
   });
