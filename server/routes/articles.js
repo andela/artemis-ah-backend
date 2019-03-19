@@ -81,7 +81,6 @@ router.delete('/articles/:slug/comment/:commentId',
 
 router.get('/articles/:slug/comment/:commentId/history',
   AuthenticateUser.verifyUser,
-  AuthenticateUser.isAdmin,
   AuthenticateArticle.verifyArticle,
   Comment.getEditHistory);
 

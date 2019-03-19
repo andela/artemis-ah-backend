@@ -213,10 +213,16 @@ class Comment {
         articleId: article.id, // This ensures the comment belongs to the specified article
         id: commentId
       },
-      attributes: ['comment', 'createdAt']
+      attributes: ['userId', 'comment', 'createdAt']
     });
     if (!comment) {
       return response(res).notFound('Comment does not exists');
+    }
+
+    const { user } = req;
+    // If user is not an admin AND is also not the persone that created the comment.
+    if (user.id !== comment.userId && !user.isAdmin) {
+      return response(res).unauthorized('You don\'t have permission to view this');
     }
 
     // Get comment history
