@@ -29,7 +29,7 @@ router.post('/articles/:slug/comment',
 router.post('/articles/:slug/highlight',
   AuthenticateUser.verifyUser,
   AuthenticateArticle.verifyArticle,
-  Validate.highltght,
+  Validate.highlight,
   Validate.validationHandler,
   Comment.highlight);
 
