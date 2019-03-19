@@ -197,6 +197,60 @@ class Comment {
       return response(res).serverError({ errors: { server: ['database error'] } });
     }
   }
+
+  /**
+   * @description returns edit history of a particular comment.
+   * @param {*} req The request object
+   * @param {*} res The response object
+   * @returns {undefined}
+   */
+  static async getEditHistory(req, res) {
+    const { commentId } = req.params;
+    const { article } = req;
+
+    const comment = await ArticleComment.findOne({
+      where: {
+        articleId: article.id, // This ensures the comment belongs to the specified article
+        id: commentId
+      },
+      attributes: ['userId', 'comment', 'createdAt']
+    });
+    if (!comment) {
+      return response(res).notFound('Comment does not exists');
+    }
+
+    const { user } = req;
+    // If user is not an admin AND is also not the persone that created the comment.
+    if (user.id !== comment.userId && !user.isAdmin) {
+      return response(res).unauthorized('You don\'t have permission to view this');
+    }
+    comment.userId = undefined; // user ID should not show in response.
+
+    // Get comment history
+    const dbHistory = await CommentEditHistory.findAll({
+      where: {
+        commentId,
+      },
+      attributes: [['previousComment', 'comment'], 'createdAt'],
+      order: [
+        ['id', 'DESC']
+      ]
+    });
+
+    let original, history;
+    if (dbHistory.length === 0) {
+      original = comment;
+      history = [];
+    } else {
+      original = dbHistory.pop();
+      history = dbHistory;
+      history.unshift(comment);
+    }
+    response(res).success({
+      original,
+      history
+    });
+  }
 }
 
 export default Comment;

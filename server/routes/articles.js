@@ -79,4 +79,9 @@ router.delete('/articles/:slug/comment/:commentId',
   ValidateComment.validateComment,
   Comment.deleteComment);
 
+router.get('/articles/:slug/comment/:commentId/history',
+  AuthenticateUser.verifyUser,
+  AuthenticateArticle.verifyArticle,
+  Comment.getEditHistory);
+
 export default router;
