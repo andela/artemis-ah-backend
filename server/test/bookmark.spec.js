@@ -104,7 +104,7 @@ describe('Test for the bookmark route', () => {
       });
   });
 
-  it('It should return 200 if a has no bookmark', (done) => {
+  it('It should still return 200 if the user has no bookmark', (done) => {
     chai
       .request(app)
       .get('/api/bookmarks')
