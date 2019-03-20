@@ -47,19 +47,23 @@ class ArticleController {
         errors: validationErrors(errors)
       });
     } else {
-      const { title, description, body, tagId } = req.body;
+      const { title, description, body, tagId, cover } = req.body;
       let slug = slugify(title, {
         lower: true
       });
 
       // Insert into database
-      Article.create(Object.assign(this.article, {
+      const dbRow = {
         userId: req.user.id,
         title,
         description,
         body,
         tagId
-      }))
+      };
+      if (cover) {
+        dbRow.coverUrl = cover;
+      }
+      Article.create(Object.assign(this.article, dbRow))
         .then((article) => {
           slug = slug.concat(`-${article.id}`);
           article.slug = slug;
@@ -210,8 +214,9 @@ class ArticleController {
    * @param {object} res The response object from the route
    * @returns {object} - Article details
    */
-  getAll(req, res) {
+  async getAll(req, res) {
     let offset = 0; // Default offset.
+    let currentPage = 1; // Default page.
 
     const { query } = req;
     // If limit is specified.
@@ -219,6 +224,7 @@ class ArticleController {
     // If page is specified.
     if (query.page) {
       offset = (query.page - 1) * limit;
+      currentPage = query.page;
     }
 
     const sequelizeOptions = {
@@ -247,7 +253,7 @@ class ArticleController {
         'updatedAt'
       ],
       order: [
-        ['id', 'ASC'],
+        ['id', 'DESC'], // Fetch from the latest.
       ]
     };
 
@@ -256,13 +262,25 @@ class ArticleController {
       sequelizeOptions.where['$User.username$'] = query.author;
     }
 
+    // Total number of articles created on
+    const totalArticles = await Article.count();
+
     Article.findAll(sequelizeOptions).then((articles) => {
       response(res).success({
         articles: articles.map((article) => {
+          // Calculate reading time.
           const readTime = HelperUtils.estimateReadingTime(article.body);
           article.dataValues.readTime = readTime;
+
+          // Hide body as body is not needed when fetching all articles.
+          // You only see the body when viewing a single article.
+          article.dataValues.body = undefined;
+
           return article;
-        })
+        }),
+        total: totalArticles,
+        page: currentPage,
+        limit
       });
     });
   }
@@ -402,15 +420,18 @@ class ArticleController {
    */
   async updateArticle(req, res) {
     const { slug } = req.params;
-    const { title, body, description, primaryImageUrl } = req.body;
+    const { title, body, description, cover } = req.body;
 
     try {
-      const updatedArticle = await Article.update({
+      const dbRow = {
         title,
         body,
-        description,
-        primaryImageUrl
-      }, {
+        description
+      };
+      if (cover) {
+        dbRow.coverUrl = cover;
+      }
+      const updatedArticle = await Article.update(dbRow, {
         where: {
           slug
         },

@@ -1,9 +1,11 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import slugify from 'slug';
+import dotenv from 'dotenv';
 import models from '../database/models';
 import app from '../app';
 
+dotenv.config();
 chai.use(chaiHttp);
 
 const { ArticleComment } = models;
@@ -16,6 +18,8 @@ const { ArticleComment } = models;
 chai.Assertion.addMethod('number', value => typeof value === 'number');
 
 let userToken = null;
+let firstArticle;
+let articleWithCover;
 let createdArticle;
 let secondUserToken;
 let thirdUserToken;
@@ -48,6 +52,24 @@ describe('Testing articles endpoint', () => {
       });
   });
 
+  it('should return a 400 if fields are empty', (done) => {
+    const data = {
+      title: '',
+      description: '',
+      body: '',
+      tagId: 1
+    };
+    chai
+      .request(app)
+      .post('/api/articles')
+      .set('authorization', `Bearer ${userToken}`)
+      .send(data)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        done();
+      });
+  });
+
   // Test creating article.
   it('should create a new article', (done) => {
     const data = {
@@ -73,56 +95,21 @@ describe('Testing articles endpoint', () => {
         expect(article.tagId).to.equal(1);
         testData.push(`${slugify(data.title, { lower: true })}-${article.id}`);
         testData.push(userToken);
+
+        firstArticle = article;
+
         done();
       });
   });
 
-  it('should return a 400 if fields are empty', (done) => {
-    const data = {
-      title: '',
-      description: '',
-      body: '',
-      tagId: 1
-    };
-    chai
-      .request(app)
-      .post('/api/articles')
-      .set('authorization', `Bearer ${userToken}`)
-      .send(data)
-      .end((err, res) => {
-        expect(res.status).to.equal(400);
-        done();
-      });
-  });
-
-  it('This test the read time functionality for word over 900', (done) => {
-    const body = ['word'];
-
-    for (let i = 0; i < 1000; i += 1) {
-      body.push('word');
-    }
-    const data = {
-      title: 'This is an article',
-      description: 'This is the description of the article',
-      body: body.join(' '),
-      tagId: 1
-    };
-    chai
-      .request(app)
-      .post('/api/articles')
-      .set('authorization', `Bearer ${userToken}`)
-      .send(data)
-      .end((err, res) => {
-        expect(res.status).to.equal(201);
-        done();
-      });
+  it('first article return default image url if no cover is uploaded', (done) => {
+    expect(firstArticle.coverUrl).to.equal(process.env.DEFAULT_ARTICLE_COVER);
+    done();
   });
 });
 
 // Test endpoint to get all articles.
 describe('Test endpoint to get all articles.', () => {
-  let pageOneFirstArticle = null;
-
   it('should get an array containing the article created above', (done) => {
     chai
       .request(app)
@@ -134,7 +121,6 @@ describe('Test endpoint to get all articles.', () => {
         expect(articles).to.be.an('array');
         expect(articles.length).to.be.at.least(1);
         const [article] = articles;
-        pageOneFirstArticle = article;
 
         createdArticle = article;
 
@@ -158,8 +144,12 @@ describe('Test endpoint to get all articles.', () => {
       });
   });
 
+  let pageOneFirstArticle;
+
   // The second article article will be used to test pagination
   it('should create another article', (done) => {
+    // NOTE: Get all articles sorts article from most recent. So this article will Be first article
+    //       when fetching all articles
     chai
       .request(app)
       .post('/api/articles')
@@ -167,10 +157,13 @@ describe('Test endpoint to get all articles.', () => {
       .send({
         title: 'The second article',
         description: 'This is the description of the second article',
-        body: 'Welcome to the second article'
+        body: 'Welcome to the second article',
+        tagId: 1
       })
       .end((err, res) => {
         expect(res.status).to.equal(201);
+
+        pageOneFirstArticle = res.body.article;
 
         done();
       });
@@ -192,12 +185,39 @@ describe('Test endpoint to get all articles.', () => {
             // Assuming there is nothing on page 2
             return true;
           }
-          // Given that page=2 and limit=1, the id of first item on page 2 should 1 greater than
+          // Given that page=2 and limit=1, the id of first item on page 2 should 1 lesser than
           // the id of the first element on page 1 since the table contains only the 2
-          // articles created in this test file.
-          return arr[0].id === pageOneFirstArticle.id + 1;
+          // articles created above in this test file.
+          // NB: Result set is now sorted from most recent to least recent by default.
+          return arr[0].id === pageOneFirstArticle.id - 1;
         });
 
+        done();
+      });
+  });
+});
+
+// Test functionality to test reading time.
+describe('Testing functionality to compute reading time', () => {
+  it('This test the read time functionality for word over 900', (done) => {
+    const body = ['word'];
+
+    for (let i = 0; i < 1000; i += 1) {
+      body.push('word');
+    }
+    const data = {
+      title: 'This is an article',
+      description: 'This is the description of the article',
+      body: body.join(' '),
+      tagId: 1
+    };
+    chai
+      .request(app)
+      .post('/api/articles')
+      .set('authorization', `Bearer ${userToken}`)
+      .send(data)
+      .end((err, res) => {
+        expect(res.status).to.equal(201);
         done();
       });
   });
@@ -629,6 +649,85 @@ describe('DELETE article /api/articles/:slug', () => {
         expect(res.status).to.be.equal(200);
         expect(res.body.message).to.be.an('string').to.equal('article successfully deleted');
         done(err);
+      });
+  });
+});
+
+const coverImageUrl = `${process.env.ARTICLE_COVER_URL_PATH}/cover-filename`;
+const newCoverImageUrl = `${process.env.ARTICLE_COVER_URL_PATH}/new-cover-filename`;
+
+describe('Test uploading cover for articles', () => {
+  it('should return a 400 if cover URL is not valid', (done) => {
+    chai.request(app)
+      .post('/api/articles')
+      .send({
+        title: 'Article with a cover',
+        description: 'Check out the cover included',
+        body: 'This is the body of the article with a cover',
+        cover: 'fake-image-url'
+      })
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        done();
+      });
+  });
+
+  it('should upload cover when creating an article', (done) => {
+    chai.request(app)
+      .post('/api/articles')
+      .send({
+        title: 'Article with a cover',
+        description: 'Check out the cover included',
+        body: 'This is the body of the article with a cover',
+        cover: coverImageUrl,
+        tagId: 1
+      })
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(201);
+        const { article } = res.body;
+        articleWithCover = article;
+        done();
+      });
+  });
+
+  it('should return correct cover url when article with uploaded cover is fetched', (done) => {
+    chai.request(app)
+      .get(`/api/articles/${articleWithCover.slug}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.article.coverUrl).to.equal(coverImageUrl);
+
+        done();
+      });
+  });
+
+  it('should update an article with new cover uploaded', (done) => {
+    chai.request(app)
+      .patch(`/api/articles/${articleWithCover.slug}`)
+      .send({
+        title: 'Article with a cover',
+        description: 'Check out the cover included',
+        body: 'This is the body of the article with a cover',
+        cover: newCoverImageUrl
+      })
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+
+        done();
+      });
+  });
+
+  it('should return correct cover url for article with cover updated', (done) => {
+    chai.request(app)
+      .get(`/api/articles/${articleWithCover.slug}`)
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.article.coverUrl).to.equal(newCoverImageUrl);
+
+        done();
       });
   });
 });
