@@ -22,7 +22,8 @@ export default {
       },
       highlighted: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
+        defaultValue: 'N/A',
       },
       index: {
         type: Sequelize.INTEGER,
