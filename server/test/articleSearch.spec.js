@@ -58,7 +58,42 @@ describe('test filter', () => {
   it('should return 200 success and an article', (done) => {
     chai
       .request(app)
-      .get('/api/filter?title=This is an article&tag=Food&author=greatauthor')
+      .get('/api/filter?tag=Food')
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.articles).to.be.an('array');
+        const { tagId } = res.body.articles[0];
+        expect(tagId).to.be.a('number');
+        done();
+      });
+  });
+
+  it('should return 404 error if Tag is not found', (done) => {
+    chai
+      .request(app)
+      .get('/api/filter?tag=Foodss')
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        expect(res.body.message).to.equal('No article found with that match');
+        done();
+      });
+  });
+
+  it('should return 404 error if author is not found', (done) => {
+    chai
+      .request(app)
+      .get('/api/filter?author=asdffss')
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        expect(res.body.message).to.equal('No article found with that match');
+        done();
+      });
+  });
+
+  it('should return 200 success and an article', (done) => {
+    chai
+      .request(app)
+      .get('/api/filter?author=greatauthor')
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body.articles).to.be.an('array');
@@ -84,19 +119,7 @@ describe('test filter', () => {
   it('should return 404 error when article is not found', (done) => {
     chai
       .request(app)
-      .get('/api/filter?title=bland morning&tag=tech&author=nameless')
-      .end((err, res) => {
-        expect(res).to.have.status(404);
-        expect(res.body.message).to.be.a('string');
-        expect(res.body.message).to.equal('No article found with that match');
-        done();
-      });
-  });
-
-  it('should return 404 error when there is no parameter for tag', (done) => {
-    chai
-      .request(app)
-      .get('/api/filter?title=bland morning&tag=&author=nameless')
+      .get('/api/filter?title=bland morning')
       .end((err, res) => {
         expect(res).to.have.status(404);
         expect(res.body.message).to.be.a('string');

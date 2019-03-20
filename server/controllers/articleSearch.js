@@ -102,34 +102,63 @@ export default class ArticleSearch {
    */
   static async filter(req, res) {
     try {
-      const title = ArticleSearch.modifyString(req.query.title);
-      const author = ArticleSearch.modifyString(req.query.author);
-      const tag = ArticleSearch.modifyString(req.query.tag);
+      const param = Object.keys(req.query)[0];
+      const paramValue = ArticleSearch.modifyString(Object.values(req.query)[0]);
+      let articles = [];
 
-      const user = await User.findAll({
-        where: { username: author },
-        raw: true
-      });
-
-      const userId = user.length === 0 ? 0 : user[0].id;
-
-      const tagResult = await Tag.findAll({
-        where: { name: tag },
-        raw: true
-      });
-
-      const tagId = tagResult.length === 0 ? 0 : tagResult[0].id;
-
-      const articles = await Article.findAll({
-        where: {
-          [Op.or]: [
-            { title },
-            { tagId },
-            { userId }
+      if (param === 'title') {
+        articles = await Article.findAll({
+          where: { title: paramValue },
+          include: [
+            {
+              model: User,
+              attributes: ['username', 'bio', 'image']
+            },
+            {
+              model: Tag,
+              attributes: ['name']
+            }
           ]
-        },
-        raw: true
-      });
+        });
+      } else if (param === 'author') {
+        const user = await User.findAll({
+          where: { username: paramValue }
+        });
+
+        const userId = user.length === 0 ? 0 : user[0].id;
+        articles = await Article.findAll({
+          where: { userId },
+          include: [
+            {
+              model: User,
+              attributes: ['username', 'bio', 'image']
+            },
+            {
+              model: Tag,
+              attributes: ['name']
+            }
+          ]
+        });
+      } else if (param === 'tag') {
+        const tagResult = await Tag.findAll({
+          where: { name: paramValue }
+        });
+
+        const tagId = tagResult.length === 0 ? 0 : tagResult[0].id;
+        articles = await Article.findAll({
+          where: { tagId },
+          include: [
+            {
+              model: User,
+              attributes: ['username', 'bio', 'image']
+            },
+            {
+              model: Tag,
+              attributes: ['name']
+            }
+          ]
+        });
+      }
 
       if (articles.length === 0) {
         return response(res).notFound({ message: 'No article found with that match' });
