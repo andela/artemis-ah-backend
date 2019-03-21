@@ -36,7 +36,7 @@ export default [
     })
     .withMessage('Body is required')
     .isLength({ min: 10 })
-    .withMessage('minimum character length for body should be 5'),
+    .withMessage('minimum character length for body should be 10'),
 
   // Validate cover URL
   check('cover')

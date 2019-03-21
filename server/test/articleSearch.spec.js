@@ -9,7 +9,7 @@ describe('test search', () => {
   it('should return 200 status and an article', (done) => {
     chai
       .request(app)
-      .get('/api/search?title= This')
+      .get('/api/search?title= T')
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body.allResults).to.be.an('array');
