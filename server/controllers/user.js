@@ -3,7 +3,7 @@ import { HelperUtils, response } from '../utils';
 import verifyEmailMarkup from '../utils/markups/emailVerificationMarkup';
 import passwordResetMarkup from '../utils/markups/passwordResetMarkup';
 
-const { User, History, Article } = db;
+const { User, History, Article, Follower } = db;
 
 /**
  * @description Controller to authenticate users
@@ -230,19 +230,93 @@ export default class Users {
     try {
       const user = await User.findOne({
         where: { username },
-        attributes: ['username', 'email', 'bio', 'image', 'isAdmin', 'emailNotification', 'inAppNotification']
+        attributes: {
+          exclude: [
+            'password',
+            'createdAt',
+            'updatedAt']
+        },
       });
 
       if (!user) response(res).notFound({ message: 'user not found' });
       else {
+        // Get user articles
+        const articles = await Users.getUserArticles(user.id);
+
+        // Get following stats
+        const followingStats = await Users.getFollowing(user.id);
+
+        // Get is following
+
+        const isFollowing = await Users.isfollowing(user.id, req.user.id);
+
+
         response(res).success({
           message: 'user found',
-          user
+          user,
+          articles,
+          followingStats,
+          isFollowing
         });
       }
     } catch (err) {
       return response(res).serverError({ message: err });
     }
+  }
+
+  /**
+   * @description gets articles for a particular user
+   * @param {*} userId
+   * @returns {Array} articles
+   */
+  static getUserArticles(userId) {
+    return Article.findAll({
+      where: { userId },
+      attributes: { exclude: [
+        'id',
+        'userId',
+        'totalClaps',
+        'createdAt',
+        'updatedAt']
+      }
+    });
+  }
+
+  /**
+   * @description gets articles for a particular user
+   * @param {*} userId
+   * @returns {Array} articles
+   */
+  static async getFollowing(userId) {
+    const followers = await Follower.findAndCountAll({
+      where: { userId }
+    });
+
+    const following = await Follower.findAndCountAll({
+      where: { followerId: userId }
+    });
+
+    const followingStats = { followers: followers.count, following: following.count };
+
+    return followingStats;
+  }
+
+  /**
+   * @description check for if a user is following
+   * @param {*} userId
+   * @param {*} followerId
+   * @returns {boolean} true or false
+   */
+  static async isfollowing(userId, followerId) {
+    if (!followerId || followerId === undefined || followerId === null) return false;
+
+    const following = await Follower.findOne({
+      where: { userId, followerId }
+    });
+
+    const isfollowing = following ? 'true' : 'false';
+
+    return isfollowing;
   }
 
   /**

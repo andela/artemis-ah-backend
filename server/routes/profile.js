@@ -37,6 +37,7 @@ profileRoutes.put('/user', AuthenticateUser.verifyUser, Users.updateUser);
 
 // Get user profile
 profileRoutes.get('/profiles/:username',
+  AuthenticateUser.identifyUser,
   AuthenticateUser.verifyUsername,
   Users.getUser);
 

@@ -31,8 +31,9 @@ export default class ArticleSearch {
     const titleResults = ArticleSearch.searchByTitle(req, res);
     const authorResults = ArticleSearch.filterByAuthors(req, res);
     const tagResults = ArticleSearch.searchByTag(req, res);
+    const articleResults = ArticleSearch.searchByAuthor(req, res);
 
-    const allResults = await Promise.all([titleResults, authorResults, tagResults]);
+    const allResults = await Promise.all([titleResults, authorResults, tagResults, articleResults]);
     const searchResults = allResults.some(result => result.length > 0);
 
     if (searchResults) {
@@ -70,6 +71,7 @@ export default class ArticleSearch {
    */
   static async searchByTag(req, res) {
     try {
+      const tags = [];
       const keyword = ArticleSearch.modifyString(req.query.title);
       const tag = await Tag.findAll({
         where: { name: { [Op.iLike]: `%${keyword}%` } },
@@ -80,12 +82,14 @@ export default class ArticleSearch {
         return [];
       }
 
-      const tagId = (tag[0].id);
+      tag.forEach((returnedTag) => {
+        tags.push(returnedTag.id);
+      });
 
       const articles = await Article.findAll({
-        raw: true,
-        where: { tagId },
-        include: [{ model: User, attributes: ['username', 'bio', 'image'] }]
+        where: { tagId:
+          { [Op.or]: tags }
+        },
       });
 
       return articles;
@@ -179,25 +183,8 @@ export default class ArticleSearch {
   static async filterByAuthors(req, res) {
     const author = ArticleSearch.modifyString(req.query.title);
     try {
-      const users = await User.findAll({
-        where: {
-          [Op.or]: {
-            firstname: {
-              [Op.iLike]: `%${author}%`
-            },
-            lastname: {
-              [Op.iLike]: `%${author}%`
-            },
-            username: {
-              [Op.iLike]: `%${author}%`
-            },
-          }
-        },
-        raw: true,
-        attributes: {
-          excludes: ['createdAt', 'updatedAt']
-        }
-      });
+      const users = await ArticleSearch.searchForAuthors(author);
+
       if (req.params.authors && users[0]) {
         return response(res).success({ users });
       }
@@ -205,6 +192,73 @@ export default class ArticleSearch {
         return response(res).notFound({ message: 'No such author exists.' });
       }
       return users;
+    } catch (error) {
+      return response(res).serverError();
+    }
+  }
+
+  /**
+   * @description get all authors
+   * @param {*} keyWord
+   * @returns {object} authors
+   */
+  static searchForAuthors(keyWord) {
+    return User.findAll({
+      where: {
+        [Op.or]: {
+          firstname: {
+            [Op.iLike]: `%${keyWord}%`
+          },
+          lastname: {
+            [Op.iLike]: `%${keyWord}%`
+          },
+          username: {
+            [Op.iLike]: `%${keyWord}%`
+          },
+        }
+      },
+      raw: true,
+      attributes: {
+        exclude: ['email',
+          'password',
+          'verifiedEmail',
+          'isAdmin',
+          'emailNotification',
+          'inAppNotification',
+          'role',
+          'createdAt',
+          'updatedAt']
+      }
+    });
+  }
+
+  /**
+   * @description returns articles by authors
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} articles
+   */
+  static async searchByAuthor(req, res) {
+    const authors = ArticleSearch.modifyString(req.query.title);
+    const userid = [];
+    try {
+      const users = await ArticleSearch.searchForAuthors(authors);
+      users.forEach((user) => {
+        userid.push(user.id);
+      });
+
+      if (!userid[0]) {
+        return userid;
+      }
+
+      const articles = await Article.findAll({
+        where: {
+          userId: {
+            [Op.or]: userid
+          }
+        }
+      });
+      return articles;
     } catch (error) {
       return response(res).serverError();
     }

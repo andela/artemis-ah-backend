@@ -481,14 +481,19 @@ class ArticleController {
    * @param {*} articleId
    * @returns {boolean} true or false
    */
-  getClap(userId, articleId) {
-    return ArticleClap.findOne({
+  async getClap(userId, articleId) {
+    if (userId === undefined || userId === null) return false;
+    const isClapped = await ArticleClap.findOne({
       where: {
         userId,
         articleId
       },
       attributes: ['clap']
     });
+
+    if (isClapped === null) return false;
+
+    return isClapped.clap;
   }
 }
 
