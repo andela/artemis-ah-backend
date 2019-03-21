@@ -238,27 +238,24 @@ export default class Users {
         },
       });
 
-      if (!user) response(res).notFound({ message: 'user not found' });
-      else {
-        // Get user articles
-        const articles = await Users.getUserArticles(user.id);
+      // Get user articles
+      const articles = await Users.getUserArticles(user.id);
 
-        // Get following stats
-        const followingStats = await Users.getFollowing(user.id);
+      // Get following stats
+      const followingStats = await Users.getFollowing(user.id);
 
-        // Get is following
+      // Get is following
 
-        const isFollowing = await Users.isfollowing(user.id, req.user.id);
+      const isFollowing = await Users.isfollowing(user.id, req.user.id);
 
 
-        response(res).success({
-          message: 'user found',
-          user,
-          articles,
-          followingStats,
-          isFollowing
-        });
-      }
+      response(res).success({
+        message: 'user found',
+        user,
+        articles,
+        followingStats,
+        isFollowing
+      });
     } catch (err) {
       return response(res).serverError({ message: err });
     }
