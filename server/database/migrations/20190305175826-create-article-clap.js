@@ -1,6 +1,4 @@
-/* eslint no-unused-vars: "off" */
-
-module.exports = {
+export default {
   up: (queryInterface, Sequelize) => queryInterface.createTable('ArticleClaps', {
     id: {
       allowNull: false,
@@ -26,5 +24,5 @@ module.exports = {
       type: Sequelize.DATE
     }
   }),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('ArticleClaps')
+  down: queryInterface => queryInterface.dropTable('ArticleClaps')
 };

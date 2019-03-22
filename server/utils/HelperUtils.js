@@ -26,6 +26,19 @@ class HelperUtils {
   }
 
   /**
+   * @method timedToken
+   * @description Generate a token with timer
+   * @param {object} hash encrypted data
+   * @param {object} time
+   * @returns {string} Token
+   */
+  static timedToken(hash, time) {
+    return jwt.sign({
+      hash
+    }, secretKey, { expiresIn: time });
+  }
+
+  /**
    * @method verifyToken
    * @description Verifies a token and decodes it to its subsequent payload
    * @param {string} token The token to decode
