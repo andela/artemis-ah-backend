@@ -28,6 +28,7 @@ export default {
       index: {
         type: Sequelize.INTEGER,
         allowNull: true,
+        defaultValue: 0
       },
       totalLikes: {
         type: Sequelize.INTEGER,
