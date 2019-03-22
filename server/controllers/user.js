@@ -387,19 +387,35 @@ export default class Users {
    * @description Get the reading stats for the user
    * @param {object} req - The request object
    * @param {object} res - The response object
-   * @returns {object} A single article object
+   * @returns {object} A user's history
    */
   static async getStats(req, res) {
     try {
       const userHistory = await History.findAll({
         where: { userId: req.user.id },
-        include: [{ model: Article, attributes: ['title'] }]
+        include: [{ model: Article, attributes: ['title', 'slug'] }]
       });
       response(res).success({
         history: userHistory
       });
     } catch (err) {
       return response(res).serverError({ message: 'Could not get stats, please try again later' });
+    }
+  }
+
+  /** @method deactivateUser
+   * @description Deactivates a user
+   * @param {object} req - The request object
+   * @param {object} res - The response object
+   * @returns {undefined}
+   */
+  static async deactivateUser(req, res) {
+    const { user } = req;
+    try {
+      await user.update({ active: false });
+      return response(res).success({ message: 'Deactivation Successful' });
+    } catch (error) {
+      return response(res).serverError({ message: 'Could not deactivate user' });
     }
   }
 }

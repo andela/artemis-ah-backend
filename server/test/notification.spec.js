@@ -58,7 +58,7 @@ describe('Test notification for articles from users you follow', () => {
   it('should get a list of followers for author', (done) => {
     chai
       .request(app)
-      .get('/api/profiles/followers')
+      .get(`/api/profiles/${author.username}/followers`)
       .set('authorization', `Bearer ${author.token}`)
       .end((err, res) => {
         const { followers } = res.body;

@@ -14,16 +14,19 @@ const controller = new ArticleController();
 
 router.post('/articles',
   AuthenticateUser.verifyUser, // User must be logged in first
+  AuthenticateUser.verifyActiveUser,
   createArticleValidation, // Validate user input
   controller.create.bind(controller));
 
 router.delete('/articles/:slug',
   AuthenticateUser.verifyUser,
+  AuthenticateUser.verifyActiveUser,
   AuthenticateArticle.verifyArticle,
   controller.delete.bind(controller));
 
 router.post('/articles/:slug/comment',
   AuthenticateUser.verifyUser,
+  AuthenticateUser.verifyActiveUser,
   AuthenticateArticle.verifyArticle,
   ValidateComment.validateMethods('create', false),
   ValidateComment.validateComment,
@@ -31,6 +34,7 @@ router.post('/articles/:slug/comment',
 
 router.post('/articles/:slug/highlight',
   AuthenticateUser.verifyUser,
+  AuthenticateUser.verifyActiveUser,
   AuthenticateArticle.verifyArticle,
   Validate.highlight,
   Validate.validationHandler,
@@ -52,10 +56,12 @@ router.get('/articles/:slug',
 const articleCommentLike = new ArticleCommentLikeController();
 router.post('/articles/:slug/comments/:id/like',
   AuthenticateUser.verifyUser, // User has to logged in first
+  AuthenticateUser.verifyActiveUser,
   articleCommentLike.likeToggle.bind(articleCommentLike));
 
 router.post('/articles/:slug/ratings',
   AuthenticateUser.verifyUser,
+  AuthenticateUser.verifyActiveUser,
   rateArticleValidation, // Validate user input
   AuthenticateArticle.verifyArticle,
   controller.rateArticle.bind(controller));
@@ -66,11 +72,13 @@ router.get('/articles/:slug/ratings',
 
 router.patch('/articles/:slug',
   AuthenticateUser.verifyUser,
+  AuthenticateUser.verifyActiveUser,
   AuthenticateArticle.verifyArticle,
   controller.updateArticle.bind(controller));
 
 router.patch('/articles/:slug/comment/:commentId',
   AuthenticateUser.verifyUser,
+  AuthenticateUser.verifyActiveUser,
   AuthenticateArticle.verifyArticle,
   ValidateComment.validateMethods('update', true),
   ValidateComment.validateComment,
@@ -78,6 +86,7 @@ router.patch('/articles/:slug/comment/:commentId',
 
 router.delete('/articles/:slug/comment/:commentId',
   AuthenticateUser.verifyUser,
+  AuthenticateUser.verifyActiveUser,
   AuthenticateArticle.verifyArticle,
   ValidateComment.validateMethods('delete', true),
   ValidateComment.validateComment,
@@ -85,6 +94,7 @@ router.delete('/articles/:slug/comment/:commentId',
 
 router.get('/articles/:slug/comment/:commentId/history',
   AuthenticateUser.verifyUser,
+  AuthenticateUser.verifyActiveUser,
   AuthenticateArticle.verifyArticle,
   Comment.getEditHistory);
 
