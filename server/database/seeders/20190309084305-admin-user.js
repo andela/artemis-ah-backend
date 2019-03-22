@@ -16,6 +16,7 @@ export default {
       verifiedEmail: true,
       isAdmin: true,
       role: 'user',
+      active: true,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -28,6 +29,7 @@ export default {
       verifiedEmail: true,
       isAdmin: false,
       role: 'user',
+      active: true,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -40,6 +42,20 @@ export default {
       verifiedEmail: true,
       isAdmin: false,
       role: 'user',
+      active: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      firstname: 'obi',
+      lastname: 'ora',
+      username: 'obiora',
+      email: 'nwabuzor.obiora@gmail.com',
+      password: HelperUtils.hashPassword(password),
+      verifiedEmail: true,
+      isAdmin: false,
+      role: 'user',
+      active: false,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -52,6 +68,7 @@ export default {
       verifiedEmail: true,
       isAdmin: true,
       role: 'superadmin',
+      active: true,
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});

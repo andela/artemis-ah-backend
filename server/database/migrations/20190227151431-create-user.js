@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 export default {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Users', {
     id: {
@@ -35,9 +39,8 @@ export default {
     },
     image: {
       type: Sequelize.STRING,
-      allowNull: true,
-      defaultValue:
-          'https://res.cloudinary.com/shaolinmkz/image/upload/v1544370726/iReporter/avatar.png'
+      allowNull: false,
+      defaultValue: process.env.DEFAULT_PROFILE_IMAGE
     },
     verifiedEmail: {
       type: Sequelize.BOOLEAN,
@@ -63,6 +66,11 @@ export default {
       type: Sequelize.BOOLEAN,
       defaultValue: true,
       allowNull: false
+    },
+    active: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
     },
     createdAt: {
       allowNull: false,

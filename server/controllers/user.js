@@ -1,7 +1,10 @@
+import jwt from 'jsonwebtoken';
 import db from '../database/models';
-import { HelperUtils, response } from '../utils';
-import verifyEmailMarkup from '../utils/markups/emailVerificationMarkup';
-import passwordResetMarkup from '../utils/markups/passwordResetMarkup';
+import { verifyEmailMarkup,
+  reactivateAccountMarkup,
+  passwordResetMarkup,
+  HelperUtils,
+  response } from '../utils';
 
 const { User, History, Article, Follower } = db;
 
@@ -35,9 +38,9 @@ export default class Users {
         ...formInputs,
         id: createUser.id
       });
-      const name = typeof username !== 'undefined'
-        ? username
-        : `${lastname}, ${firstname}`;
+      const name = (typeof lastname !== 'undefined' && typeof firstname !== 'undefined')
+        ? `${lastname}, ${firstname}`
+        : username;
       HelperUtils.sendMail(email,
         'Authors Haven <no-reply@authorshaven.com>',
         'Email Verification',
@@ -400,6 +403,86 @@ export default class Users {
       });
     } catch (err) {
       return response(res).serverError({ message: 'Could not get stats, please try again later' });
+    }
+  }
+
+  /**
+   * @method sendReactivationLink
+   * @description Send reactivation link to user
+   * @param {object} req - The request object
+   * @param {object} res - The response object
+   * @returns {undefined}
+   */
+  static async sendReactivationLink(req, res) {
+    const { email } = req.body;
+    try {
+      const user = await User.findOne({
+        where: { email }
+      });
+
+      if (user.active) return response(res).badRequest({ message: 'Your account is active already' });
+
+      const name = (typeof user.lastname !== 'undefined' && typeof user.firstname !== 'undefined')
+        ? `${user.lastname}, ${user.firstname}`
+        : user.username;
+
+      const hashedEmail = await HelperUtils.hashPassword(email);
+      // timed token last for 15 minutes
+      const timedToken = await HelperUtils.timedToken(hashedEmail, (15 * 60));
+
+      HelperUtils.sendMail(email,
+        'Authors Haven <re-activation@authorshaven.com>',
+        'Activation of Account',
+        'Account Activation',
+        reactivateAccountMarkup(name, email, timedToken));
+
+      response(res).success({
+        message: 'Please, check your mail box for your reactivation link',
+      });
+    } catch (err) {
+      return response(res).badRequest({ message: 'Your account doesn\'t exist' });
+    }
+  }
+
+  /**
+   * @method reactivateUser
+   * @description Reactivate users account
+   * @param {object} req - The request object
+   * @param {object} res - The response object
+   * @returns {undefined}
+   */
+  static reactivateUser(req, res) {
+    const { email, token } = req.query;
+    try {
+      jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
+        if (err) {
+          response(res).badRequest({
+            message: 'reactivation link has expired',
+          });
+        } else {
+          const isValidEmail = await HelperUtils.comparePasswordOrEmail(email, decoded.hash);
+
+          if (isValidEmail) {
+            const user = await User.findOne({
+              where: { email }
+            });
+
+            if (user.active) return response(res).badRequest({ message: 'You have been reactivated already' });
+
+            await user.update({ active: true });
+
+            response(res).success({
+              message: 'Your account has been reactivated, please login now',
+            });
+          } else {
+            response(res).badRequest({
+              message: 'invalid reactivation link',
+            });
+          }
+        }
+      });
+    } catch (err) {
+      return response(res).serverError({ message: 'You can\'t be reactivated at this moment' });
     }
   }
 }

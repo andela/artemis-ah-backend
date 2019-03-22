@@ -58,8 +58,15 @@ authRoute.get('/users/auth/twitter/redirect',
   passport.authenticate('twitter', { session: false }),
   Users.socialLogin);
 
+// Get users stats
 authRoute.get('/users/stats',
   AuthenticateUser.verifyUser,
   Users.getStats);
+
+// Send Timed Reactivation Link To Users Email
+authRoute.post('/users/reactivate', Users.sendReactivationLink);
+
+// Reactivate users account
+authRoute.get('/users/reactivate', Users.reactivateUser);
 
 export default authRoute;

@@ -1,14 +1,16 @@
 import HelperUtils from './HelperUtils';
 import response, { validationErrors } from './response';
-import emailVerificationMarkUp from './markups/emailVerificationMarkup';
+import verifyEmailMarkup from './markups/emailVerificationMarkup';
 import favouriteArticleNotification from './markups/favouriteArticleNotification';
 import passwordResetMarkup from './markups/passwordResetMarkup';
+import reactivateAccountMarkup from './markups/reactivateAccount';
 
 export {
   HelperUtils,
   response,
   validationErrors,
-  emailVerificationMarkUp,
+  verifyEmailMarkup,
   favouriteArticleNotification,
-  passwordResetMarkup
+  passwordResetMarkup,
+  reactivateAccountMarkup,
 };
