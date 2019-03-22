@@ -481,7 +481,7 @@ export default class Users {
         });
       });
     } catch (err) {
-      return response(res).serverError({ message: err.message });
+      return response(res).serverError({ message: 'You can\'t be reactivated at this moment' });
     }
   }
 
