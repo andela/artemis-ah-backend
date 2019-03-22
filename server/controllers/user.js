@@ -456,30 +456,28 @@ export default class Users {
     try {
       jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
         if (err) {
-          response(res).badRequest({
+          return response(res).badRequest({
             message: 'reactivation link has expired',
           });
-        } else {
-          const isValidEmail = await HelperUtils.comparePasswordOrEmail(email, decoded.hash);
-
-          if (isValidEmail) {
-            const user = await User.findOne({
-              where: { email }
-            });
-
-            if (user.active) return response(res).badRequest({ message: 'You have been reactivated already' });
-
-            await user.update({ active: true });
-
-            response(res).success({
-              message: 'Your account has been reactivated, please login now',
-            });
-          } else {
-            response(res).badRequest({
-              message: 'invalid reactivation link',
-            });
-          }
         }
+        const isValidEmail = await HelperUtils.comparePasswordOrEmail(email, decoded.hash);
+
+        if (!isValidEmail) {
+          return response(res).badRequest({
+            message: 'invalid reactivation link',
+          });
+        }
+        const user = await User.findOne({
+          where: { email }
+        });
+
+        if (user.active) return response(res).badRequest({ message: 'You have been reactivated already' });
+
+        await user.update({ active: true });
+
+        return response(res).success({
+          message: 'Your account has been reactivated, please login now',
+        });
       });
     } catch (err) {
       return response(res).serverError({ message: 'You can\'t be reactivated at this moment' });
