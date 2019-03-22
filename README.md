@@ -9,6 +9,27 @@ by leveraging the modern web.
 
 ---
 
+## How to run
+
+### Locally
+- Clone project
+- Install dependencies by running ```npm install```
+- Check .env.sample file for environmental variables required and obtain them and add to a .env file
+- Start server on port 3000 by running ```npm run start:dev```
+
+### Online
+- Project API is hosted online at https://authorshaven.herokuapp.com
+
+## Project Management
+
+The pivotal tracker board for the project can be found [here](https://www.pivotaltracker.com/n/projects/2313261)
+
+
+## Documentation
+
+The swagger documentation for the project can be found [here](https://authorshaven.herokuapp.com/api/docs)
+
+
 ## API Spec
 The preferred JSON object to be returned by the API should be structured as follows:
 
@@ -21,14 +42,16 @@ The preferred JSON object to be returned by the API should be structured as foll
     "token": "jwt.token.here",
     "username": "jake",
     "bio": "I work at statefarm",
-    "image": null
+    "image": "https://res.cloudinary.com/shaolinmkz/image/upload/v1544370726/iReporter/avatar.png",
+    "role": "user",
+    "isAdmin": false
   }
 }
 ```
 ### Profile
 ```source-json
 {
-  "profile": {
+  "user": {
     "username": "jake",
     "bio": "I work at statefarm",
     "image": "image-link",
@@ -137,8 +160,14 @@ The preferred JSON object to be returned by the API should be structured as foll
 ```source-json
 {
   "tags": [
-    "reactjs",
-    "angularjs"
+    {
+      "id": 1,
+      "name": "Food",
+    },
+    {
+      "id": 2,
+      "name": "Technology",
+    },
   ]
 }
 ```
@@ -174,7 +203,7 @@ Example request body:
 ```source-json
 {
   "user":{
-    "email": "jake@jake.jake",
+    "name": "jake@jake.jake",
     "password": "jakejake"
   }
 }
@@ -182,7 +211,8 @@ Example request body:
 
 No authentication required, returns a User
 
-Required fields: `email`, `password`
+`name` caould be the email or username
+Required fields: `name`, `password`
 
 ### Registration:
 
@@ -262,7 +292,7 @@ Query Parameters:
 
 Filter by tag:
 
-`?tag=AngularJS`
+`?tag=Arts`
 
 Filter by author:
 
@@ -308,7 +338,12 @@ Example request body:
     "title": "How to train your dragon",
     "description": "Ever wonder how?",
     "body": "You have to believe",
-    "tagList": ["reactjs", "angularjs", "dragons"]
+    "readTime":{
+      "text": "< 1 min read",
+      "minutes": 0.005,
+      "time": 300,
+      "words": 1
+    }
   }
 }
 ```
@@ -397,4 +432,4 @@ No additional parameters required
 
 ### Get Tags
 
-`GET /api/tags`
+`GET /api/articles/tags`
