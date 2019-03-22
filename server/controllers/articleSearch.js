@@ -17,7 +17,7 @@ export default class ArticleSearch {
    * @returns {string} formatted string
    */
   static modifyString(str) {
-    const trimString = str.trim();
+    const trimString = str.toString().trim();
     return trimString.replace('%20', ' ');
   }
 
@@ -37,7 +37,10 @@ export default class ArticleSearch {
     const searchResults = allResults.some(result => result.length > 0);
 
     if (searchResults) {
-      return response(res).success({ allResults });
+      return response(res).success({ titleResults: allResults[0],
+        authorResults: allResults[1],
+        tagResults: allResults[2],
+        articleResults: allResults[3] });
     }
     return response(res).notFound({ message: 'no article found, redefine keyword' });
   }
@@ -126,7 +129,7 @@ export default class ArticleSearch {
         });
       } else if (param === 'author') {
         const user = await User.findAll({
-          where: { username: paramValue }
+          where: { username: paramValue, active: true }
         });
 
         const userId = user.length === 0 ? 0 : user[0].id;
@@ -215,7 +218,8 @@ export default class ArticleSearch {
           username: {
             [Op.iLike]: `%${keyWord}%`
           },
-        }
+        },
+        active: true
       },
       raw: true,
       attributes: {

@@ -10,3 +10,4 @@ import './articleSearch.spec';
 import './admin.spec';
 import './notification.spec';
 import './commentEditHistory.spec';
+import './userDeactivation.spec';

@@ -3,6 +3,7 @@ import chai, { expect } from 'chai';
 import dotenv from 'dotenv';
 import { HelperUtils } from '../utils';
 import app from '../app';
+import { handleSocialLogin } from '../config/passport';
 
 dotenv.config();
 
@@ -405,6 +406,48 @@ describe('Test reset password mail endpoint and password link endpoint', () => {
         expect(res.status).to.equal(400);
         done();
       });
+  });
+});
+
+describe('Social Login', () => {
+  it('should sign a new user in', (done) => {
+    const mockCb = (err, res) => {
+      const { email, role, firstname, lastname, image, active, id } = res.data;
+      expect(id).to.be.a('number');
+      expect(email).to.equal('thanosxxl@yahoo.com');
+      expect(role).to.equal('user');
+      expect(firstname).to.equal('Thanos');
+      expect(lastname).to.equal('Stormborn');
+      expect(image).to.equal('hsgdfdg.jpg');
+      expect(active).to.equal(true);
+      done();
+    };
+    handleSocialLogin('thanosxxl@yahoo.com',
+      'Thanos',
+      'Stormborn',
+      'snappy',
+      'hsgdfdg.jpg',
+      mockCb);
+  });
+
+  it('should log a returning user in', (done) => {
+    const mockCb = (err, res) => {
+      const { email, role, firstname, lastname, image, active, id } = res.data;
+      expect(id).to.be.a('number');
+      expect(email).to.equal('thanosxxl@yahoo.com');
+      expect(role).to.equal('user');
+      expect(firstname).to.equal('Thanos');
+      expect(lastname).to.equal('Stormborn');
+      expect(image).to.equal('hsgdfdg.jpg');
+      expect(active).to.equal(true);
+      done();
+    };
+    handleSocialLogin('thanosxxl@yahoo.com',
+      null,
+      null,
+      null,
+      null,
+      mockCb);
   });
 });
 

@@ -7,6 +7,7 @@ const articleClapRoute = express.Router();
 // Article toggle route
 articleClapRoute.post('/articles/:slug/clapToggle',
   AuthenticateUser.verifyUser,
+  AuthenticateUser.verifyActiveUser,
   AuthenticateArticle.verifyArticle,
   ArticleClap.clapToggle);
 

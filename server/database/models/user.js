@@ -62,6 +62,11 @@ export default (sequelize, DataTypes) => {
         defaultValue: 'user',
         allowNull: false
       },
+      active: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: false
+      }
     },
     {});
   User.associate = (models) => {

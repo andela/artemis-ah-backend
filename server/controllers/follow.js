@@ -17,15 +17,17 @@ export default class Follow {
    * @return {undefined}
    */
   static async fetchFollowers(req, res) {
-    const { id } = req.user;
+    const { id } = req.otherUser;
     try {
       const users = await Follower.findAll({
-        where: { userId: id },
+        where: { userId: id,
+          '$follower.active$': true
+        },
         include: [
           {
             model: User,
             as: 'follower',
-            attributes: ['firstname', 'lastname', 'email', 'username', 'image']
+            attributes: ['firstname', 'lastname', 'email', 'username', 'image', 'bio']
           }
         ]
       });
@@ -53,15 +55,17 @@ export default class Follow {
    * @return {undefined}
    */
   static async fetchFollowing(req, res) {
-    const { id } = req.user;
+    const { id } = req.otherUser;
     try {
       const following = await Follower.findAll({
-        where: { followerId: id },
+        where: { followerId: id,
+          '$following.active$': true
+        },
         include: [
           {
             model: User,
             as: 'following',
-            attributes: ['firstname', 'lastname', 'email', 'username', 'image']
+            attributes: ['firstname', 'lastname', 'email', 'username', 'image', 'bio']
           }
         ]
       });
