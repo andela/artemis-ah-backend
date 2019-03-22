@@ -39,12 +39,12 @@ const facebookReturnUrl = process.env.FACEBOOK_RETURN_URL;
  * @param {callback} cb - Callback function\
  * @returns {method} - A callback function
  */
-async function handleSocialLogin(email,
+export const handleSocialLogin = async (email,
   firstname,
   lastname,
   username,
   photo,
-  cb) {
+  cb) => {
   try {
     const existingUser = await User.findOne({ where: { email } });
     return cb(null, {
@@ -56,15 +56,15 @@ async function handleSocialLogin(email,
       firstname,
       lastname,
       username: username
-        ? `${username}-${new Date().getTime()}`
+        ? `${username}${new Date().getTime()}`
         : `${firstname ? firstname.toLowerCase() : email}${
           lastname ? lastname.toLowerCase() : ''
-        }-${new Date().getTime()}`,
+        }${new Date().getTime()}`,
       image: photo
     });
     return cb(null, { data: user.dataValues });
   }
-}
+};
 
 passport.use(new GoogleStrategy({
   clientID: googleClientId,

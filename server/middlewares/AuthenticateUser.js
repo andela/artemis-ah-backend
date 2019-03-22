@@ -89,7 +89,7 @@ class AuthenticateUser {
    */
   static async identifyUser(req, res, next) {
     const payload = await AuthenticateUser.verifyAuthHeader(req);
-    req.user = payload.error ? {} : payload;
+    req.user = payload.error || !payload.active ? {} : payload;
     return next();
   }
 
@@ -105,7 +105,7 @@ class AuthenticateUser {
     const { username } = req.params;
     try {
       const user = await User.findOne({ where: { username } });
-      if (!user) {
+      if (!user || !user.active) {
         return response(res).notFound({ message: `User with username ${username} does not exist` });
       }
       req.otherUser = user;
@@ -126,6 +126,22 @@ class AuthenticateUser {
   static async verifySuperAdmin(req, res, next) {
     const { role } = req.user;
     return role === 'superadmin' ? next() : response(res).forbidden({ message: 'Only a super admin can access this route' });
+  }
+
+  /**
+   * @method verifyActiveUser
+   * @description Verifies that the user is still active
+   * @param {object} req - The Request Object
+   * @param {object} res - The Response Object
+   * @param {callback} next - Callback method
+   * @returns {undefined}
+   */
+  static async verifyActiveUser(req, res, next) {
+    const user = req.user.data ? req.user.data : req.user;
+    if (!user.active) {
+      return response(res).unauthorized({ message: 'Your account is inactive' });
+    }
+    return next();
   }
 }
 

@@ -15,6 +15,7 @@ authRoute.post('/users',
 authRoute.post('/users/login',
   ValidateUser.validateLoginFields(),
   ValidateUser.validateLogin,
+  AuthenticateUser.verifyActiveUser,
   Users.loginUser);
 
 // verifies new users email
@@ -39,6 +40,7 @@ authRoute.get('/users/auth/google',
 
 authRoute.get('/users/auth/google/redirect',
   passport.authenticate('google', { session: false }),
+  AuthenticateUser.verifyActiveUser,
   Users.socialLogin);
 authRoute.get('/users/auth/facebook',
   passport.authenticate('facebook', {
@@ -47,6 +49,7 @@ authRoute.get('/users/auth/facebook',
 
 authRoute.get('/users/auth/facebook/redirect',
   passport.authenticate('facebook', { session: false }),
+  AuthenticateUser.verifyActiveUser,
   Users.socialLogin);
 
 authRoute.get('/users/auth/twitter',
@@ -56,11 +59,13 @@ authRoute.get('/users/auth/twitter',
 
 authRoute.get('/users/auth/twitter/redirect',
   passport.authenticate('twitter', { session: false }),
+  AuthenticateUser.verifyActiveUser,
   Users.socialLogin);
 
 // Get users stats
 authRoute.get('/users/stats',
   AuthenticateUser.verifyUser,
+  AuthenticateUser.verifyActiveUser,
   Users.getStats);
 
 // Send Timed Reactivation Link To Users Email
@@ -68,5 +73,12 @@ authRoute.post('/users/reactivate', Users.sendReactivationLink);
 
 // Reactivate users account
 authRoute.get('/users/reactivate', Users.reactivateUser);
+
+// Deactivate a user
+authRoute.post('/users/deactivate',
+  AuthenticateUser.verifyUser,
+  AuthenticateUser.verifyActiveUser,
+  ValidateUser.validateUserDeactivation,
+  Users.deactivateUser);
 
 export default authRoute;

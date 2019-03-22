@@ -11,3 +11,4 @@ import './admin.spec';
 import './notification.spec';
 import './commentEditHistory.spec';
 import './reactivate.spec';
+import './userDeactivation.spec';

@@ -11,10 +11,12 @@ let token1 = '';
 let token2 = '';
 const email1 = 'mcemie4eva@gmail.com';
 const email2 = 'ireporter18@gmail.com';
+const username1 = 'Mekus';
+const username2 = 'iSeeiReport';
 const followUserUrl = '/api/profiles';
 const unfollowUserURL = '/api/profiles';
-const getUsersFollowersURL = '/api/profiles/followers';
-const getUsersFollowingURL = '/api/profiles/following';
+const getUsersFollowersURL = username => `/api/profiles/${username}/followers`;
+const getUsersFollowingURL = username => `/api/profiles/${username}/following`;
 const signupURL = '/api/users';
 const verifyURL1 = `/api/users/verifyemail?email=${email1}&hash=${HelperUtils.hashPassword(email1)}`;
 const verifyURL2 = `/api/users/verifyemail?email=${email2}&hash=${HelperUtils.hashPassword(email2)}`;
@@ -133,7 +135,7 @@ describe('Test user follow and unfollow on user profile endpoint', () => {
   it('It should return a 200 if a user gets his/her followers successfully', (done) => {
     chai
       .request(app)
-      .get(getUsersFollowersURL)
+      .get(getUsersFollowersURL(username2))
       .set('authorization', `Bearer ${token2}`)
       .end((err, res) => {
         expect(res.status).to.equal(200);
@@ -146,7 +148,7 @@ describe('Test user follow and unfollow on user profile endpoint', () => {
   it('It should return a 200 if nobody is following a user', (done) => {
     chai
       .request(app)
-      .get(getUsersFollowersURL)
+      .get(getUsersFollowersURL(username1))
       .set('authorization', `Bearer ${token1}`)
       .end((err, res) => {
         expect(res.status).to.equal(200);
@@ -159,7 +161,7 @@ describe('Test user follow and unfollow on user profile endpoint', () => {
   it('It should return a 200 if a user gets all the users they are following', (done) => {
     chai
       .request(app)
-      .get(getUsersFollowingURL)
+      .get(getUsersFollowingURL(username1))
       .set('authorization', `Bearer ${token1}`)
       .end((err, res) => {
         expect(res.status).to.equal(200);
@@ -172,7 +174,7 @@ describe('Test user follow and unfollow on user profile endpoint', () => {
   it("It should return a 200 if a user isn't following anyone", (done) => {
     chai
       .request(app)
-      .get(getUsersFollowingURL)
+      .get(getUsersFollowingURL(username2))
       .set('authorization', `Bearer ${token2}`)
       .end((err, res) => {
         expect(res.status).to.equal(200);

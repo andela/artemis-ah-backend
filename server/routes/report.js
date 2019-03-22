@@ -7,6 +7,7 @@ const reportRoutes = express.Router();
 // Post a report
 reportRoutes.post('/articles/:slug/report',
   AuthenticateUser.verifyUser,
+  AuthenticateUser.verifyActiveUser,
   AuthenticateArticle.verifyArticle,
   ValidateReport.reportCategory,
   ValidateReport.report,

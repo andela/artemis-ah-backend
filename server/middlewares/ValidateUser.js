@@ -173,6 +173,31 @@ class ValidateUser {
     req.user = user;
     next();
   }
+
+  /**
+   * @method validateUserDeactivation
+   * @description Validates details provided by user when deactivating
+   * @param {object} req - request object
+   * @param {object} res - response object
+   * @param {object} next - function to pass to next middleware
+   * @returns {undefined}
+   */
+  static async validateUserDeactivation(req, res, next) {
+    const { password } = req.body;
+    const { user } = req;
+
+    if (!password) {
+      return response(res).badRequest({ message: 'Password is required for deactivation' });
+    }
+
+    const passwordValid = await bcrypt.compare(password, user.password);
+
+    if (!passwordValid) {
+      return response(res).forbidden({ message: 'Password is invalid' });
+    }
+
+    next();
+  }
 }
 
 export default ValidateUser;
