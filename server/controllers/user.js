@@ -1,10 +1,12 @@
 import jwt from 'jsonwebtoken';
 import db from '../database/models';
-import { verifyEmailMarkup,
+import {
+  verifyEmailMarkup,
   reactivateAccountMarkup,
   passwordResetMarkup,
   HelperUtils,
-  response } from '../utils';
+  response
+} from '../utils';
 
 const { User, History, Article, Follower } = db;
 
@@ -272,12 +274,13 @@ export default class Users {
   static getUserArticles(userId) {
     return Article.findAll({
       where: { userId },
-      attributes: { exclude: [
-        'id',
-        'userId',
-        'totalClaps',
-        'createdAt',
-        'updatedAt']
+      attributes: {
+        exclude: [
+          'id',
+          'userId',
+          'totalClaps',
+          'createdAt',
+          'updatedAt']
       }
     });
   }

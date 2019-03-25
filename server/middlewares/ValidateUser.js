@@ -2,7 +2,7 @@ import { check, validationResult } from 'express-validator/check';
 import Sequelize from 'sequelize';
 import bcrypt from 'bcryptjs';
 import models from '../database/models';
-import { response, validationErrors } from '../utils';
+import { response, validationErrors, HelperUtils } from '../utils';
 
 const { Op } = Sequelize;
 const { User } = models;
@@ -68,7 +68,7 @@ class ValidateUser {
    * @param {callback} next - Callback method
    * @returns {object} - JSON response object
    */
-  static validateUserDetails(req, res, next) {
+  static async validateUserDetails(req, res, next) {
     const { username, email } = req.body;
     const errorFormatter = ({ msg }) => [msg];
     const errorMessages = validationResult(req).formatWith(errorFormatter);
@@ -76,18 +76,16 @@ class ValidateUser {
     if (!errorMessages.isEmpty()) {
       return response(res).badRequest({ errors: errorMessages.mapped() });
     }
+    const userObj = await ValidateUser.isUserUnique(email, username);
 
-    const uniqueUser = ValidateUser.isUserUnique(email, username);
-    return Promise.resolve(uniqueUser).then((result) => {
-      if (result.length > 0) {
-        const errors = {};
-        result.forEach((userDetail) => {
-          errors[userDetail] = [`${userDetail} already exists.`];
-        });
-        return response(res).conflict({ errors });
-      }
-      return next();
-    });
+    if (userObj.length > 0) {
+      const errors = {};
+      userObj.forEach((field) => {
+        errors[field] = [`${field} already exists.`];
+      });
+      return response(res).conflict({ errors });
+    }
+    next();
   }
 
   /**
@@ -98,7 +96,8 @@ class ValidateUser {
    * @returns {boolean} - If user detail is unique or not
    */
   static async isUserUnique(email, username) {
-    const user = await User.findAll({
+    const matchedFields = [];
+    const userObj = await User.findOne({
       attributes: ['email', 'username'],
       where: {
         [Op.or]: [{ email }, { username }]
@@ -106,8 +105,15 @@ class ValidateUser {
       raw: true
     });
 
-    const existingUserObject = await user;
-    return user.length > 0 ? Object.keys(existingUserObject[0]) : [];
+    if (userObj && userObj.email === email) {
+      matchedFields.push('email');
+    }
+
+    if (userObj && userObj.username === username) {
+      matchedFields.push('username');
+    }
+
+    return matchedFields;
   }
 
   /**
@@ -197,6 +203,24 @@ class ValidateUser {
     }
 
     next();
+  }
+
+  /**
+   * @method validateEmail
+   * @description Validate email format
+   * @param {object} req - request object
+   * @param {object} res - response object
+   * @param {object} next - function to pass to next middleware
+   * @returns {undefined}
+   */
+  static async validateEmail(req, res, next) {
+    const { email } = req.body;
+
+    if (!HelperUtils.isValidEmail(email)) {
+      response(res).badRequest({ message: 'invalid email format' });
+    } else {
+      next();
+    }
   }
 }
 

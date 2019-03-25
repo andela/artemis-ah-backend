@@ -69,7 +69,9 @@ authRoute.get('/users/stats',
   Users.getStats);
 
 // Send Timed Reactivation Link To Users Email
-authRoute.post('/users/reactivate', Users.sendReactivationLink);
+authRoute.post('/users/reactivate',
+  ValidateUser.validateEmail,
+  Users.sendReactivationLink);
 
 // Reactivate users account
 authRoute.get('/users/reactivate', Users.reactivateUser);
