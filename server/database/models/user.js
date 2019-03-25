@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
 export default (sequelize, DataTypes) => {
   const User = sequelize.define('User',
     {
@@ -34,8 +37,7 @@ export default (sequelize, DataTypes) => {
       image: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue:
-          'https://res.cloudinary.com/shaolinmkz/image/upload/v1544370726/iReporter/avatar.png'
+        defaultValue: process.env.DEFAULT_PROFILE_IMAGE
       },
       verifiedEmail: {
         type: DataTypes.BOOLEAN,
@@ -64,9 +66,9 @@ export default (sequelize, DataTypes) => {
       },
       active: {
         type: DataTypes.BOOLEAN,
+        allowNull: false,
         defaultValue: true,
-        allowNull: false
-      }
+      },
     },
     {});
   User.associate = (models) => {

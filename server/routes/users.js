@@ -62,11 +62,19 @@ authRoute.get('/users/auth/twitter/redirect',
   AuthenticateUser.verifyActiveUser,
   Users.socialLogin);
 
+// Get users stats
 authRoute.get('/users/stats',
   AuthenticateUser.verifyUser,
   AuthenticateUser.verifyActiveUser,
   Users.getStats);
 
+// Send Timed Reactivation Link To Users Email
+authRoute.post('/users/reactivate', Users.sendReactivationLink);
+
+// Reactivate users account
+authRoute.get('/users/reactivate', Users.reactivateUser);
+
+// Deactivate a user
 authRoute.post('/users/deactivate',
   AuthenticateUser.verifyUser,
   AuthenticateUser.verifyActiveUser,
