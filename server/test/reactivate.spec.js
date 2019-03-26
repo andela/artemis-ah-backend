@@ -30,6 +30,19 @@ describe('Test Reactivation of account endpoint', () => {
       });
   });
 
+  it('It should return 400 if email format is invalid', (done) => {
+    chai
+      .request(app)
+      .post(sentReactivationLinkURL)
+      .send({ email: 'invalid.email.format.com' })
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.message).to.be.a('string');
+        expect(res.body.message).to.equal('invalid email format');
+        done();
+      });
+  });
+
 
   it('It should return 200 if account has been reactivated', (done) => {
     chai

@@ -154,6 +154,18 @@ class HelperUtils {
       });
     });
   }
+
+  /**
+   * @method isValidEmail
+   * @description Validates an email field
+   * @param {string} email - users email
+   * @return {boolean} if email is valid
+   */
+  static isValidEmail(email) {
+    const emailMatch = /^([A-z0-9]+)([._-]{0,1})([A-z0-9]+)@([A-z0-9-_.]+)\.([A-z]{2,3})$/;
+    const emailEvaluation = emailMatch.test(email);
+    return emailEvaluation;
+  }
 }
 
 export default HelperUtils;

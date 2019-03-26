@@ -17,7 +17,7 @@ class ValidateComment {
      * @param {boolean} commentId - Boolean to check if comment id is specified
      * @returns {array} - Array of validation methods
      */
-  static validateMethods(requestType, commentId = false) {
+  static validateMethods(requestType, commentId) {
     const propsToValidate = [];
 
     if (requestType === 'update' || requestType === 'create') {
