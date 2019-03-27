@@ -14,7 +14,7 @@
     "reset:db": "npm run sequelize db:migrate:undo:all && npm run sequelize db:migrate && npm run reset:seeds",
     "start:dev": "npm run reset:db && npm run dev",
     "build": "rm -rf dist && mkdir dist && babel -d ./dist ./server -s",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm run reset:db && npm run build",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm run build",
     "lint": "eslint ./server --fix"
   },
   "lint-staged": {
@@ -69,6 +69,7 @@
     "sequelize": "^4.42.0",
     "sequelize-cli": "^5.4.0",
     "slug": "^1.0.0",
+    "swagger-ui-express": "^4.0.2",
     "underscore": "^1.9.1"
   },
   "devDependencies": {

@@ -144,6 +144,19 @@ describe('Test endpoint to get all articles.', () => {
       });
   });
 
+  it('should return an authors article with a status code of 200', (done) => {
+    chai
+      .request(app)
+      .get('/api/articles?author=greatauthor')
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        const { articles } = res.body;
+        expect(articles).to.be.an('array');
+        expect(articles.length).to.equal(1);
+        done();
+      });
+  });
+
   let pageOneFirstArticle;
 
   // The second article article will be used to test pagination

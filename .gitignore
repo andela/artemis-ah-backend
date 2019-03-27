@@ -42,3 +42,6 @@ node_modules
 
 # This file is causing a lot of merge conflict!
 package-lock.json
+
+# Ignore all .rej extension
+.rej
