@@ -1,0 +1,1456 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "A Social platform for the creative at heart",
+    "version" : "1.0.0",
+    "title" : "Author's Haven",
+    "termsOfService" : "http://swagger.io/terms/",
+    "contact" : {
+      "name" : "Artemis",
+      "email" : "apiteam@swagger.io"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host" : "authorshaven.herokuapp.com",
+  "basePath" : "/api",
+  "tags" : [ {
+    "name" : "user",
+    "description" : "Everything associated to users"
+  }, {
+    "name" : "profile",
+    "description" : "Everything associated user profile"
+  }, {
+    "name" : "article",
+    "description" : "Every thing relating to articles"
+  }, {
+    "name" : "bookmark",
+    "description" : "All about the users bookmarks"
+  }, {
+    "name" : "report",
+    "description" : "All about reports on Articles"
+  }, {
+    "name" : "comment",
+    "description" : "All about comments on Articles"
+  }, {
+    "name" : "admin",
+    "description" : "All about admin routes"
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/users" : {
+      "post" : {
+        "tags" : [ "user" ],
+        "summary" : "Creates a new user",
+        "description" : "This endpoint signup a new user",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "user",
+          "description" : "User details",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/user"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "user created successfully"
+          }
+        }
+      }
+    },
+    "/users/verifyemail" : {
+      "get" : {
+        "tags" : [ "user" ],
+        "summary" : "Verify a new user's email",
+        "description" : "This endpoint verifies a new user's email",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "email",
+          "in" : "query",
+          "description" : "New user's email address",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "hash",
+          "in" : "query",
+          "description" : "Encrypted data for comparism",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "email verified successfully"
+          },
+          "400" : {
+            "description" : "invalid email"
+          }
+        }
+      }
+    },
+    "/users/reset-password" : {
+      "post" : {
+        "tags" : [ "user" ],
+        "summary" : "Send reset password link",
+        "description" : "This endpoint confirms user's email before sending a reset link",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "email",
+          "description" : "User details",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/email"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Please, verify password reset link in your email box"
+          },
+          "404" : {
+            "description" : "user not found in our records"
+          }
+        }
+      },
+      "patch" : {
+        "tags" : [ "user" ],
+        "summary" : "Reset user's password",
+        "description" : "This endpoint resets user's password",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "email",
+          "in" : "query",
+          "description" : "User's email address",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "query",
+          "in" : "path",
+          "description" : "Encrypted data for comparism",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "password",
+          "description" : "User password",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/password"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Password reset successful. Please, login using your new password."
+          },
+          "400" : {
+            "description" : "Invalid password reset link"
+          },
+          "404" : {
+            "description" : "user not found"
+          }
+        }
+      }
+    },
+    "/users/login" : {
+      "post" : {
+        "tags" : [ "user" ],
+        "summary" : "Logs a user in",
+        "description" : "This endpoint logs a user in using their password and email/username",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "user",
+          "description" : "User details",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/user_1"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "user logged in successfully"
+          },
+          "400" : {
+            "description" : "Email or Username is required to login, Password is required to login"
+          },
+          "403" : {
+            "description" : "invalid credentials"
+          }
+        }
+      }
+    },
+    "/users/stats" : {
+      "get" : {
+        "tags" : [ "user" ],
+        "summary" : "Returns user’s history",
+        "description" : "Sends back all the articles that the user has viewed on the platform",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/users/auth/google" : {
+      "get" : {
+        "tags" : [ "user" ],
+        "summary" : "Signs users in with google",
+        "description" : "Redirects to google authentication page to seek their permission to share their information with the platform",
+        "produces" : [ "text/html" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "user logged in successfully"
+          }
+        }
+      }
+    },
+    "/users/auth/facebook" : {
+      "get" : {
+        "tags" : [ "user" ],
+        "summary" : "Signs users in with facebook",
+        "description" : "Redirects to facebook authentication page to seek their permission to share their information with the platform",
+        "produces" : [ "text/html" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "user logged in successfully"
+          }
+        }
+      }
+    },
+    "/users/auth/twitter" : {
+      "get" : {
+        "tags" : [ "user" ],
+        "summary" : "Signs users in with twitter",
+        "description" : "Redirects to twitter authentication page to seek their permission to share their information with the platform",
+        "produces" : [ "text/html" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "user logged in successfully"
+          }
+        }
+      }
+    },
+    "/articles" : {
+      "get" : {
+        "tags" : [ "article" ],
+        "summary" : "Get list of articles",
+        "description" : "This endpoint can fetch a list of article, filter by author and support pagination",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Page limit",
+          "required" : false,
+          "type" : "number"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "single page",
+          "required" : false,
+          "type" : "number"
+        }, {
+          "name" : "author",
+          "in" : "query",
+          "description" : "unsername of author",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "success"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "article" ],
+        "summary" : "Creates a new article",
+        "description" : "Creates a new article",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "article",
+          "description" : "Create an article",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/article"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/articles/{slug}" : {
+      "delete" : {
+        "tags" : [ "article" ],
+        "summary" : "Deletes an article",
+        "description" : "Deletes article with slug contained in parameter",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "slug of the article the comment belongs to",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "article deleted successfully"
+          },
+          "403" : {
+            "description" : "forbidden"
+          },
+          "404" : {
+            "description" : "article not found"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      },
+      "patch" : {
+        "tags" : [ "article" ],
+        "summary" : "Updates an article",
+        "description" : "Updates article with slug contained in parameter",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "slug of the article the comment belongs to",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "title",
+          "description" : "Article details to update",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/title"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "article deleted successfully"
+          },
+          "403" : {
+            "description" : "forbidden"
+          },
+          "404" : {
+            "description" : "article not found"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/articles/tags" : {
+      "get" : {
+        "tags" : [ "article" ],
+        "summary" : "Returns all tags",
+        "description" : "Returns all the tags an article could have",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          }
+        }
+      }
+    },
+    "/articles/{slug}/ratings" : {
+      "get" : {
+        "tags" : [ "article" ],
+        "summary" : "Get all ratings for article",
+        "description" : "Get's all the ratings assigned to the article",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "Article's slug",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "article" ],
+        "summary" : "Rates an article",
+        "description" : "Calculates the average rating of an article",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "Article's slug",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of ratings"
+          },
+          "403" : {
+            "description" : "You can’t rate your own article"
+          },
+          "404" : {
+            "description" : "Article not found"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/articles/{slug}/comment" : {
+      "post" : {
+        "tags" : [ "comment" ],
+        "summary" : "Comment an article",
+        "description" : "Comment on article",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "Article's slug",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Comment object"
+          },
+          "400" : {
+            "description" : "Invalid property specified"
+          },
+          "404" : {
+            "description" : "Article not found"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/articles/{slug}/comment/{commentId}" : {
+      "delete" : {
+        "tags" : [ "comment" ],
+        "summary" : "Delete a comment",
+        "description" : "Deletes a given comment",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "Hyphenated article title appended by it id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "commentId",
+          "in" : "path",
+          "description" : "comment id of comment to be deleted",
+          "required" : true,
+          "type" : "integer"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "comment has been deleted successfully"
+          },
+          "404" : {
+            "description" : "Comment not found"
+          },
+          "500" : {
+            "description" : "Server error"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      },
+      "patch" : {
+        "tags" : [ "comment" ],
+        "summary" : "Updates a comment",
+        "description" : "This endpoint updates the comment of a given article",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "Hyphenated article title appended by it id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "commentId",
+          "in" : "path",
+          "description" : "Gets a comment id of the comment",
+          "required" : true,
+          "type" : "integer"
+        }, {
+          "in" : "body",
+          "name" : "comment",
+          "description" : "Comment text to update",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/comment"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Updated commment response object"
+          },
+          "404" : {
+            "description" : "Article not found"
+          },
+          "500" : {
+            "description" : "Server Error"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/articles/{slug}/comments" : {
+      "get" : {
+        "tags" : [ "comment" ],
+        "summary" : "Returns all comments for an article",
+        "description" : "Returns all the comments under an article",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "Hyphenated article title appended by it id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "500" : {
+            "description" : "Server Error"
+          }
+        }
+      }
+    },
+    "/articles/{slug}/comment/{commentId}/history" : {
+      "get" : {
+        "tags" : [ "comment" ],
+        "summary" : "Return edit history for a comment",
+        "description" : "Return edit history for a comment",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "The slug of the article",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "commentId",
+          "in" : "path",
+          "description" : "The comment id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "404" : {
+            "description" : "Not found. Returned if article or comment does not exists"
+          },
+          "500" : {
+            "description" : "Server error"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/profiles" : {
+      "get" : {
+        "tags" : [ "profile" ],
+        "summary" : "fetch all authors profiles",
+        "description" : "success",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "success"
+          },
+          "500" : {
+            "description" : "Could not get user profiles"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/bookmarks" : {
+      "get" : {
+        "tags" : [ "bookmark" ],
+        "summary" : "Gets all bookmark",
+        "description" : "This endpoint creates a new bookmark resource",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "Hyphenated article title appended by it id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "you have no bookmarks"
+          },
+          "208" : {
+            "description" : "all bookmarks delivered successfully"
+          },
+          "404" : {
+            "description" : "user not found"
+          },
+          "500" : {
+            "description" : "Server Error"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/articles/{slug}/clapToggle" : {
+      "post" : {
+        "tags" : [ "article" ],
+        "summary" : "Clap for article",
+        "description" : "This endpoint claps for and retrieves claps from an article",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "Hyphenated article title appended by it id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "you have retrieved your clap"
+          },
+          "201" : {
+            "description" : "you have just clapped for this article"
+          },
+          "404" : {
+            "description" : "article not found"
+          },
+          "500" : {
+            "description" : "Server Error"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/articles/{slug}/bookmark" : {
+      "post" : {
+        "tags" : [ "bookmark" ],
+        "summary" : "Create a bookmark",
+        "description" : "This endpoint creates a new bookmark resource",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "Hyphenated article title appended by it id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "article bookmarked successfully"
+          },
+          "400" : {
+            "description" : "you have bookmarked this already"
+          },
+          "404" : {
+            "description" : "article not found"
+          },
+          "500" : {
+            "description" : "Server Error"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "bookmark" ],
+        "summary" : "Delete a bookmark",
+        "description" : "This endpoint remove a bookmark resource from your record",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "Hyphenated article title appended by it id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "bookmark removed successfully"
+          },
+          "404" : {
+            "description" : "bookmark doesn't exist"
+          },
+          "500" : {
+            "description" : "Server Error"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/articles/{slug}/report" : {
+      "post" : {
+        "tags" : [ "report" ],
+        "summary" : "Create a report",
+        "description" : "This endpoint creates a new report on an article",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "Hyphenated article title appended by it id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "report",
+          "description" : "Report of an article",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/report"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Article reported successfully"
+          },
+          "404" : {
+            "description" : "article not found, You can not report your own article"
+          },
+          "500" : {
+            "description" : "Server Error"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/admin/reports" : {
+      "get" : {
+        "tags" : [ "report" ],
+        "summary" : "Gets all reports",
+        "description" : "This endpoint gets all reports",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "Hyphenated article title appended by it id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "500" : {
+            "description" : "Server Error"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/admin/reports/{id}" : {
+      "get" : {
+        "tags" : [ "report" ],
+        "summary" : "Gets a single report",
+        "description" : "This endpoint gets a single report",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Gets a report by id",
+          "required" : true,
+          "type" : "integer"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "404" : {
+            "description" : "Report not found"
+          },
+          "500" : {
+            "description" : "Server Error"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/admin/reports/{id}/status" : {
+      "patch" : {
+        "tags" : [ "report" ],
+        "summary" : "Updates a report status",
+        "description" : "This endpoint updates the status of a report",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Gets a report by id",
+          "required" : true,
+          "type" : "integer"
+        }, {
+          "in" : "body",
+          "name" : "status",
+          "description" : "Report status",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/status"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "400" : {
+            "description" : "Status field empty"
+          },
+          "404" : {
+            "description" : "Report not found"
+          },
+          "500" : {
+            "description" : "Server Error"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/profiles/{username}/following" : {
+      "get" : {
+        "tags" : [ "profile" ],
+        "summary" : "Get people you follow",
+        "description" : "Fetch all users an author is following",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "username",
+          "in" : "path",
+          "description" : "username of author to insert",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "people you are following"
+          },
+          "500" : {
+            "description" : "Could not get following"
+          }
+        }
+      }
+    },
+    "/profiles/{username}/followers" : {
+      "get" : {
+        "tags" : [ "profile" ],
+        "summary" : "Get people who follow you",
+        "description" : "Fetch all users that follows an author",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "username",
+          "in" : "path",
+          "description" : "username of author to insert",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "these are your followers"
+          },
+          "500" : {
+            "description" : "Could not get followers"
+          }
+        }
+      }
+    },
+    "/profiles/{username}/follow" : {
+      "post" : {
+        "tags" : [ "profile" ],
+        "summary" : "Follow an author by username",
+        "description" : "Follows a single author",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "username",
+          "in" : "path",
+          "description" : "username of author to return",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "you already following ${authors username}"
+          },
+          "201" : {
+            "description" : "you just followed ${authors username}"
+          },
+          "403" : {
+            "description" : "you cannot follow yourself"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "profile" ],
+        "summary" : "Unfollow an author by username",
+        "description" : "Unfollows a single author",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "username",
+          "in" : "path",
+          "description" : "username of author to return",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "${authors username} has been unfollowed"
+          },
+          "403" : {
+            "description" : "you cannot unfollow yourself"
+          },
+          "404" : {
+            "description" : "user not found"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/user" : {
+      "get" : {
+        "tags" : [ "user" ],
+        "summary" : "Gets a single user",
+        "description" : "gets single user by username returned from header",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "user found"
+          },
+          "404" : {
+            "description" : "user not found"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "user" ],
+        "summary" : "Update user",
+        "description" : "updates user bio and image",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "update",
+          "description" : "Update a user",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/update"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "user updated"
+          },
+          "404" : {
+            "description" : "user not found"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/profiles/{username}" : {
+      "get" : {
+        "tags" : [ "profile" ],
+        "summary" : "Get user profile",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "username",
+          "in" : "path",
+          "description" : "username of user to return",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "user found"
+          },
+          "403" : {
+            "description" : "user not found"
+          }
+        }
+      }
+    },
+    "/users/deactivate" : {
+      "post" : {
+        "tags" : [ "user" ],
+        "summary" : "deactivates a user",
+        "description" : "deactivates user's account",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "update",
+          "description" : "Update a user",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/update_1"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Deactivation succesful"
+          },
+          "400" : {
+            "description" : "Password incorrect"
+          },
+          "401" : {
+            "description" : "No authorization header was specified"
+          },
+          "404" : {
+            "description" : "User not found"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/users/reactivate" : {
+      "get" : {
+        "tags" : [ "user" ],
+        "summary" : "reactivate account",
+        "description" : "reactivate users account",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "your account has been reactivated, please lagin now"
+          },
+          "400" : {
+            "description" : "You have been reactivated already"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "user" ],
+        "summary" : "send reactivation link",
+        "description" : "send reactivation link to users",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "update",
+          "description" : "Update a user",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/update_2"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "please check your email box your reactivation link"
+          },
+          "400" : {
+            "description" : "Your account is active already"
+          }
+        }
+      }
+    },
+    "/users/notification" : {
+      "patch" : {
+        "tags" : [ "user" ],
+        "summary" : "changes the notifications settings",
+        "description" : "changes the user's notifications settings",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "nottification settings",
+          "description" : "Update a user",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/nottification settings"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Notification settings updated"
+          },
+          "400" : {
+            "description" : "Please specify if you want to recieve in app notifications, Please specify if you want to recieve email notifications, InAppNotification should be either true or false, emailNotification should be either true or false"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/articles/{slug}/highlight" : {
+      "post" : {
+        "tags" : [ "comment" ],
+        "summary" : "Highlight and comment on an article",
+        "description" : "Highlight text on an article and add a comment on article",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "slug",
+          "in" : "path",
+          "description" : "Article's slug",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Highlighed text and comment"
+          },
+          "400" : {
+            "description" : "Invalid property specified"
+          },
+          "404" : {
+            "description" : "Article not found"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/admin/{username}/upgrade" : {
+      "patch" : {
+        "tags" : [ "admin" ],
+        "summary" : "Grant user admin privileges",
+        "description" : "Route to give a regular user admin privileges",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "username",
+          "in" : "path",
+          "description" : "User's username",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "User granted admin priviledges"
+          },
+          "403" : {
+            "description" : "Only a super admin can access this route"
+          },
+          "404" : {
+            "description" : "User not found"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/admin/{username}/downgrade" : {
+      "patch" : {
+        "tags" : [ "admin" ],
+        "summary" : "Revoke's user admin privileges",
+        "description" : "Route to revoke user of admin privileges",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "username",
+          "in" : "path",
+          "description" : "User's username",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "User has been revoked of admin priviledges"
+          },
+          "403" : {
+            "description" : "Only a super admin can access this route"
+          },
+          "404" : {
+            "description" : "User not found"
+          }
+        },
+        "security" : [ {
+          "authorization" : [ ]
+        } ]
+      }
+    },
+    "/filter" : {
+      "get" : {
+        "tags" : [ "article" ],
+        "summary" : "Search for articles by title, author and tag",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "title",
+          "in" : "query",
+          "description" : "title of article",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "author",
+          "in" : "query",
+          "description" : "author of article",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "tag",
+          "in" : "query",
+          "description" : "tag of article",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "filtered articles"
+          },
+          "404" : {
+            "description" : "no article found"
+          }
+        }
+      }
+    },
+    "/search" : {
+      "get" : {
+        "tags" : [ "article" ],
+        "summary" : "Search for articles by title, author and tag",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "keyword",
+          "in" : "query",
+          "description" : "key words to search with",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "articles related to searched keyword"
+          },
+          "404" : {
+            "description" : "no article found, redefine keyword"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions" : {
+    "authorization" : {
+      "type" : "apiKey",
+      "name" : "authorization",
+      "in" : "header"
+    }
+  },
+  "definitions" : {
+    "update" : {
+      "type" : "object",
+      "properties" : {
+        "bio" : {
+          "type" : "string"
+        },
+        "image" : {
+          "type" : "string"
+        }
+      }
+    },
+    "update_2" : {
+      "type" : "object",
+      "properties" : {
+        "email" : {
+          "type" : "string"
+        }
+      }
+    },
+    "title" : {
+      "type" : "object",
+      "properties" : {
+        "title" : {
+          "type" : "string",
+          "description" : "Title text to be updated"
+        },
+        "description" : {
+          "type" : "string",
+          "description" : "Description text to be updated"
+        },
+        "body" : {
+          "type" : "string",
+          "description" : "Body text to be updated"
+        }
+      }
+    },
+    "article" : {
+      "type" : "object",
+      "properties" : {
+        "title" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "body" : {
+          "type" : "string"
+        }
+      }
+    },
+    "update_1" : {
+      "type" : "object",
+      "properties" : {
+        "password" : {
+          "type" : "string"
+        }
+      }
+    },
+    "password" : {
+      "type" : "object",
+      "properties" : {
+        "newPassword" : {
+          "type" : "string",
+          "description" : "Password of the user"
+        },
+        "confirmPassword" : {
+          "type" : "string",
+          "description" : "New password of the user"
+        }
+      }
+    },
+    "nottification settings" : {
+      "type" : "object",
+      "properties" : {
+        "inAppNotification" : {
+          "type" : "boolean"
+        },
+        "emailNotification" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "user_1" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "Email/username of the user"
+        },
+        "password" : {
+          "type" : "string",
+          "description" : "User's password"
+        }
+      }
+    },
+    "report" : {
+      "type" : "object",
+      "properties" : {
+        "category" : {
+          "type" : "string"
+        },
+        "report" : {
+          "type" : "string"
+        }
+      }
+    },
+    "comment" : {
+      "type" : "object",
+      "properties" : {
+        "comment" : {
+          "type" : "string",
+          "description" : "Text to be updated"
+        }
+      }
+    },
+    "user" : {
+      "type" : "object",
+      "properties" : {
+        "firstname" : {
+          "type" : "string"
+        },
+        "lastname" : {
+          "type" : "string"
+        },
+        "username" : {
+          "type" : "string"
+        },
+        "email" : {
+          "type" : "string"
+        },
+        "password" : {
+          "type" : "string"
+        }
+      }
+    },
+    "email" : {
+      "type" : "object",
+      "properties" : {
+        "email" : {
+          "type" : "string"
+        }
+      }
+    },
+    "status" : {
+      "type" : "object",
+      "properties" : {
+        "status" : {
+          "type" : "string",
+          "description" : "Report status"
+        }
+      }
+    }
+  }
+}

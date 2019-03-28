@@ -6,6 +6,8 @@ import cors from 'cors';
 import passport from 'passport';
 import dotenv from 'dotenv';
 import expressSession from 'express-session';
+import swaggerUI from 'swagger-ui-express';
+import apiDocs from '../api_docs.json';
 import routes from './routes';
 import Trimmer from './middlewares/Trimmer';
 
@@ -35,6 +37,9 @@ app.use(expressSession({
   resave: true,
   saveUninitialized: true
 }));
+
+// Serve documentation for API
+app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(apiDocs));
 
 // Setup an index route
 app.get('/', (req, res) => res.status(200).send({
