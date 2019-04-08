@@ -204,18 +204,15 @@ export default class Users {
 
     try {
       const userToken = await HelperUtils.generateToken({ id, isAdmin, role, email });
-
-
-      return response(res).success({
-        message: 'user logged in successfully',
-        user: {
-          email,
-          username,
-          bio,
-          image,
-          token: userToken
-        }
-      });
+      const user = {
+        email,
+        username,
+        bio,
+        image,
+        token: userToken
+      };
+      res.header('userData', user);
+      res.redirect('https://authorshaven.herokuapp.com/');
     } catch (err) {
       return response(res).serverError({
         message: 'token could not be generated, please try again later'
