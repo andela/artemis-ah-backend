@@ -3,7 +3,7 @@ import { HelperUtils } from '../../utils';
 
 dotenv.config();
 
-const password = 'admin123456';
+const password = process.env.ADMIN_PASSWORD;
 
 export default {
   up(queryInterface) {

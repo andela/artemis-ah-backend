@@ -40,7 +40,7 @@ export default class Users {
         ...formInputs,
         id: createUser.id
       });
-      const name = (typeof lastname !== 'undefined' && typeof firstname !== 'undefined')
+      const name = typeof lastname !== 'undefined' && typeof firstname !== 'undefined'
         ? `${lastname}, ${firstname}`
         : username;
       HelperUtils.sendMail(email,
@@ -172,8 +172,7 @@ export default class Users {
             password: hashPassword
           });
           response(res).success({
-            message:
-              'Password reset successful. Please, login using your new password.'
+            message: 'Password reset successful. Please, login using your new password.'
           });
         }
       } else {
@@ -198,9 +197,7 @@ export default class Users {
   static async socialLogin(req, res) {
     const { data } = req.user;
 
-    const {
-      email, username, bio, image, id, isAdmin, role
-    } = data;
+    const { email, username, bio, image, id, isAdmin, role } = data;
 
     try {
       const userToken = await HelperUtils.generateToken({ id, isAdmin, role, email });
@@ -211,11 +208,40 @@ export default class Users {
         image,
         token: userToken
       };
-      res.header('userData', user);
-      res.redirect('https://authorshaven.herokuapp.com/');
+      const encryptedUserdata = HelperUtils.generateToken(user);
+      res.redirect(301,
+        `${process.env.SOCIAL_LOGIN_REDIRECT_URL}?userData=${encryptedUserdata}`);
     } catch (err) {
       return response(res).serverError({
         message: 'token could not be generated, please try again later'
+      });
+    }
+  }
+
+  /**
+   * @description This controller method login redirected users via social media
+   *
+   * @param {object} req - Express request object
+   * @param {object} res - Express response object
+   * @return {undefined}
+   */
+  static async rediectSocialLogin(req, res) {
+    const { userData } = req.query;
+
+    try {
+      const user = HelperUtils.verifyToken(userData);
+      if (user) {
+        return response(res).success({
+          message: 'successfully signed in',
+          user
+        });
+      }
+      response(res).badRequest({
+        message: 'invalid user data'
+      });
+    } catch (err) {
+      return response(res).serverError({
+        message: 'couldnot signin user'
       });
     }
   }
@@ -233,11 +259,8 @@ export default class Users {
       const user = await User.findOne({
         where: { username },
         attributes: {
-          exclude: [
-            'password',
-            'createdAt',
-            'updatedAt']
-        },
+          exclude: ['password', 'createdAt', 'updatedAt']
+        }
       });
 
       // Get user articles
@@ -249,7 +272,6 @@ export default class Users {
       // Get is following
 
       const isFollowing = await Users.isfollowing(user.id, req.user.id);
-
 
       response(res).success({
         message: 'user found',
@@ -272,12 +294,7 @@ export default class Users {
     return Article.findAll({
       where: { userId },
       attributes: {
-        exclude: [
-          'id',
-          'userId',
-          'totalClaps',
-          'createdAt',
-          'updatedAt']
+        exclude: ['id', 'userId', 'totalClaps', 'createdAt', 'updatedAt']
       }
     });
   }
@@ -385,7 +402,6 @@ export default class Users {
     }
   }
 
-
   /** @method getStats
    * @description Get the reading stats for the user
    * @param {object} req - The request object
@@ -406,7 +422,6 @@ export default class Users {
     }
   }
 
-
   /**
    * @method sendReactivationLink
    * @description Send reactivation link to user
@@ -423,13 +438,13 @@ export default class Users {
 
       if (user.active) return response(res).badRequest({ message: 'Your account is active already' });
 
-      const name = (typeof user.lastname !== 'undefined' && typeof user.firstname !== 'undefined')
+      const name = typeof user.lastname !== 'undefined' && typeof user.firstname !== 'undefined'
         ? `${user.lastname}, ${user.firstname}`
         : user.username;
 
       const hashedEmail = await HelperUtils.hashPassword(email);
       // timed token last for 15 minutes
-      const timedToken = await HelperUtils.timedToken(hashedEmail, (15 * 60));
+      const timedToken = await HelperUtils.timedToken(hashedEmail, 15 * 60);
 
       HelperUtils.sendMail(email,
         'Authors Haven <re-activation@authorshaven.com>',
@@ -438,10 +453,10 @@ export default class Users {
         reactivateAccountMarkup(name, email, timedToken));
 
       response(res).success({
-        message: 'Please, check your mail box for your reactivation link',
+        message: 'Please, check your mail box for your reactivation link'
       });
     } catch (err) {
-      return response(res).badRequest({ message: 'Your account doesn\'t exist' });
+      return response(res).badRequest({ message: "Your account doesn't exist" });
     }
   }
 
@@ -458,14 +473,14 @@ export default class Users {
       jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
         if (err) {
           return response(res).badRequest({
-            message: 'reactivation link has expired',
+            message: 'reactivation link has expired'
           });
         }
         const isValidEmail = await HelperUtils.comparePasswordOrEmail(email, decoded.hash);
 
         if (!isValidEmail) {
           return response(res).badRequest({
-            message: 'invalid reactivation link',
+            message: 'invalid reactivation link'
           });
         }
         const user = await User.findOne({
@@ -477,11 +492,11 @@ export default class Users {
         await user.update({ active: true });
 
         return response(res).success({
-          message: 'Your account has been reactivated, please login now',
+          message: 'Your account has been reactivated, please login now'
         });
       });
     } catch (err) {
-      return response(res).serverError({ message: 'You can\'t be reactivated at this moment' });
+      return response(res).serverError({ message: "You can't be reactivated at this moment" });
     }
   }
 
