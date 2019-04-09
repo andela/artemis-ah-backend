@@ -219,34 +219,6 @@ export default class Users {
   }
 
   /**
-   * @description This controller method login redirected users via social media
-   *
-   * @param {object} req - Express request object
-   * @param {object} res - Express response object
-   * @return {undefined}
-   */
-  static async rediectSocialLogin(req, res) {
-    const { userData } = req.query;
-
-    try {
-      const user = HelperUtils.verifyToken(userData);
-      if (user) {
-        return response(res).success({
-          message: 'successfully signed in',
-          user
-        });
-      }
-      response(res).badRequest({
-        message: 'invalid user data'
-      });
-    } catch (err) {
-      return response(res).serverError({
-        message: 'couldnot signin user'
-      });
-    }
-  }
-
-  /**
    * @description controller function that handles user data retrieval
    * @param {*} req
    * @param {*} res

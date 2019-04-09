@@ -62,9 +62,6 @@ authRoute.get('/users/auth/twitter/redirect',
   AuthenticateUser.verifyActiveUser,
   Users.socialLogin);
 
-authRoute.get('/users/auth/social-media/redirect',
-  Users.rediectSocialLogin);
-
 // Get users stats
 authRoute.get('/users/stats',
   AuthenticateUser.verifyUser,
