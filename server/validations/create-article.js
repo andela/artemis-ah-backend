@@ -46,7 +46,7 @@ export default [
 
       // Cover URL must be a valid URL of an image uploaded to cloudinary
       const articleCoverPathRegex = process.env.ARTICLE_COVER_URL_PATH.replace(/\//g, '\\/');
-      const isValidUrl = (new RegExp(`^${articleCoverPathRegex}\\/.+`)).test(cover);
+      const isValidUrl = (new RegExp(`^${articleCoverPathRegex}v[0-9]+/[A-z0-9]+.+$`)).test(cover);
 
       return isValidUrl;
     })

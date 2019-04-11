@@ -666,9 +666,8 @@ describe('DELETE article /api/articles/:slug', () => {
   });
 });
 
-const coverImageUrl = `${process.env.ARTICLE_COVER_URL_PATH}/cover-filename`;
-const newCoverImageUrl = `${process.env.ARTICLE_COVER_URL_PATH}/new-cover-filename`;
-
+const coverImageUrl = `${process.env.ARTICLE_COVER_URL_PATH}v1553005105/authorshaven/cover-filename.png`;
+const newCoverImageUrl = `${process.env.ARTICLE_COVER_URL_PATH}v1553005105/authorshaven/new-cover-filename.png`;
 describe('Test uploading cover for articles', () => {
   it('should return a 400 if cover URL is not valid', (done) => {
     chai.request(app)
