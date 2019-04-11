@@ -244,6 +244,7 @@ class ArticleController {
       attributes: [
         'id',
         'slug',
+        'coverUrl',
         'title',
         'description',
         'body',
