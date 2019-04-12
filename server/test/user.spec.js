@@ -449,6 +449,68 @@ describe('Social Login', () => {
       null,
       mockCb);
   });
+
+  it('should generate a serial username if social username is already taken', (done) => {
+    const mockCb = (err, res) => {
+      const { email, role, firstname, username, lastname, image, active, id } = res.data;
+      expect(id).to.be.a('number');
+      expect(email).to.equal('thanosxxxxxl@yahoo.com');
+      expect(username).to.equal('ayo1');
+      expect(role).to.equal('user');
+      expect(firstname).to.equal('Thanos');
+      expect(lastname).to.equal('Stormborn');
+      expect(image).to.equal('hsgdfdg.jpg');
+      expect(active).to.equal(true);
+      done();
+    };
+    handleSocialLogin('thanosxxxxxl@yahoo.com',
+      'Thanos',
+      'Stormborn',
+      'ayo',
+      'hsgdfdg.jpg',
+      mockCb);
+  });
+
+  it('should generate a username with firstname if social network provides no username', (done) => {
+    const mockCb = (err, res) => {
+      const { email, role, firstname, username, lastname, image, active, id } = res.data;
+      expect(id).to.be.a('number');
+      expect(email).to.equal('thanosl@yahoo.com');
+      expect(username).to.equal('tatiana');
+      expect(role).to.equal('user');
+      expect(firstname).to.equal('tatiana');
+      expect(lastname).to.equal('Stormborn');
+      expect(image).to.equal('hsgdfdg.jpg');
+      expect(active).to.equal(true);
+      done();
+    };
+    handleSocialLogin('thanosl@yahoo.com',
+      'tatiana',
+      'Stormborn',
+      null,
+      'hsgdfdg.jpg',
+      mockCb);
+  });
+
+  it('should generate a username with email if social network provides no username or firstname', (done) => {
+    const mockCb = (err, res) => {
+      const { email, role, username, lastname, image, active, id } = res.data;
+      expect(id).to.be.a('number');
+      expect(email).to.equal('thanosxl@yahoo.com');
+      expect(username).to.equal('thanosxl');
+      expect(role).to.equal('user');
+      expect(lastname).to.equal('Stormborn');
+      expect(image).to.equal('hsgdfdg.jpg');
+      expect(active).to.equal(true);
+      done();
+    };
+    handleSocialLogin('thanosxl@yahoo.com',
+      null,
+      'Stormborn',
+      null,
+      'hsgdfdg.jpg',
+      mockCb);
+  });
 });
 
 describe('Social Login with Google', () => {
@@ -458,6 +520,15 @@ describe('Social Login with Google', () => {
       .get(`${signupURL}/auth/google`)
       .end((err, res) => {
         expect(res.redirects[0]).to.contain('https://accounts.google.com/o/oauth2');
+        done();
+      });
+  });
+  it('should redirect to the platform if the user does not grant access', (done) => {
+    chai
+      .request(app)
+      .get(`${signupURL}/auth/google/redirect?error=access_denied&error_code=200&error_description=Permissions+error&error_reason=user_denied#_=_`)
+      .end((err, res) => {
+        expect(res.redirects[0]).to.contain(`${process.env.SOCIAL_LOGIN_REDIRECT_URL}/?errorData=`);
         done();
       });
   });
@@ -471,6 +542,27 @@ describe('Social Login with Facebook', () => {
       .end((err, res) => {
         expect(res.redirects[0]).to.contain('https://www.facebook.com');
         expect(res.redirects[0]).to.contain('oauth');
+        done();
+      });
+  });
+  it('should redirect to the platform if the user does not grant access', (done) => {
+    chai
+      .request(app)
+      .get(`${signupURL}/auth/facebook/redirect?error=access_denied&error_code=200&error_description=Permissions+error&error_reason=user_denied#_=_`)
+      .end((err, res) => {
+        expect(res.redirects[0]).to.contain(`${process.env.SOCIAL_LOGIN_REDIRECT_URL}/?errorData=`);
+        done();
+      });
+  });
+});
+
+describe('Social Login with Twitter', () => {
+  it('should redirect to the platform if the user does not grant access', (done) => {
+    chai
+      .request(app)
+      .get(`${signupURL}/auth/twitter/redirect?denied=RtMJrQAAAAAA9jxWAAABagrKdfc`)
+      .end((err, res) => {
+        expect(res.redirects[0]).to.contain(`${process.env.SOCIAL_LOGIN_REDIRECT_URL}/?errorData=`);
         done();
       });
   });

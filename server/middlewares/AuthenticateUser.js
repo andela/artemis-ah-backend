@@ -143,6 +143,25 @@ class AuthenticateUser {
     }
     return next();
   }
+
+  /**
+   * @method verifySocialLogin
+   * @description Verifies that the user granted the platform access to their data
+   * @param {object} req - The Request Object
+   * @param {object} res - The Response Object
+   * @param {callback} next - Callback method
+   * @returns {undefined}
+   */
+  static async verifySocialLogin(req, res, next) {
+    const { query } = req;
+    const { error, denied } = query;
+    if (error || denied) {
+      const encryptedData = await HelperUtils.generateToken('Error receiving data');
+      return res.redirect(301,
+        `${process.env.SOCIAL_LOGIN_REDIRECT_URL}?errorData=${encryptedData}`);
+    }
+    return next();
+  }
 }
 
 export default AuthenticateUser;
