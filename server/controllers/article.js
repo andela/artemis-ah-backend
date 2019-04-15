@@ -272,11 +272,6 @@ class ArticleController {
           // Calculate reading time.
           const readTime = HelperUtils.estimateReadingTime(article.body);
           article.dataValues.readTime = readTime;
-
-          // Hide body as body is not needed when fetching all articles.
-          // You only see the body when viewing a single article.
-          article.dataValues.body = undefined;
-
           return article;
         }),
         total: totalArticles,
