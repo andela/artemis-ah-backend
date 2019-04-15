@@ -39,6 +39,7 @@ authRoute.get('/users/auth/google',
   }));
 
 authRoute.get('/users/auth/google/redirect',
+  AuthenticateUser.verifySocialLogin,
   passport.authenticate('google', { session: false }),
   AuthenticateUser.verifyActiveUser,
   Users.socialLogin);
@@ -48,6 +49,7 @@ authRoute.get('/users/auth/facebook',
   }));
 
 authRoute.get('/users/auth/facebook/redirect',
+  AuthenticateUser.verifySocialLogin,
   passport.authenticate('facebook', { session: false }),
   AuthenticateUser.verifyActiveUser,
   Users.socialLogin);
@@ -58,6 +60,7 @@ authRoute.get('/users/auth/twitter',
   }));
 
 authRoute.get('/users/auth/twitter/redirect',
+  AuthenticateUser.verifySocialLogin,
   passport.authenticate('twitter', { session: false }),
   AuthenticateUser.verifyActiveUser,
   Users.socialLogin);

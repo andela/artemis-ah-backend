@@ -30,6 +30,30 @@ const facebookAppSecret = process.env.FACEBOOK_APP_SECRET;
 const facebookReturnUrl = process.env.FACEBOOK_RETURN_URL;
 
 /**
+ * @description Function to increment the number added to the username (e.g bisi1 returns bisi2)
+ * @param {string} username - username that failed validation because it wasnt unique
+ * @returns {string} - new username
+ */
+const generateNewUsername = (username) => {
+  const letterPart = username.match(/\D+/g)[0];
+  const numberPart = username.match(/\d+/g) ? username.match(/\d+/g)[0] : 0;
+  return `${letterPart}${Number(numberPart) + 1}`;
+};
+
+/**
+ * @description Function to check if a username is unique
+ * @param {string} username - username to validate
+ * @returns {string} - unique username
+ */
+const validateUsername = async (username) => {
+  try {
+    const existingUser = await User.findOne({ where: { username } });
+    return validateUsername(generateNewUsername(existingUser.dataValues.username));
+  } catch (err) {
+    return username;
+  }
+};
+/**
  *
  * @param {string} email - User email
  * @param {string} firstname - User's firstname
@@ -51,18 +75,20 @@ export const handleSocialLogin = async (email,
       data: existingUser.dataValues
     });
   } catch (error) {
-    const user = await User.create({
-      email,
-      firstname,
-      lastname,
-      username: username
-        ? `${username}${new Date().getTime()}`
-        : `${firstname ? firstname.toLowerCase() : email}${
-          lastname ? lastname.toLowerCase() : ''
-        }${new Date().getTime()}`,
-      image: photo
-    });
-    return cb(null, { data: user.dataValues });
+    try {
+      const user = await User.create({
+        email,
+        firstname,
+        lastname,
+        username: username
+          ? await validateUsername(username)
+          : `${firstname ? await validateUsername(firstname.toLowerCase()) : await validateUsername(email.split('@')[0].split('.')[0])}`,
+        image: photo
+      });
+      return cb(null, { data: user.dataValues });
+    } catch (err) {
+      return cb(null, { error: 'Could not authenticate user' });
+    }
   }
 };
 

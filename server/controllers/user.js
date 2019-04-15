@@ -195,7 +195,13 @@ export default class Users {
    * @return {undefined}
    */
   static async socialLogin(req, res) {
-    const { data } = req.user;
+    const { data, error } = req.user;
+
+    if (error) {
+      const encryptedData = await HelperUtils.generateToken(error);
+      return res.redirect(301,
+        `${process.env.SOCIAL_LOGIN_REDIRECT_URL}?errorData=${encryptedData}`);
+    }
 
     const { email, username, bio, image, id, isAdmin, role } = data;
 
@@ -209,7 +215,7 @@ export default class Users {
         token: userToken
       };
       const encryptedUserdata = HelperUtils.generateToken(user);
-      res.redirect(301,
+      return res.redirect(301,
         `${process.env.SOCIAL_LOGIN_REDIRECT_URL}?userData=${encryptedUserdata}`);
     } catch (err) {
       return response(res).serverError({
