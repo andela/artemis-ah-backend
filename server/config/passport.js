@@ -63,12 +63,7 @@ const validateUsername = async (username) => {
  * @param {callback} cb - Callback function\
  * @returns {method} - A callback function
  */
-export const handleSocialLogin = async (email,
-  firstname,
-  lastname,
-  username,
-  photo,
-  cb) => {
+export const handleSocialLogin = async (email, firstname, lastname, username, photo, cb) => {
   try {
     const existingUser = await User.findOne({ where: { email } });
     return cb(null, {
@@ -82,7 +77,11 @@ export const handleSocialLogin = async (email,
         lastname,
         username: username
           ? await validateUsername(username)
-          : `${firstname ? await validateUsername(firstname.toLowerCase()) : await validateUsername(email.split('@')[0].split('.')[0])}`,
+          : `${
+            firstname
+              ? await validateUsername(firstname.toLowerCase())
+              : await validateUsername(email.split('@')[0].split('.')[0])
+          }`,
         image: photo
       });
       return cb(null, { data: user.dataValues });
@@ -118,12 +117,7 @@ passport.use(new TwitterStrategy({
 },
 (token, tokenSecret, profile, cb) => {
   const { username, emails, photos } = profile;
-  handleSocialLogin(emails[0].value,
-    null,
-    null,
-    username,
-    photos[0].value,
-    cb);
+  handleSocialLogin(emails[0].value, null, null, username, photos[0].value, cb);
 }));
 
 passport.use(new FacebookStrategy({
@@ -137,12 +131,7 @@ passport.use(new FacebookStrategy({
   const splitnames = displayName.split(' ');
   const firstname = splitnames[0];
   const lastname = splitnames.length > 1 ? splitnames[1] : '';
-  handleSocialLogin(emails[0].value,
-    firstname,
-    lastname,
-    null,
-    photos[0].value,
-    cb);
+  handleSocialLogin(emails[0].value, firstname, lastname, null, photos[0].value, cb);
 }));
 
 export default passport;

@@ -382,7 +382,7 @@ describe('Test reset password mail endpoint and password link endpoint', () => {
       });
   });
 
-  it('It should return a 404 if user doesn\'t exist', (done) => {
+  it("It should return a 404 if user doesn't exist", (done) => {
     const data = { newPassword: 'hello2qwerr', confirmPassword: 'hello2qwerr' };
     chai
       .request(app)
@@ -442,12 +442,7 @@ describe('Social Login', () => {
       expect(active).to.equal(true);
       done();
     };
-    handleSocialLogin('thanosxxl@yahoo.com',
-      null,
-      null,
-      null,
-      null,
-      mockCb);
+    handleSocialLogin('thanosxxl@yahoo.com', null, null, null, null, mockCb);
   });
 
   it('should generate a serial username if social username is already taken', (done) => {
@@ -484,12 +479,7 @@ describe('Social Login', () => {
       expect(active).to.equal(true);
       done();
     };
-    handleSocialLogin('thanosl@yahoo.com',
-      'tatiana',
-      'Stormborn',
-      null,
-      'hsgdfdg.jpg',
-      mockCb);
+    handleSocialLogin('thanosl@yahoo.com', 'tatiana', 'Stormborn', null, 'hsgdfdg.jpg', mockCb);
   });
 
   it('should generate a username with email if social network provides no username or firstname', (done) => {
@@ -504,12 +494,7 @@ describe('Social Login', () => {
       expect(active).to.equal(true);
       done();
     };
-    handleSocialLogin('thanosxl@yahoo.com',
-      null,
-      'Stormborn',
-      null,
-      'hsgdfdg.jpg',
-      mockCb);
+    handleSocialLogin('thanosxl@yahoo.com', null, 'Stormborn', null, 'hsgdfdg.jpg', mockCb);
   });
 });
 
@@ -719,7 +704,7 @@ describe('Toggle notification', () => {
   it('should update my notifications settings', (done) => {
     const newSettings = {
       emailNotification: false,
-      inAppNotification: false,
+      inAppNotification: false
     };
     chai
       .request(app)
@@ -743,7 +728,7 @@ describe('Toggle notification', () => {
   it('should fail if emailNotification is not true or false', (done) => {
     const newSettings = {
       emailNotification: 'djfhfhf',
-      inAppNotification: false,
+      inAppNotification: false
     };
     chai
       .request(app)
@@ -759,7 +744,7 @@ describe('Toggle notification', () => {
   it('should fail if inAppNotification is not true or false', (done) => {
     const newSettings = {
       emailNotification: true,
-      inAppNotification: 'nhfhjfj',
+      inAppNotification: 'nhfhjfj'
     };
     chai
       .request(app)
@@ -774,7 +759,7 @@ describe('Toggle notification', () => {
   });
   it('should fail if emailNotification is missing', (done) => {
     const newSettings = {
-      inAppNotification: true,
+      inAppNotification: true
     };
     chai
       .request(app)
@@ -789,7 +774,7 @@ describe('Toggle notification', () => {
   });
   it('should fail if inAppNotification is missing', (done) => {
     const newSettings = {
-      emailNotification: true,
+      emailNotification: true
     };
     chai
       .request(app)
@@ -811,7 +796,9 @@ describe('Test wild card route', () => {
       .get('/api/reportadmin')
       .end((req, res) => {
         expect(res.status).to.equal(404);
-        expect(res.body.message).to.be.a('string').to.equal('Route not found');
+        expect(res.body.message)
+          .to.be.a('string')
+          .to.equal('Route not found');
         done();
       });
   });
@@ -824,7 +811,9 @@ describe('Test welcome route', () => {
       .get('/')
       .end((req, res) => {
         expect(res.status).to.equal(200);
-        expect(res.body.message).to.be.a('string').to.equal('Authors Haven.');
+        expect(res.body.message)
+          .to.be.a('string')
+          .to.equal('Authors Haven.');
         done();
       });
   });
