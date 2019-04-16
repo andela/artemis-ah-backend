@@ -461,7 +461,7 @@ class ArticleController {
       include: [
         {
           model: User,
-          attributes: ['firstname', 'lastname', 'username', 'email', 'image']
+          attributes: ['firstname', 'lastname', 'username', 'email', 'image', 'bio']
         },
         {
           model: Tag,
