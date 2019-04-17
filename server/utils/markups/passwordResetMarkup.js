@@ -1,5 +1,3 @@
-import host from './index';
-
 /**
  * @description Markup for password reset
  * @param {string} username
@@ -87,7 +85,7 @@ const passwordResetMarkup = (username, email, hash) => (
         </p><br>
         <p class="message">Please, click the button below to proceed.</p>
       </div>
-        <a class="verifyLink" href="${host}api/users/reset-password?email=${email}&hash=${hash}" target="_blank" style="color: rgb(255, 255, 255)">
+        <a class="verifyLink" href="http://authorshaven-client.herokuapp.com/reset-password?email=${email}&hash=${hash}" target="_blank" style="color: rgb(255, 255, 255)">
           Reset Password
         </a>
       </div>      
