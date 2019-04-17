@@ -88,9 +88,7 @@ export default class Users {
         await user.update({
           verifiedEmail: true
         });
-        response(res).success({
-          message: 'email verified successfully'
-        });
+        return res.redirect(301, `${process.env.HOME_PAGE}`);
       }
     } else {
       response(res).badRequest({ message: 'invalid email' });
