@@ -2,7 +2,6 @@ import chaiHttp from 'chai-http';
 import chai, { expect } from 'chai';
 import dotenv from 'dotenv';
 import app from '../app';
-import { HelperUtils } from '../utils';
 
 dotenv.config();
 chai.use(chaiHttp);
@@ -18,8 +17,7 @@ const unfollowUserURL = '/api/profiles';
 const getUsersFollowersURL = username => `/api/profiles/${username}/followers`;
 const getUsersFollowingURL = username => `/api/profiles/${username}/following`;
 const signupURL = '/api/users';
-const verifyURL1 = `/api/users/verifyemail?email=${email1}&hash=${HelperUtils.hashPassword(email1)}`;
-const verifyURL2 = `/api/users/verifyemail?email=${email2}&hash=${HelperUtils.hashPassword(email2)}`;
+
 
 describe('Test user follow and unfollow on user profile endpoint', () => {
   it(`Insert user ${email1}`, (done) => {
@@ -41,15 +39,6 @@ describe('Test user follow and unfollow on user profile endpoint', () => {
       });
   });
 
-  it(`verify email ${email1}`, (done) => {
-    chai
-      .request(app)
-      .get(verifyURL1)
-      .end((err, res) => {
-        expect(res.status).to.equal(200);
-        done();
-      });
-  });
 
   it(`Insert user ${email2}`, (done) => {
     chai
@@ -66,16 +55,6 @@ describe('Test user follow and unfollow on user profile endpoint', () => {
         const { token } = res.body.user;
         expect(res.status).to.equal(201);
         token2 = token;
-        done();
-      });
-  });
-
-  it(`verify email ${email2}`, (done) => {
-    chai
-      .request(app)
-      .get(verifyURL2)
-      .end((err, res) => {
-        expect(res.status).to.equal(200);
         done();
       });
   });

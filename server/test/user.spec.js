@@ -112,18 +112,6 @@ describe('Test signup endpoint and email verification endpoint', () => {
       });
   });
 
-  it('It should return 200 if email is verified successfully', (done) => {
-    chai
-      .request(app)
-      .get(verifyURL)
-      .end((err, res) => {
-        expect(res.status).to.equal(200);
-        expect(res.body.message).to.be.a('string');
-        expect(res.body.message).to.equal('email verified successfully');
-        done();
-      });
-  });
-
   it('should return 400 if email is empty', (done) => {
     chai
       .request(app)
