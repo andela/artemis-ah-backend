@@ -81,12 +81,14 @@ export default class Users {
         where: { email }
       });
       if (!user) {
-        res.redirect(200, `${process.env.HOME_PAGE}?verified=false`);
+        response(res).notFound({
+          message: "user doesn't exist"
+        });
       } else {
         await user.update({
           verifiedEmail: true
         });
-        return res.redirect(200, `${process.env.HOME_PAGE}?verified=true`);
+        return res.redirect(301, `${process.env.HOME_PAGE}`);
       }
     } else {
       response(res).badRequest({ message: 'invalid email' });
