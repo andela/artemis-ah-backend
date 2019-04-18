@@ -204,7 +204,7 @@ export default class Users {
     const { email, username, bio, image, id, isAdmin, role } = data;
 
     try {
-      const userToken = await HelperUtils.generateToken({ id, isAdmin, role, email });
+      const userToken = await HelperUtils.generateToken({ id, isAdmin, role, email, username });
       const user = {
         email,
         username,
