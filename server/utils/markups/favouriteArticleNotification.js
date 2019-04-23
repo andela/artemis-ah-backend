@@ -1,13 +1,10 @@
-import host from './index';
-
 /**
  * @description Markup for favourite article notification
  * @param {string} username
  * @param {string} slug - hyphenated article title
  * @returns {string} markup template
  */
-const favouriteArticleNotification = (username, slug) => (
-  `<head>
+const favouriteArticleNotification = (username, slug) => `<head>
       <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
       <style>
         * {
@@ -81,13 +78,12 @@ const favouriteArticleNotification = (username, slug) => (
         </p>
         <p class="message">Click the button below to see comment.</p>
       </div>
-        <a class="verifyLink" href="${host}api/articles/${slug}" target="_blank" style="color: rgb(255, 255, 255)">
+        <a class="verifyLink" href="https://authorshaven-client.herokuapp.com/article/${slug}" target="_blank" style="color: rgb(255, 255, 255)">
           Read Article
         </a>
       </div>
     </body>
   </html>
-`
-);
+`;
 
 export default favouriteArticleNotification;
