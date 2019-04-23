@@ -263,8 +263,18 @@ class ArticleController {
       sequelizeOptions.where['$User.username$'] = query.author;
     }
 
-    // Total number of articles created on
-    const totalArticles = await Article.count();
+    // Total number of articles
+    const totalArticles = query.author ? (
+      await Article.count({
+        where: { '$User.username$': query.author },
+        include: [
+          {
+            model: User,
+            attributes: ['username']
+          },
+        ]
+      })
+    ) : await Article.count();
 
     Article.findAll(sequelizeOptions).then((articles) => {
       response(res).success({
