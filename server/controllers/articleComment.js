@@ -1,7 +1,6 @@
 import models from '../database/models';
 import response from '../utils/response';
 import { favouriteArticleNotification, HelperUtils } from '../utils';
-import host from '../utils/markups';
 
 const {
   ArticleComment,
@@ -82,14 +81,14 @@ class Comment {
             message: `${username} commented on a post you bookmarked`,
             title: article.title,
             type: 'comment',
-            url: `${host}api/articles/${slug}`
+            url: `/${slug}`
           });
           const notification = await Notification.create({
             message: `${username} commented on the post "${article.title}"`,
             metaId: userData.id,
             type: 'comment',
             title: article.title,
-            url: `${host}api/articles/${slug}`,
+            url: `/${slug}`,
           });
 
           await UserNotification.create({
