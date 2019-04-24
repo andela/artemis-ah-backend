@@ -240,7 +240,7 @@ export default class Users {
       });
 
       // Get user articles
-      const articles = await Users.getUserArticles(user.id);
+      const totalArticles = await Users.getUserTotalArticles(user.id);
 
       // Get following stats
       const followingStats = await Users.getFollowing(user.id);
@@ -252,7 +252,7 @@ export default class Users {
       response(res).success({
         message: 'user found',
         user,
-        articles,
+        totalArticles,
         followingStats,
         isFollowing
       });
@@ -266,12 +266,9 @@ export default class Users {
    * @param {*} userId
    * @returns {Array} articles
    */
-  static getUserArticles(userId) {
-    return Article.findAll({
-      where: { userId },
-      attributes: {
-        exclude: ['id', 'userId', 'totalClaps', 'createdAt', 'updatedAt']
-      }
+  static getUserTotalArticles(userId) {
+    return Article.count({
+      where: { userId }
     });
   }
 
