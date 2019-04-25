@@ -1,6 +1,7 @@
 /* eslint class-methods-use-this: "off" */
 import slugify from 'slug';
 import { validationResult } from 'express-validator/check';
+import { Op } from 'sequelize';
 import { HelperUtils } from '../utils';
 import response, { validationErrors } from '../utils/response';
 import db from '../database/models';
@@ -387,7 +388,9 @@ class ArticleController {
         where: {
           userId: id,
           isRead: false,
-          '$Notification.type$': 'comment'
+          '$Notification.type$': {
+            [Op.or]: ['comment', 'article.published']
+          }
         },
         include: [{
           model: Notification
