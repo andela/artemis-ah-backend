@@ -562,6 +562,7 @@ describe('GET single article /api/articles/:slug', () => {
         const { title } = res.body.article;
         expect(res.status).to.be.equal(200);
         expect(title).to.be.equal('This is an article');
+        expect(typeof res.body.isBookmarked).to.be.equal('boolean');
         done(err);
       });
   });
