@@ -388,6 +388,7 @@ class ArticleController {
         where: {
           userId: id,
           isRead: false,
+          '$Notification.metaId$': req.article.id,
           '$Notification.type$': {
             [Op.or]: ['comment', 'article.published']
           }
@@ -401,7 +402,7 @@ class ArticleController {
         await UserNotification.update({ isRead: true }, {
           where: {
             userId: id,
-            notificationId: notify.id,
+            id: notify.id,
           }
         });
       }
