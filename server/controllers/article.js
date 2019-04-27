@@ -165,7 +165,10 @@ class ArticleController {
       'Authors Haven <no-reply@authorshaven.com>',
       notification.message,
       notification.message,
-      articleNotificationMarkup(`${author.firstname} ${author.lastname}`, article.title, article.description, notification.url));
+      articleNotificationMarkup(`${author.firstname} ${author.lastname}`,
+        article.title,
+        article.description,
+        notification.url));
   }
 
   /**
@@ -255,7 +258,7 @@ class ArticleController {
         'updatedAt'
       ],
       order: [
-        ['id', 'DESC'], // Fetch from the latest.
+        ['id', 'DESC'] // Fetch from the latest.
       ]
     };
 
@@ -265,17 +268,17 @@ class ArticleController {
     }
 
     // Total number of articles
-    const totalArticles = query.author ? (
-      await Article.count({
+    const totalArticles = query.author
+      ? await Article.count({
         where: { '$User.username$': query.author },
         include: [
           {
             model: User,
             attributes: ['username']
-          },
+          }
         ]
       })
-    ) : await Article.count();
+      : await Article.count();
 
     Article.findAll(sequelizeOptions).then((articles) => {
       response(res).success({
@@ -328,14 +331,17 @@ class ArticleController {
         rating
       });
 
+      const averageRating = HelperUtils.calcArticleRating(existingRatings.length,
+        req.article.rating,
+        this.rating);
+
       await req.article.update({
-        rating: HelperUtils.calcArticleRating(existingRatings.length,
-          req.article.rating,
-          this.rating)
+        rating: averageRating
       });
 
       return response(res).success({
-        message: 'You have successfully rated this article'
+        message: 'You have successfully rated this article',
+        rating: averageRating
       });
     } catch (error) {
       return response(res).serverError({
@@ -393,21 +399,25 @@ class ArticleController {
             [Op.or]: ['comment', 'article.published']
           }
         },
-        include: [{
-          model: Notification
-        }]
+        include: [
+          {
+            model: Notification
+          }
+        ]
       });
 
       if (notify) {
-        await UserNotification.update({ isRead: true }, {
-          where: {
-            userId: id,
-            id: notify.id,
-          }
-        });
+        await UserNotification.update({ isRead: true },
+          {
+            where: {
+              userId: id,
+              id: notify.id
+            }
+          });
       }
 
       const clap = await this.getClap(id, article.id);
+      const rated = await this.checkUserRating(id, article.id);
 
       if (req.user.id && req.user.id !== req.article.userId) {
         await History.create({
@@ -416,7 +426,7 @@ class ArticleController {
           readingTime: readTime.text.split(' read')[0]
         });
       }
-      response(res).success({ article: singleArticle[0], clap });
+      response(res).success({ article: singleArticle[0], clap, rated });
     } catch (error) {
       return response(res).serverError({ errors: { server: error } });
     }
@@ -468,9 +478,7 @@ class ArticleController {
         slug
       },
       attributes: {
-        exclude: [
-          'userId'
-        ]
+        exclude: ['userId']
       },
       include: [
         {
@@ -480,7 +488,7 @@ class ArticleController {
         {
           model: Tag,
           attributes: ['name']
-        },
+        }
       ]
     });
   }
@@ -504,6 +512,26 @@ class ArticleController {
     if (isClapped === null) return false;
 
     return isClapped.clap;
+  }
+
+  /**
+   * @describe get user clap
+   * @param {*} userId
+   * @param {*} articleId
+   * @returns {boolean} true or false
+   */
+  async checkUserRating(userId, articleId) {
+    if (userId === undefined || userId === null) return false;
+    const rating = await Rating.findOne({
+      where: {
+        userId,
+        articleId
+      },
+      raw: true,
+      attributes: ['rating']
+    });
+
+    return Boolean(rating);
   }
 }
 
