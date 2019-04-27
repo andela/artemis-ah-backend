@@ -29,7 +29,13 @@ class Comment {
     const comments = await ArticleComment.findAll({
       where: {
         articleId
-      }
+      },
+      include: [
+        {
+          model: User,
+          attributes: ['firstname', 'lastname', 'username', 'email', 'image']
+        }
+      ]
     });
     return response(res).success({
       message: 'Comments successfully retrieved',
