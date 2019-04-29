@@ -9,6 +9,7 @@ import articleNotificationMarkup from '../utils/markups/articleNotificationMarku
 
 const {
   Article,
+  Bookmark,
   Tag,
   User,
   Rating,
@@ -417,16 +418,27 @@ class ArticleController {
       }
 
       const clap = await this.getClap(id, article.id);
+      let isBookmarked = false;
       const rated = await this.checkUserRating(id, article.id);
 
-      if (req.user.id && req.user.id !== req.article.userId) {
-        await History.create({
-          userId: req.user.id,
-          articleId: req.article.id,
-          readingTime: readTime.text.split(' read')[0]
+      // If user is logged in
+      if (req.user.id) {
+        // Check if article is bookmarked
+        const bookmarkRecord = await Bookmark.findOne({
+          where: { userId: req.user.id, articleId: article.id }
         });
+        isBookmarked = bookmarkRecord != null;
+
+        // If user is not the author of the article
+        if (req.user.id !== req.article.userId) {
+          await History.create({
+            userId: req.user.id,
+            articleId: req.article.id,
+            readingTime: readTime.text.split(' read')[0]
+          });
+        }
       }
-      response(res).success({ article: singleArticle[0], clap, rated });
+      response(res).success({ article: singleArticle[0], clap, rated, isBookmarked });
     } catch (error) {
       return response(res).serverError({ errors: { server: error } });
     }
