@@ -8,7 +8,8 @@ const {
   User,
   Notification,
   UserNotification,
-  CommentEditHistory
+  CommentEditHistory,
+  ArticleCommentLike
 } = models;
 
 /**
@@ -25,8 +26,9 @@ class Comment {
    * @returns {object} - The comment object
    */
   static async getComments(req, res) {
-    const articleId = req.article.id;
-    const comments = await ArticleComment.findAll({
+    const { user, article } = req;
+    const articleId = article.id;
+    let comments = await ArticleComment.findAll({
       where: {
         articleId
       },
@@ -38,6 +40,21 @@ class Comment {
         }
       ]
     });
+    if (user.id) {
+      comments = await Promise.all(comments.map(async (comment) => {
+        const userLike = await ArticleCommentLike.findOne({
+          where: {
+            userId: user.id,
+            commentId: comment.dataValues.id,
+            articleId: comment.dataValues.articleId
+          }
+        });
+        return {
+          ...comment.dataValues,
+          hasLiked: Boolean(userLike)
+        };
+      }));
+    }
     return response(res).success({
       message: 'Comments successfully retrieved',
       comments

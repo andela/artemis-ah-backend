@@ -42,6 +42,7 @@ router.post('/articles/:slug/highlight',
 
 router.get('/articles/:slug/comments',
   AuthenticateArticle.verifyArticle,
+  AuthenticateUser.identifyUser,
   Comment.getComments);
 
 router.get('/articles/tags',
