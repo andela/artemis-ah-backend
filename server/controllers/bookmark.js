@@ -1,7 +1,7 @@
 import db from '../database/models';
-import { response } from '../utils';
+import { response, HelperUtils } from '../utils';
 
-const { Bookmark, Article, User } = db;
+const { Bookmark, Article, User, Tag } = db;
 
 /**
  * @description Controller to bookmark articles
@@ -103,9 +103,18 @@ export default class BookmarkController {
             'title',
             'description',
             'body',
+            'tagId',
+            'coverUrl',
+            'rating',
             'totalClaps',
             'createdAt',
-            'updatedAt']
+            'updatedAt'],
+          include: [{
+            model: Tag,
+            attributes: [
+              'name'
+            ]
+          }]
         }]
       });
 
@@ -121,19 +130,26 @@ export default class BookmarkController {
               title,
               description,
               body,
+              rating,
+              coverUrl,
               totalClaps,
               createdAt,
               updatedAt
             } = data.Article;
             const { articleAuthor } = data;
+            const readTime = HelperUtils.estimateReadingTime(body);
 
             return {
               articleAuthor,
               slug,
               userId,
               title,
+              rating,
+              coverUrl,
+              readTime,
               description,
               body,
+              Tag: data.Article.Tag,
               totalClaps,
               createdAt,
               updatedAt
