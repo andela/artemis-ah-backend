@@ -193,6 +193,7 @@ describe('GET comments of a single article', () => {
       .end((err, res) => {
         expect(res.status).to.be.equal(200);
         expect(res.body.message).to.be.equal('Comments successfully retrieved');
+        expect(res.body.comments[0].hasLiked).to.be.equal(false);
         done(err);
       });
   });
