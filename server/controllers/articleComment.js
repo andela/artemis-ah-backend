@@ -29,7 +29,14 @@ class Comment {
     const comments = await ArticleComment.findAll({
       where: {
         articleId
-      }
+      },
+      order: [['id', 'DESC']],
+      include: [
+        {
+          model: User,
+          attributes: ['firstname', 'lastname', 'username', 'email', 'image']
+        }
+      ]
     });
     return response(res).success({
       message: 'Comments successfully retrieved',
@@ -88,12 +95,12 @@ class Comment {
             metaId: userData.id,
             type: 'comment',
             title: article.title,
-            url: `/${slug}`,
+            url: `/${slug}`
           });
 
           await UserNotification.create({
             userId: userData.id,
-            notificationId: notification.dataValues.id,
+            notificationId: notification.dataValues.id
           });
         }
       });
@@ -126,12 +133,13 @@ class Comment {
         });
       }
 
-      const articleUpdate = await ArticleComment.update({ comment }, {
-        where: {
-          id
-        },
-        returning: true
-      });
+      const articleUpdate = await ArticleComment.update({ comment },
+        {
+          where: {
+            id
+          },
+          returning: true
+        });
       const userComment = articleUpdate[1][0];
       return response(res).success({
         message: 'Comment updated successfully',
@@ -187,7 +195,8 @@ class Comment {
         comment,
         highlighted,
         index,
-        userId });
+        userId
+      });
       return response(res).created({
         message: 'Comment created successfully',
         userComment
@@ -221,19 +230,17 @@ class Comment {
     const { user } = req;
     // If user is not an admin AND is also not the persone that created the comment.
     if (user.id !== comment.userId && !user.isAdmin) {
-      return response(res).unauthorized('You don\'t have permission to view this');
+      return response(res).unauthorized("You don't have permission to view this");
     }
     comment.userId = undefined; // user ID should not show in response.
 
     // Get comment history
     const dbHistory = await CommentEditHistory.findAll({
       where: {
-        commentId,
+        commentId
       },
       attributes: [['previousComment', 'comment'], 'createdAt'],
-      order: [
-        ['id', 'DESC']
-      ]
+      order: [['id', 'DESC']]
     });
 
     let original, history;
