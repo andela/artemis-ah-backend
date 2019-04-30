@@ -169,12 +169,31 @@ describe('PATCH update comment', () => {
 });
 
 describe('GET comments of a single article', () => {
+  before((done) => {
+    chai
+      .request(app)
+      .post('/api/users')
+      .send({
+        firstname: 'Chris',
+        lastname: 'James',
+        email: 'chr2@gmail.com',
+        username: 'Chr2',
+        password: '12345678'
+      })
+      .end((err, res) => {
+        const { token } = res.body.user;
+        userToken = token;
+        done(err);
+      });
+  });
   it('should return 200 and get comments for an article', (done) => {
     chai.request(app)
       .get('/api/articles/this-is-an-article-1/comments')
+      .set('authorization', `Bearer ${userToken}`)
       .end((err, res) => {
         expect(res.status).to.be.equal(200);
         expect(res.body.message).to.be.equal('Comments successfully retrieved');
+        expect(res.body.comments[0].hasLiked).to.be.equal(false);
         done(err);
       });
   });
