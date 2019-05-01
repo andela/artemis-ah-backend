@@ -124,6 +124,7 @@ class ArticleController {
       message: `${author.firstname} ${author.lastname} just published an article`,
       metaId: article.id,
       type: 'article.published',
+      title: article.title,
       url: `/${article.slug}`
     });
 
