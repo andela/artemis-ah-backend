@@ -25,8 +25,8 @@ class AuthenticateUser {
     const token = authorization.split(' ')[1];
     const payload = HelperUtils.verifyToken(token);
     try {
-      const { id, username, email } = payload;
-      const user = await User.findOne({ where: { id, username, email } });
+      const { id, email } = payload;
+      const user = await User.findOne({ where: { id, email } });
       if (!user) {
         return { error: 'token' };
       }

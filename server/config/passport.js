@@ -84,7 +84,7 @@ export const handleSocialLogin = async (email, firstname, lastname, username, ph
           }`,
         image: photo
       });
-      return cb(null, { data: user.dataValues });
+      return cb(null, { data: { ...user.dataValues, newUser: true } });
     } catch (err) {
       return cb(null, { error: 'Could not authenticate user' });
     }

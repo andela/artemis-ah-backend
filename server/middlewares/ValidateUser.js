@@ -222,6 +222,24 @@ class ValidateUser {
       next();
     }
   }
+
+  /**
+   * @description function for determining if user is unique
+   * @param {string} field - database field
+   * @param {string} value - value to check for
+   * @returns {boolean} whether the user is unique or not
+   */
+  static async isUnique(field, value) {
+    try {
+      const existingUser = await User.findOne({ where: { [field]: value } });
+      if (existingUser) {
+        return false;
+      }
+      return true;
+    } catch (err) {
+      return true;
+    }
+  }
 }
 
 export default ValidateUser;
