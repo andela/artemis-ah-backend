@@ -70,7 +70,7 @@ class Comment {
    */
   static async postComment(req, res) {
     const userId = req.user.id;
-    const { username } = req.user;
+    const { firstname, lastname } = req.user;
     const { comment } = req.body;
     const { slug } = req.params;
     const { article } = req;
@@ -102,14 +102,14 @@ class Comment {
         }
         if (userData.inAppNotification) {
           await HelperUtils.pusher(`channel-${userData.id}`, 'notification', {
-            message: `${username} commented on a post you bookmarked`,
+            message: `${firstname} ${lastname} commented on a post you bookmarked`,
             title: article.title,
             type: 'comment',
             url: `/${slug}`
           });
           const notification = await Notification.create({
-            message: `${username} commented on the post "${article.title}"`,
-            metaId: userData.id,
+            message: `${firstname} ${lastname}  commented on a post you bookmarked`,
+            metaId: article.id,
             type: 'comment',
             title: article.title,
             url: `/${slug}`
