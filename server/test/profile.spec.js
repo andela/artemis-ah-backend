@@ -186,6 +186,43 @@ describe('Get user data', () => {
           });
       });
 
+      it('It should return 400 if username is taken', (done) => {
+        const data = {
+          bio: 'John',
+          image: 'new image',
+          username: 'bayo'
+        };
+        chai
+          .request(app)
+          .put(userURL)
+          .set('Authorization', `Bearer ${userToken}`)
+          .send(data)
+          .end((err, res) => {
+            expect(res.status).to.equal(400);
+            expect(res.body.message).to.equal('Username has already been taken');
+            done();
+          });
+      });
+
+      it('It should allow user update username if username is not taken', (done) => {
+        const data = {
+          bio: 'John',
+          image: 'new image',
+          username: 'bayo1234ff'
+        };
+        chai
+          .request(app)
+          .put(userURL)
+          .set('Authorization', `Bearer ${userToken}`)
+          .send(data)
+          .end((err, res) => {
+            expect(res.status).to.equal(200);
+            expect(res.body.message).to.equal('user updated');
+            expect(res.body.user.username).to.equal(data.username);
+            done();
+          });
+      });
+
       it('It should return 401 for unauthorized user', (done) => {
         chai
           .request(app)

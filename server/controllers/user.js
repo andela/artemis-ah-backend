@@ -7,6 +7,7 @@ import {
   HelperUtils,
   response
 } from '../utils';
+import { ValidateUser } from '../middlewares';
 
 const { User, History, Article, Follower } = db;
 
@@ -201,7 +202,7 @@ export default class Users {
         `${process.env.SOCIAL_LOGIN_REDIRECT_URL}?errorData=${encryptedData}`);
     }
 
-    const { email, username, bio, image, id, isAdmin, role } = data;
+    const { email, username, bio, image, id, isAdmin, role, newUser } = data;
 
     try {
       const userToken = await HelperUtils.generateToken({ id, isAdmin, role, email, username });
@@ -210,6 +211,7 @@ export default class Users {
         username,
         bio,
         image,
+        newUser,
         token: userToken
       };
       const encryptedUserdata = HelperUtils.generateToken(user);
@@ -316,16 +318,23 @@ export default class Users {
    * @returns {object} updatedUser
    */
   static async updateUser(req, res) {
+    const { body } = req;
     const { username } = req.user;
     try {
       const user = await User.findOne({
         where: { username },
         attributes: ['username', 'email', 'bio', 'image']
       });
+      const updatingUsername = body.username && body.username !== username;
+      const isUsernameUnique = updatingUsername ? await ValidateUser.isUnique('username', body.username) : true;
+      if (!isUsernameUnique) {
+        return response(res).badRequest({ message: 'Username has already been taken' });
+      }
 
       const values = {
-        bio: req.body.bio || user.bio,
-        image: req.body.image || user.image
+        bio: body.bio || user.bio,
+        image: body.image || user.image,
+        username: body.username || user.username,
       };
 
       const updateUser = await User.update(values, {
@@ -337,7 +346,7 @@ export default class Users {
       response(res).success({
         message: 'user updated',
         user: {
-          username,
+          username: updatingUsername ? body.username : username,
           email,
           bio,
           image
