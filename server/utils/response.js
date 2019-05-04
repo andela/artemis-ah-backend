@@ -77,15 +77,6 @@ export default res => ({
   },
 
   /**
-   * Sends status 500 and `data` to the client
-   * Should be sent when there's a server error
-   * @param {*} data
-   */
-  serverError(data) {
-    this.sendData(500, data);
-  },
-
-  /**
    * Send data to the client.
    *
    * @access private
