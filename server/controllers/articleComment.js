@@ -99,14 +99,14 @@ class Comment {
           where: { id: usersId }
         });
 
-        if (userData.emailNotification && (userData.id !== userId)) {
+        if (userData.emailNotification && (userData.id !== req.user.id)) {
           await HelperUtils.sendMail(userData.email,
             'Authors Haven <notification@authorshaven.com>',
             'Bookmarked Article Notification',
             'Comment Notification',
             favouriteArticleNotification(userData.username, slug));
         }
-        if (userData.inAppNotification && (userData.id === userId)) {
+        if (userData.inAppNotification && (userData.id === req.user.id)) {
           await HelperUtils.pusher(`channel-${userData.id}`, 'notification', {
             message: `${firstname} ${lastname} commented on a post you bookmarked`,
             title: article.title,
