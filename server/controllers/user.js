@@ -9,7 +9,7 @@ import {
 } from '../utils';
 import { ValidateUser } from '../middlewares';
 
-const { User, History, Article, Follower } = db;
+const { User, History, Article, Follower, Tag } = db;
 
 /**
  * @description Controller to authenticate users
@@ -335,13 +335,15 @@ export default class Users {
         bio: body.bio || user.bio,
         image: body.image || user.image,
         username: body.username || user.username,
+        firstname: body.firstname || user.firstname,
+        lastname: body.lastname || user.lastnamename,
       };
 
       const updateUser = await User.update(values, {
         returning: true,
         where: { username }
       });
-      const { email, bio, image } = updateUser[1][0];
+      const { email, bio, image, firstname, lastname } = updateUser[1][0];
 
       response(res).success({
         message: 'user updated',
@@ -349,7 +351,9 @@ export default class Users {
           username: updatingUsername ? body.username : username,
           email,
           bio,
-          image
+          image,
+          firstname,
+          lastname
         }
       });
     } catch (err) {
@@ -394,7 +398,7 @@ export default class Users {
     try {
       const userHistory = await History.findAll({
         where: { userId: req.user.id },
-        include: [{ model: Article, attributes: ['title', 'slug'] }]
+        include: [{ model: Article, attributes: ['title', 'slug'], include: [{ model: Tag, attributes: ['name'] }, { model: User, attributes: ['firstname', 'lastname', 'username'] }] }]
       });
       response(res).success({
         history: userHistory
