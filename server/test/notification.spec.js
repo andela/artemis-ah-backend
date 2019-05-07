@@ -1,6 +1,7 @@
 import chaiHttp from 'chai-http';
 import chai, { expect } from 'chai';
 import app from '../app';
+import bookmarkMarkup from '../utils/markups/favouriteArticleNotification';
 
 chai.use(chaiHttp);
 
@@ -100,5 +101,12 @@ describe('Notification for offline users', () => {
         expect(res.body.notifications).to.be.an('array');
         done();
       });
+  });
+});
+
+describe('Markups', () => {
+  it('test the bookmark markup', (done) => {
+    bookmarkMarkup('username', 'url');
+    done();
   });
 });

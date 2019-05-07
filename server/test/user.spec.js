@@ -3,7 +3,7 @@ import chai, { expect } from 'chai';
 import dotenv from 'dotenv';
 import { HelperUtils } from '../utils';
 import app from '../app';
-import { handleSocialLogin } from '../config/passport';
+import { handleSocialLogin, generateNewUsername } from '../config/passport';
 
 dotenv.config();
 
@@ -804,5 +804,12 @@ describe('Test welcome route', () => {
           .to.equal('Authors Haven.');
         done();
       });
+  });
+});
+
+describe('Unit test passport methods', () => {
+  it('should test the meta passport methods', (done) => {
+    expect(generateNewUsername('shaolin1')).to.equal('shaolin2');
+    done();
   });
 });

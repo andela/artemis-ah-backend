@@ -34,7 +34,7 @@ const facebookReturnUrl = process.env.FACEBOOK_RETURN_URL;
  * @param {string} username - username that failed validation because it wasnt unique
  * @returns {string} - new username
  */
-const generateNewUsername = (username) => {
+export const generateNewUsername = (username) => {
   const letterPart = username.match(/\D+/g)[0];
   const numberPart = username.match(/\d+/g) ? username.match(/\d+/g)[0] : 0;
   return `${letterPart}${Number(numberPart) + 1}`;
@@ -45,7 +45,7 @@ const generateNewUsername = (username) => {
  * @param {string} username - username to validate
  * @returns {string} - unique username
  */
-const validateUsername = async (username) => {
+export const validateUsername = async (username) => {
   try {
     const existingUser = await User.findOne({ where: { username } });
     return validateUsername(generateNewUsername(existingUser.dataValues.username));

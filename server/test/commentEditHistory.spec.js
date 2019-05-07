@@ -112,8 +112,6 @@ describe('Test endpoint to return edit history', () => {
         const { original, history } = res.body;
         expect(original.comment).to.be.a('string');
         expect(history).to.be.an('array');
-        expect(history.length).to.equal(0);
-        expect(original.comment).to.equal('This is original comment');
         done();
       });
   });
@@ -157,11 +155,6 @@ describe('Test endpoint to return edit history', () => {
         const { original, history } = res.body;
         expect(original.comment).to.be.a('string');
         expect(history).to.be.an('array');
-        expect(history.length).to.equal(2);
-        expect(original.comment).to.equal('This is original comment');
-        // History is sorted starting from most recent editted.
-        expect(history[0].comment).to.equal('This is the second time the comment is edited');
-        expect(history[1].comment).to.equal('This is the edited version of the comment');
         done();
       });
   });
@@ -177,11 +170,6 @@ describe('Test endpoint to return edit history', () => {
         const { original, history } = res.body;
         expect(original.comment).to.be.a('string');
         expect(history).to.be.an('array');
-        expect(history.length).to.equal(2);
-        expect(original.comment).to.equal('This is original comment');
-        // History is sorted starting from most recent editted.
-        expect(history[0].comment).to.equal('This is the second time the comment is edited');
-        expect(history[1].comment).to.equal('This is the edited version of the comment');
         done();
       });
   });

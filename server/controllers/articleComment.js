@@ -84,6 +84,11 @@ class Comment {
         userComment
       });
 
+      await CommentEditHistory.create({
+        commentId: userComment.id,
+        previousComment: comment
+      });
+
       const bookmarks = await Bookmark.findAll({
         where: { articleId }
       }).map(user => user.userId);
@@ -93,14 +98,14 @@ class Comment {
           attributes: ['id', 'email', 'username', 'emailNotification', 'inAppNotification'],
           where: { id: usersId }
         });
-        if (userData.emailNotification) {
+        if (userData.emailNotification && (userData.id !== req.user.id)) {
           await HelperUtils.sendMail(userData.email,
             'Authors Haven <notification@authorshaven.com>',
             'Bookmarked Article Notification',
             'Comment Notification',
             favouriteArticleNotification(userData.username, slug));
         }
-        if (userData.inAppNotification) {
+        if (userData.inAppNotification && (userData.id !== req.user.id)) {
           await HelperUtils.pusher(`channel-${userData.id}`, 'notification', {
             message: `${firstname} ${lastname} commented on a post you bookmarked`,
             title: article.title,

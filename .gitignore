@@ -45,3 +45,6 @@ package-lock.json
 
 # Ignore all .rej extension
 .rej
+
+# disable random .vscode dir
+.vscode
